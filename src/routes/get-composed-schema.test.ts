@@ -38,7 +38,29 @@ tap.test('Composed schema', (t) => {
 
     t.equal(res.statusCode, 200)
 
-    t.matchSnapshot(req.body, 'Composed schema of two clients')
+    t.same(res.body, {
+      success: true,
+      data: [
+        {
+          uid: '916348424',
+          service_id: 'foo',
+          is_active: true,
+          type_defs: 'type Query { hello: String }',
+          created_at: 1618948427027,
+          updated_at: null,
+          version: '1',
+        },
+        {
+          uid: '1323442088',
+          service_id: 'bar',
+          is_active: true,
+          type_defs: 'type Query2 { hello: String }',
+          created_at: 1618948427027,
+          updated_at: null,
+          version: '2',
+        },
+      ]
+    })
 
     t.end()
   })

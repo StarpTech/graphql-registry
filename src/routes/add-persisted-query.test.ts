@@ -18,28 +18,36 @@ tap.test('Add Persisted Queries', (t) => {
     t.same(res.body, {
       success: true,
     })
-    t.matchSnapshot(store)
-    t.end()
-  })
-  t.test('Should return validation error', async (t) => {
-    const store = NewNamespace(
+    t.same(store, [
       {
-        name: 'PERSISTED_QUERIES',
+        key: 'pq::123',
+        value: 'query',
       },
-      [],
-    )
-
-    const req = Request('POST', '', { key: '123' })
-    const res = Response()
-    await addPersistedQuery(req, res)
-
-    t.equal(res.statusCode, 400)
-    t.same(res.body, {
-      success: false,
-      error: 'At path: query -- Expected a string, but received: undefined',
-    })
-    t.matchSnapshot(store)
+    ])
     t.end()
   })
+  t.test(
+    'Should return validation error because no query was provided',
+    async (t) => {
+      const store = NewNamespace(
+        {
+          name: 'PERSISTED_QUERIES',
+        },
+        [],
+      )
+
+      const req = Request('POST', '', { key: '123' })
+      const res = Response()
+      await addPersistedQuery(req, res)
+
+      t.equal(res.statusCode, 400)
+      t.same(res.body, {
+        success: false,
+        error: 'At path: query -- Expected a string, but received: undefined',
+      })
+      t.same(store, [])
+      t.end()
+    },
+  )
   t.end()
 })

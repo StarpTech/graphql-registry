@@ -44,57 +44,99 @@ tap.test('Register new schema', (t) => {
 
     t.equal(res.statusCode, 200)
 
-    t.matchSnapshot(res.body, "Client schemas after first push")
+    t.same(res.body, {
+      success: true,
+      data: [
+        {
+          created_at: 1618948427027,
+          is_active: true,
+          service_id: 'foo',
+          type_defs: 'type Query { hello: String }',
+          uid: '916348424',
+          updated_at: null,
+          version: '1',
+        },
+      ],
+    })
 
     t.end()
   })
 
-  t.test('Should not create multiple schemas when type_defs does not change', async (t) => {
-    NewNamespace(
-      {
-        name: 'SERVICES',
-      },
-      [],
-    )
+  t.test(
+    'Should not create multiple schemas when type_defs does not change',
+    async (t) => {
+      NewNamespace(
+        {
+          name: 'SERVICES',
+        },
+        [],
+      )
 
-    let req = Request('POST', '', {
-      type_defs: 'type Query { hello: String }',
-      version: '1',
-      name: 'foo',
-    })
-    let res = Response()
-    await registerSchema(req, res)
+      let req = Request('POST', '', {
+        type_defs: 'type Query { hello: String }',
+        version: '1',
+        name: 'foo',
+      })
+      let res = Response()
+      await registerSchema(req, res)
 
-    t.equal(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
 
-    req = Request('GET', '')
-    res = Response()
-    await getComposedSchema(req, res)
+      req = Request('GET', '')
+      res = Response()
+      await getComposedSchema(req, res)
 
-    t.equal(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
 
-    t.matchSnapshot(res.body, "First schema and client")
+      t.same(res.body, {
+        success: true,
+        data: [
+          {
+            created_at: 1618948427027,
+            is_active: true,
+            service_id: 'foo',
+            type_defs: 'type Query { hello: String }',
+            uid: '916348424',
+            updated_at: null,
+            version: '1',
+          },
+        ],
+      })
 
-    req = Request('POST', '', {
-      type_defs: 'type Query { hello: String }',
-      version: '1',
-      name: 'foo',
-    })
-    res = Response()
-    await registerSchema(req, res)
+      req = Request('POST', '', {
+        type_defs: 'type Query { hello: String }',
+        version: '1',
+        name: 'foo',
+      })
+      res = Response()
+      await registerSchema(req, res)
 
-    t.equal(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
 
-    req = Request('GET', '')
-    res = Response()
-    await getComposedSchema(req, res)
+      req = Request('GET', '')
+      res = Response()
+      await getComposedSchema(req, res)
 
-    t.equal(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
 
-    t.matchSnapshot(res.body, "Client schemas after second push same data")
+      t.same(res.body, {
+        success: true,
+        data: [
+          {
+            created_at: 1618948427027,
+            is_active: true,
+            service_id: 'foo',
+            type_defs: 'type Query { hello: String }',
+            uid: '916348424',
+            updated_at: 1618948427027,
+            version: '1',
+          },
+        ],
+      })
 
-    t.end()
-  })
+      t.end()
+    },
+  )
 
   t.test('Should register schemas from multiple clients', async (t) => {
     NewNamespace(
@@ -130,7 +172,29 @@ tap.test('Register new schema', (t) => {
 
     t.equal(res.statusCode, 200)
 
-    t.matchSnapshot(res.body, "schemas from two different clients")
+    t.same(res.body, {
+      success: true,
+      data: [
+        {
+          created_at: 1618948427027,
+          is_active: true,
+          service_id: 'foo',
+          type_defs: 'type Query { hello: String }',
+          uid: '916348424',
+          updated_at: null,
+          version: '1',
+        },
+        {
+          created_at: 1618948427027,
+          is_active: true,
+          service_id: 'bar',
+          type_defs: 'type Query2 { hello: String }',
+          uid: '1323442088',
+          updated_at: null,
+          version: '2',
+        },
+      ],
+    })
 
     t.end()
   })
@@ -164,7 +228,10 @@ tap.test('Register new schema', (t) => {
 
     t.equal(res.statusCode, 200)
 
-    t.matchSnapshot(res.body, "Empty")
+    t.same(res.body, {
+      success: true,
+      data: [],
+    })
 
     t.end()
   })
