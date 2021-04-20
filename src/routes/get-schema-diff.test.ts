@@ -1,10 +1,10 @@
 import tap from 'tap'
 import { NewNamespace, Request, Response } from '../test-utils'
-import { ErrorResponse } from '../types'
-import { getSchemaValidation } from './get-schema-validation'
+import { getSchemaDiff } from './get-schema-diff'
+import { registerSchema } from './register-schema'
 
-tap.test('Schema validation', (t) => {
-  t.test('Should validate schema as valid', async (t) => {
+tap.test('Schema diff', (t) => {
+  t.test('Should calculate schema diff', async (t) => {
     NewNamespace(
       {
         name: 'SERVICES',
@@ -14,38 +14,34 @@ tap.test('Schema validation', (t) => {
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
+      version: '1',
       name: 'foo',
     })
     let res = Response()
-    await getSchemaValidation(req, res)
+    await registerSchema(req, res)
 
+    t.equal(res.statusCode, 200)
+
+    req = Request('POST', '', {
+      name: 'foo',
+      type_defs: 'type Query { hello: String world: String }',
+    })
+    res = Response()
+    await getSchemaDiff(req, res)
     t.equal(res.statusCode, 200)
     t.same(res.body, {
       success: true,
+      data: [
+        {
+          criticality: {
+            level: 'NON_BREAKING',
+          },
+          type: 'FIELD_ADDED',
+          message: "Field 'world' was added to object type 'Query'",
+          path: 'Query.world',
+        },
+      ],
     })
-    t.end()
-  })
-
-  t.test('Should validate schema as invalid', async (t) => {
-    NewNamespace(
-      {
-        name: 'SERVICES',
-      },
-      [],
-    )
-
-    let req = Request('POST', '', {
-      type_defs: 'type Query { hello: String22 }',
-      name: 'foo',
-    })
-    let res = Response()
-    await getSchemaValidation(req, res)
-
-    const body = (res.body as any) as ErrorResponse
-
-    t.equal(res.statusCode, 400)
-    t.equal(body.success, false)
-    t.ok(body.error)
     t.end()
   })
   t.end()
