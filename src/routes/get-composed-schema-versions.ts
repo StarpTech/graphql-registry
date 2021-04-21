@@ -31,10 +31,7 @@ const validateRequest = object({
  */
 export const getComposedSchemaByVersions: Handler = async function (req, res) {
   const requestBody = await req.body<GetSchemaByVersionsRequest>()
-  const [error, input] = validate(
-    requestBody,
-    validateRequest,
-  )
+  const [error, input] = validate(requestBody, validateRequest)
   if (!input || error) {
     return res.send(400, {
       success: false,

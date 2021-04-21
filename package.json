@@ -6,30 +6,33 @@
     "build": "webpack",
     "deploy": "NODE_ENV=production wrangler publish",
     "test": "npm run unit",
-    "unit": "tap --debug src/**/*.test.ts --node-arg=--require=./bin/register.js -Rspec",
+    "unit": "ava src/**/*.test.ts",
     "watch": "npm run unit -- --watch",
-    "cov": "npm run unit -- --cov --coverage-report=html",
-    "format": "prettier --write '**/*.{js,css,json,md}'",
+    "cov": "nyc --reporter=lcov --reporter=text-summary -- npm run unit",
+    "format": "prettier --write '**/*.{js,ts,json,md}'",
     "types": "tsc --noEmit"
   },
-  "tap": {
-    "check-coverage": false,
-    "test-env": [
-      "ESM_DISABLE_CACHE=1"
-    ]
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "./bin/register"
+    ],
+    "nodeArguments": []
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^2.2.1",
     "@cloudflare/wrangler": "^1.16.0",
-    "@types/tap": "^15.0.0",
+    "ava": "^3.15.0",
     "esbuild": "^0.11.12",
+    "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
-    "tap": "^15.0.3",
-    "ts-loader": "^9.0.1",
+    "ts-loader": "^9.0.2",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
-    "webpack": "^5.34.0",
+    "webpack": "^5.35.0",
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {

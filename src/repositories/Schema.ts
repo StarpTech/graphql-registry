@@ -94,7 +94,7 @@ export async function findByServiceVersions(
 
         schemas.push({
           ...schema,
-          version: schemaVersion.version
+          version: schemaVersion.version,
         })
       } else {
         throw new Error(
@@ -118,7 +118,7 @@ export async function findByServiceVersions(
 
       schemas.push({
         ...schema,
-        version: schemaVersion.version
+        version: schemaVersion.version,
       })
     }
   }
