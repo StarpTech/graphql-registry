@@ -11,7 +11,6 @@ specifiers:
   fast-sort: ^3.0.2
   graphql: ^15.5.0
   nyc: ^15.1.0
-  p-limit: ^3.1.0
   prettier: ^2.2.1
   rimraf: ^3.0.2
   superstruct: ^0.15.1
@@ -29,7 +28,6 @@ dependencies:
   '@sindresorhus/fnv1a': 2.0.1
   fast-sort: 3.0.2
   graphql: 15.5.0
-  p-limit: 3.1.0
   superstruct: 0.15.1
   ulid: 2.3.0
   worktop: 0.4.2
@@ -2346,6 +2344,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yocto-queue: 0.1.0
+    dev: true
 
   /p-locate/3.0.0:
     resolution: {integrity: sha512-x+12w/To+4GFfgJhBEpiDcLozRJGegY+Ei7/z0tSLkMmxGZNybVMSfWj9aJn8Z5Fc7dBUNJOOVgPv2H7IwulSQ==}
@@ -3393,3 +3392,4 @@ packages:
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: true
