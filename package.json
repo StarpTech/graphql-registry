@@ -12,6 +12,9 @@
     "format": "prettier --write '**/*.{js,ts,json,md}'",
     "types": "tsc --noEmit"
   },
+  "engines": {
+    "node": ">=14"
+  },
   "ava": {
     "extensions": [
       "ts"
