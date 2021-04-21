@@ -84,20 +84,19 @@ export const Request = (
 
 export const NewNamespace = (
   bindingConfig: { name: string },
-  store: { key: string; value: any }[],
+  store: Map<string, any> = new Map(),
 ) => {
   let binding = Namespace()
   binding.get = (key: string, format: string) => {
-    const m = store.findIndex((i) => i.key === `${key}`)
-    if (m !== -1) {
-      return Promise.resolve(
-        format === 'json' ? JSON.parse(store[m].value) : store[m].value,
-      )
+    const m = store.has(key)
+    if (m) {
+      const val = store.get(key)
+      return Promise.resolve(format === 'json' ? JSON.parse(val) : val)
     }
     return Promise.resolve(null)
   }
   binding.put = (key: string, value: any) => {
-    store.unshift({ key, value })
+    store.set(key, value)
     return Promise.resolve()
   }
   // @ts-ignore

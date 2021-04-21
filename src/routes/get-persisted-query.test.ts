@@ -8,14 +8,8 @@ test.serial('Should load PQ from KV', async (t) => {
     {
       name: 'PERSISTED_QUERIES',
     },
-    [
-      {
-        key: key_item('123'),
-        value: '123',
-      },
-    ],
+    new Map([[key_item('123'), '123']]),
   )
-
   const req = Request('GET', 'key=123')
   const res = Response()
   await getPersistedQuery(req, res)
@@ -27,12 +21,9 @@ test.serial('Should load PQ from KV', async (t) => {
 })
 
 test.serial('Should return 404 when key does not exist', async (t) => {
-  NewNamespace(
-    {
-      name: 'PERSISTED_QUERIES',
-    },
-    [],
-  )
+  NewNamespace({
+    name: 'PERSISTED_QUERIES',
+  })
 
   const req = Request('GET', 'key=123')
   const res = Response()

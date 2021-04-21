@@ -4,12 +4,9 @@ import { getComposedSchema } from './get-composed-schema'
 import { registerSchema } from './register-schema'
 
 test.serial('Should return schema of two services', async (t) => {
-  NewNamespace(
-    {
-      name: 'SERVICES',
-    },
-    [],
-  )
+  NewNamespace({
+    name: 'SERVICES',
+  })
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',

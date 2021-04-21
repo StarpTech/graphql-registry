@@ -9,7 +9,7 @@ export interface ServiceSchema {
 
 export function composeAndValidateSchema(servicesSchemaMap: ServiceSchema[]) {
   let schema
-  let errors: GraphQLError[] = []
+  let error = null
 
   try {
     const serviceList = servicesSchemaMap.map((schema) => {
@@ -29,10 +29,12 @@ export function composeAndValidateSchema(servicesSchemaMap: ServiceSchema[]) {
       errors: validationErrors,
     } = composeAndValidate(serviceList)
     schema = validatedSchema
-    errors = validationErrors || []
-  } catch (error) {
-    errors = [error]
+    if (validationErrors && validationErrors.length > 0) {
+      error = `${validationErrors[0]}`
+    }
+  } catch (err) {
+    error = `${err.message}`
   }
 
-  return { schema, errors }
+  return { schema, error }
 }

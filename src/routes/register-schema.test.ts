@@ -5,12 +5,9 @@ import { getComposedSchema } from './get-composed-schema'
 import { registerSchema } from './register-schema'
 
 test.serial('Should register new schema', async (t) => {
-  NewNamespace(
-    {
-      name: 'SERVICES',
-    },
-    [],
-  )
+  NewNamespace({
+    name: 'SERVICES',
+  })
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -62,12 +59,9 @@ test.serial('Should register new schema', async (t) => {
 test.serial(
   'Should not create multiple schemas when type_defs does not change',
   async (t) => {
-    NewNamespace(
-      {
-        name: 'SERVICES',
-      },
-      [],
-    )
+    NewNamespace({
+      name: 'SERVICES',
+    })
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -134,12 +128,9 @@ test.serial(
 )
 
 test.serial('Should register schemas from multiple clients', async (t) => {
-  NewNamespace(
-    {
-      name: 'SERVICES',
-    },
-    [],
-  )
+  NewNamespace({
+    name: 'SERVICES',
+  })
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -193,12 +184,9 @@ test.serial('Should register schemas from multiple clients', async (t) => {
 })
 
 test.serial('Should not be possible to push invalid schema', async (t) => {
-  NewNamespace(
-    {
-      name: 'SERVICES',
-    },
-    [],
-  )
+  NewNamespace({
+    name: 'SERVICES',
+  })
 
   let req = Request('POST', '', {
     type_defs: 'foo',
@@ -209,6 +197,11 @@ test.serial('Should not be possible to push invalid schema', async (t) => {
   await registerSchema(req, res)
 
   t.is(res.statusCode, 400)
+
+  t.deepEqual(res.body as any, {
+    success: false,
+    error: 'Syntax Error: Unexpected Name "foo".',
+  })
 
   const body = (res.body as any) as ErrorResponse
 

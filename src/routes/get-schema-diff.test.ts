@@ -4,12 +4,9 @@ import { getSchemaDiff } from './get-schema-diff'
 import { registerSchema } from './register-schema'
 
 test.serial('Should calculate schema diff', async (t) => {
-  NewNamespace(
-    {
-      name: 'SERVICES',
-    },
-    [],
-  )
+  NewNamespace({
+    name: 'SERVICES',
+  })
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',

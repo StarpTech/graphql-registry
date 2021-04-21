@@ -7,8 +7,7 @@ test.serial('Should validate schema as valid', async (t) => {
   NewNamespace(
     {
       name: 'SERVICES',
-    },
-    [],
+    }
   )
 
   let req = Request('POST', '', {
@@ -28,8 +27,7 @@ test.serial('Should validate schema as invalid', async (t) => {
   NewNamespace(
     {
       name: 'SERVICES',
-    },
-    [],
+    }
   )
 
   let req = Request('POST', '', {
@@ -43,5 +41,10 @@ test.serial('Should validate schema as invalid', async (t) => {
 
   t.is(res.statusCode, 400)
   t.is(body.success, false)
-  t.truthy(body.error)
+  
+
+  t.deepEqual(body as any, {
+    success: false,
+    error: 'Error: Unknown type: "String22".',
+  })
 })

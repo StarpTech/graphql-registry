@@ -53,12 +53,12 @@ export const getComposedSchemaByVersions: Handler = async function (req, res) {
     typeDefs: s.type_defs,
   }))
 
-  const { errors } = composeAndValidateSchema(serviceSchemas)
+  const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
 
-  if (errors.length > 0) {
+  if (error) {
     return res.send(400, {
       success: false,
-      error: errors,
+      error: schemaError,
     })
   }
 

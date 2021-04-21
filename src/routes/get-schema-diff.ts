@@ -51,10 +51,10 @@ export const getSchemaDiff: Handler = async function (req, res) {
   if (!original.schema) {
     return res.send(400)
   }
-  if (original.errors.length > 0) {
+  if (original.error) {
     return res.send(400, {
       success: false,
-      error: original.errors,
+      error: original.error,
     })
   }
 
@@ -69,10 +69,10 @@ export const getSchemaDiff: Handler = async function (req, res) {
   if (!updated.schema) {
     return res.send(400)
   }
-  if (updated.errors.length > 0) {
+  if (updated.error) {
     return res.send(400, {
       success: false,
-      error: updated.errors,
+      error: updated.error,
     })
   }
 

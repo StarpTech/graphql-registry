@@ -3,12 +3,9 @@ import { addPersistedQuery } from './add-persisted-query'
 import { NewNamespace, Request, Response } from '../test-utils'
 
 test.serial('Should store PQ from KV', async (t) => {
-  const store = NewNamespace(
-    {
-      name: 'PERSISTED_QUERIES',
-    },
-    [],
-  )
+  const store = NewNamespace({
+    name: 'PERSISTED_QUERIES',
+  })
 
   const req = Request('POST', '', { key: '123', query: 'query' })
   const res = Response()
@@ -17,22 +14,14 @@ test.serial('Should store PQ from KV', async (t) => {
   t.deepEqual(res.body as any, {
     success: true,
   })
-  t.deepEqual(store, [
-    {
-      key: 'pq::123',
-      value: 'query',
-    },
-  ])
+  t.deepEqual(store, new Map([['pq::123', 'query']]))
 })
 test.serial(
   'Should return validation error because no query was provided',
   async (t) => {
-    const store = NewNamespace(
-      {
-        name: 'PERSISTED_QUERIES',
-      },
-      [],
-    )
+    const store = NewNamespace({
+      name: 'PERSISTED_QUERIES',
+    })
 
     const req = Request('POST', '', { key: '123' })
     const res = Response()
@@ -43,6 +32,6 @@ test.serial(
       success: false,
       error: 'At path: query -- Expected a string, but received: undefined',
     })
-    t.deepEqual(store, [])
+    t.deepEqual(store, new Map())
   },
 )
