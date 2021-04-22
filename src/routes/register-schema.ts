@@ -112,25 +112,27 @@ export const registerSchema: Handler = async function (req, res) {
    */
   let schemaId = schema.uid
   let allVersions = await listSchemaVersions(input.name)
-  let matchedVersion = allVersions.find(
+  
+  let schemaVersion = allVersions.find(
     (s) => s.schema_id === schemaId && s.version === input.version,
   )
-  if (!matchedVersion) {
-    const schemaVersion = await insertSchemaVersion(input.name, {
+  if (!schemaVersion) {
+    let newVersion = await insertSchemaVersion(input.name, {
       schema_id: schema.uid,
       service_name: input.name,
       version: input.version,
     })
-    if (!schemaVersion) {
+    if (!newVersion) {
       throw new Error('Could not create schema version')
     }
+    schemaVersion = newVersion
   }
 
   const responseBody: SuccessResponse<SchemaResponseModel> = {
     success: true,
     data: {
       ...schema,
-      version: input.version,
+      version: schemaVersion.version,
     },
   }
 

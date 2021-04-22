@@ -4,11 +4,9 @@ import { ErrorResponse } from '../types'
 import { getSchemaValidation } from './get-schema-validation'
 
 test.serial('Should validate schema as valid', async (t) => {
-  NewNamespace(
-    {
-      name: 'SERVICES',
-    }
-  )
+  NewNamespace({
+    name: 'SERVICES',
+  })
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -24,11 +22,9 @@ test.serial('Should validate schema as valid', async (t) => {
 })
 
 test.serial('Should validate schema as invalid', async (t) => {
-  NewNamespace(
-    {
-      name: 'SERVICES',
-    }
-  )
+  NewNamespace({
+    name: 'SERVICES',
+  })
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String22 }',
@@ -41,7 +37,6 @@ test.serial('Should validate schema as invalid', async (t) => {
 
   t.is(res.statusCode, 400)
   t.is(body.success, false)
-  
 
   t.deepEqual(body as any, {
     success: false,

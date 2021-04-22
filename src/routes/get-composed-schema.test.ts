@@ -1,5 +1,6 @@
 import test from 'ava'
 import { NewNamespace, Request, Response } from '../test-utils'
+import { SuccessResponse, SchemaResponseModel } from '../types'
 import { getComposedSchema } from './get-composed-schema'
 import { registerSchema } from './register-schema'
 
@@ -34,27 +35,26 @@ test.serial('Should return schema of two services', async (t) => {
 
   t.is(res.statusCode, 200)
 
-  t.deepEqual(res.body as any, {
-    success: true,
-    data: [
-      {
-        uid: '916348424',
-        service_id: 'foo',
-        is_active: true,
-        type_defs: 'type Query { hello: String }',
-        created_at: 1618948427027,
-        updated_at: null,
-        version: '1',
-      },
-      {
-        uid: '1323442088',
-        service_id: 'bar',
-        is_active: true,
-        type_defs: 'type Query2 { hello: String }',
-        created_at: 1618948427027,
-        updated_at: null,
-        version: '2',
-      },
-    ],
+  const result = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
+
+  t.true(result.success)
+  t.is(result.data.length, 2)
+  t.truthy(result.data[0].uid)
+  t.truthy(result.data[0].created_at)
+  t.like(result.data[0], {
+    service_id: 'foo',
+    is_active: true,
+    type_defs: 'type Query { hello: String }',
+    updated_at: null,
+    version: '1',
+  })
+  t.truthy(result.data[1].uid)
+  t.truthy(result.data[1].created_at)
+  t.like(result.data[1], {
+    service_id: 'bar',
+    is_active: true,
+    type_defs: 'type Query2 { hello: String }',
+    updated_at: null,
+    version: '2',
   })
 })

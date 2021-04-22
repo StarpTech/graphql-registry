@@ -103,7 +103,7 @@ export async function findByServiceVersions(
       }
     } else {
       const schemaVersion = await findLatestServiceSchemaVersion(service.name)
-
+      
       if (!schemaVersion) {
         throw new Error(`Service "${service.name}" has no schema registered`)
       }

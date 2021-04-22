@@ -19,20 +19,9 @@ test.serial('Should register new schema', async (t) => {
 
   t.is(res.statusCode, 200)
 
-  let body = (res.body as any) as SuccessResponse<SchemaResponseModel>
+  let result = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
 
-  t.deepEqual(body, {
-    success: true,
-    data: {
-      uid: '916348424',
-      service_id: 'foo',
-      is_active: true,
-      type_defs: 'type Query { hello: String }',
-      created_at: 1618948427027,
-      updated_at: null,
-      version: '1',
-    },
-  })
+  t.is(result.success, true)
 
   req = Request('GET', '')
   res = Response()
@@ -40,24 +29,23 @@ test.serial('Should register new schema', async (t) => {
 
   t.is(res.statusCode, 200)
 
-  t.deepEqual(res.body as any, {
-    success: true,
-    data: [
-      {
-        created_at: 1618948427027,
-        is_active: true,
-        service_id: 'foo',
-        type_defs: 'type Query { hello: String }',
-        uid: '916348424',
-        updated_at: null,
-        version: '1',
-      },
-    ],
+  result = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
+
+  t.is(result.success, true)
+  t.is(result.data.length, 1)
+  t.truthy(result.data[0].uid)
+  t.truthy(result.data[0].created_at)
+  t.like(result.data[0], {
+    is_active: true,
+    service_id: 'foo',
+    type_defs: 'type Query { hello: String }',
+    updated_at: null,
+    version: '1',
   })
 })
 
 test.serial(
-  'Should not create multiple schemas when type_defs does not change',
+  'Should not be able create multiple schema entries when type_defs does not change',
   async (t) => {
     NewNamespace({
       name: 'SERVICES',
@@ -79,19 +67,18 @@ test.serial(
 
     t.is(res.statusCode, 200)
 
-    t.deepEqual(res.body as any, {
-      success: true,
-      data: [
-        {
-          created_at: 1618948427027,
-          is_active: true,
-          service_id: 'foo',
-          type_defs: 'type Query { hello: String }',
-          uid: '916348424',
-          updated_at: null,
-          version: '1',
-        },
-      ],
+    let first = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
+
+    t.is(first.success, true)
+    t.is(first.data.length, 1)
+    t.truthy(first.data[0].uid)
+    t.truthy(first.data[0].created_at)
+    t.like(first.data[0], {
+      is_active: true,
+      service_id: 'foo',
+      type_defs: 'type Query { hello: String }',
+      updated_at: null,
+      version: '1',
     })
 
     req = Request('POST', '', {
@@ -110,80 +97,81 @@ test.serial(
 
     t.is(res.statusCode, 200)
 
-    t.deepEqual(res.body as any, {
-      success: true,
-      data: [
-        {
-          created_at: 1618948427027,
-          is_active: true,
-          service_id: 'foo',
-          type_defs: 'type Query { hello: String }',
-          uid: '916348424',
-          updated_at: 1618948427027,
-          version: '1',
-        },
-      ],
+    const current = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
+
+    t.is(current.success, true)
+    t.is(current.data.length, 1)
+    t.truthy(current.data[0].updated_at)
+    t.truthy(current.data[0].uid)
+    t.truthy(current.data[0].created_at)
+    t.like(current.data[0], {
+      is_active: true,
+      service_id: 'foo',
+      type_defs: 'type Query { hello: String }',
+      version: '1',
     })
   },
 )
 
-test.serial('Should register schemas from multiple clients', async (t) => {
-  NewNamespace({
-    name: 'SERVICES',
-  })
+test.serial(
+  'Should be able to register schemas from multiple clients',
+  async (t) => {
+    NewNamespace({
+      name: 'SERVICES',
+    })
 
-  let req = Request('POST', '', {
-    type_defs: 'type Query { hello: String }',
-    version: '1',
-    name: 'foo',
-  })
-  let res = Response()
-  await registerSchema(req, res)
+    let req = Request('POST', '', {
+      type_defs: 'type Query { hello: String }',
+      version: '1',
+      name: 'foo',
+    })
+    let res = Response()
+    await registerSchema(req, res)
 
-  t.is(res.statusCode, 200)
+    t.is(res.statusCode, 200)
 
-  req = Request('POST', '', {
-    type_defs: 'type Query2 { hello: String }',
-    version: '2',
-    name: 'bar',
-  })
-  res = Response()
-  await registerSchema(req, res)
+    req = Request('POST', '', {
+      type_defs: 'type Query2 { hello: String }',
+      version: '2',
+      name: 'bar',
+    })
+    res = Response()
+    await registerSchema(req, res)
 
-  t.is(res.statusCode, 200)
+    t.is(res.statusCode, 200)
 
-  req = Request('GET', '')
-  res = Response()
-  await getComposedSchema(req, res)
+    req = Request('GET', '')
+    res = Response()
+    await getComposedSchema(req, res)
 
-  t.is(res.statusCode, 200)
+    t.is(res.statusCode, 200)
 
-  t.deepEqual(res.body as any, {
-    success: true,
-    data: [
-      {
-        created_at: 1618948427027,
-        is_active: true,
-        service_id: 'foo',
-        type_defs: 'type Query { hello: String }',
-        uid: '916348424',
-        updated_at: null,
-        version: '1',
-      },
-      {
-        created_at: 1618948427027,
-        is_active: true,
-        service_id: 'bar',
-        type_defs: 'type Query2 { hello: String }',
-        uid: '1323442088',
-        updated_at: null,
-        version: '2',
-      },
-    ],
-  })
-})
+    const result = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
 
-test.serial('Should not be possible to push invalid schema', async (t) => {
+    t.is(result.success, true)
+    t.is(result.data.length, 2)
+    t.truthy(result.data[0].uid)
+    t.truthy(result.data[0].created_at)
+    t.like(result.data[0], {
+      is_active: true,
+      service_id: 'foo',
+      type_defs: 'type Query { hello: String }',
+      updated_at: null,
+      version: '1',
+    })
+    t.truthy(result.data[1].uid)
+    t.truthy(result.data[1].created_at)
+    t.like(result.data[1], {
+      is_active: true,
+      service_id: 'bar',
+      type_defs: 'type Query2 { hello: String }',
+      updated_at: null,
+      version: '2',
+    })
+  },
+)
+
+test.serial('Should not be able to push invalid schema', async (t) => {
   NewNamespace({
     name: 'SERVICES',
   })
@@ -217,5 +205,50 @@ test.serial('Should not be possible to push invalid schema', async (t) => {
   t.deepEqual(res.body as any, {
     success: true,
     data: [],
+  })
+})
+
+test('Should be able to store multiple versions of the same schema and client', async (t) => {
+  NewNamespace({
+    name: 'SERVICES',
+  })
+
+  let req = Request('POST', '', {
+    type_defs: 'type Query { hello: String }',
+    version: '1',
+    name: 'foo',
+  })
+  let res = Response()
+  await registerSchema(req, res)
+
+  t.is(res.statusCode, 200)
+
+  req = Request('POST', '', {
+    type_defs: 'type Query { hello: String }',
+    version: '2',
+    name: 'foo',
+  })
+  res = Response()
+  await registerSchema(req, res)
+
+  t.is(res.statusCode, 200)
+
+  req = Request('GET', '')
+  res = Response()
+  await getComposedSchema(req, res)
+
+  t.is(res.statusCode, 200)
+
+  const result = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
+
+  t.is(result.success, true)
+  t.is(result.data.length, 1)
+  t.truthy(result.data[0].uid)
+  t.truthy(result.data[0].created_at)
+  t.like(result.data[0], {
+    is_active: true,
+    service_id: 'foo',
+    type_defs: 'type Query { hello: String }',
+    version: '2',
   })
 })

@@ -9,8 +9,6 @@ globalThis.crypto = {
   },
 }
 
-globalThis.Date.now = () => 1618948427027
-
 // @ts-ignore - just for instanceof check
 globalThis.ReadableStream = class ReadableStream {}
 
