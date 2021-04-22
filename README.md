@@ -132,6 +132,8 @@ Check [How KV works](https://developers.cloudflare.com/workers/learning/how-kv-w
 npm run dev
 ```
 
+For debugger support check out the branch [`commonjs_support_conditional`](https://github.com/StarpTech/worktop/tree/commonjs_support_conditional). Install and the build the repopsitory. Reference the local repository with `file:../worktop` in the package.json. Additionally, replace `./bin/register` with `ts-node/register` in the package.json. Background: https://github.com/lukeed/worktop/issues/31.
+
 ### Credits
 
 - https://github.com/lukeed/worktop - We use it as web framework.
