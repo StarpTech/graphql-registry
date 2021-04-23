@@ -110,6 +110,21 @@ POST - `/persisted_query` Adds persisted query to the KV Storage.
 </p>
 </details>
 
+DELETE - `/persisted_query` Deletes persisted query from KV Storage.
+
+<details>
+<summary>Example Request</summary>
+<p>
+
+```json
+{
+  "key": "apq:foo"
+}
+```
+
+</p>
+</details>
+
 ### Authentication
 
 Clients authenticate via [`Basic-Auth`](https://en.wikipedia.org/wiki/Basic_access_authentication). You have to set the cloudflare secret `ALLOWED_CLIENT_SECRETS=secret1,secret2`. The secret is used as user and pass combination.

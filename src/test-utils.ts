@@ -96,6 +96,10 @@ export const NewNamespace = (
     }
     return Promise.resolve(null)
   }
+  binding.delete = (key: string) => {
+    store.delete(key)
+    return Promise.resolve()
+  }
   binding.put = (key: string, value: any) => {
     store.set(key, value)
     return Promise.resolve()

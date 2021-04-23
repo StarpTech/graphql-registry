@@ -15,6 +15,11 @@ export function find(uid: string) {
   return DB.read<PersistedQuery>(PERSISTED_QUERIES, key, 'text')
 }
 
+export function remove(pqKey: string) {
+  const key = key_item(pqKey)
+  return DB.remove(PERSISTED_QUERIES, key)
+}
+
 export function save(pqKey: string, query: string) {
   const key = key_item(pqKey)
   return DB.write(PERSISTED_QUERIES, key, query, false)
