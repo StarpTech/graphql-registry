@@ -1,4 +1,5 @@
 import test from 'ava'
+import { assert, literal, number, object, size, string } from 'superstruct'
 import { NewNamespace, Request, Response } from '../test-utils'
 import { SuccessResponse, SchemaResponseModel } from '../types'
 import { getComposedSchema } from './get-composed-schema'
@@ -39,22 +40,116 @@ test.serial('Should return schema of two services', async (t) => {
 
   t.true(result.success)
   t.is(result.data.length, 2)
-  t.truthy(result.data[0].uid)
-  t.truthy(result.data[0].created_at)
-  t.like(result.data[0], {
-    service_id: 'foo',
-    is_active: true,
-    type_defs: 'type Query { hello: String }',
-    updated_at: null,
-    version: '1',
-  })
-  t.truthy(result.data[1].uid)
-  t.truthy(result.data[1].created_at)
-  t.like(result.data[1], {
-    service_id: 'bar',
-    is_active: true,
-    type_defs: 'type Query2 { hello: String }',
-    updated_at: null,
-    version: '2',
-  })
+
+  assert(
+    result.data[0],
+    object({
+      uid: size(string(), 4, 11),
+      is_active: literal(true),
+      service_id: literal('foo'),
+      type_defs: literal('type Query { hello: String }'),
+      created_at: number(),
+      updated_at: literal(null),
+      version: literal('1'),
+    }),
+  )
+
+  assert(
+    result.data[1],
+    object({
+      uid: size(string(), 4, 11),
+      is_active: literal(true),
+      service_id: literal('bar'),
+      type_defs: literal('type Query2 { hello: String }'),
+      created_at: number(),
+      updated_at: literal(null),
+      version: literal('2'),
+    }),
+  )
 })
+
+test.serial(
+  'Should always return the latest schema of a service',
+  async (t) => {
+    NewNamespace({
+      name: 'SERVICES',
+    })
+
+    let req = Request('POST', '', {
+      type_defs: 'type Query { hello: String }',
+      version: '1',
+      name: 'foo',
+    })
+    let res = Response()
+    await registerSchema(req, res)
+
+    t.is(res.statusCode, 200)
+
+    req = Request('POST', '', {
+      type_defs: 'type Query { hello: String world: String }',
+      version: '2',
+      name: 'foo',
+    })
+    res = Response()
+    await registerSchema(req, res)
+
+    t.is(res.statusCode, 200)
+
+    req = Request('POST', '', {
+      type_defs: 'type Query { firstname: String }',
+      version: '1',
+      name: 'bar',
+    })
+    res = Response()
+    await registerSchema(req, res)
+
+    t.is(res.statusCode, 200)
+
+    req = Request('POST', '', {
+      type_defs: 'type Query { firstname: String lastName: String }',
+      version: '2',
+      name: 'bar',
+    })
+    res = Response()
+    await registerSchema(req, res)
+
+    t.is(res.statusCode, 200)
+
+    req = Request('GET', '')
+    res = Response()
+    await getComposedSchema(req, res)
+
+    t.is(res.statusCode, 200)
+
+    const result = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
+
+    t.true(result.success)
+    t.is(result.data.length, 2)
+
+    assert(
+      result.data[0],
+      object({
+        uid: size(string(), 4, 11),
+        is_active: literal(true),
+        service_id: literal('foo'),
+        type_defs: literal('type Query { hello: String world: String }'),
+        created_at: number(),
+        updated_at: literal(null),
+        version: literal('2'),
+      }),
+    )
+
+    assert(
+      result.data[1],
+      object({
+        uid: size(string(), 4, 11),
+        is_active: literal(true),
+        service_id: literal('bar'),
+        type_defs: literal('type Query { firstname: String lastName: String }'),
+        created_at: number(),
+        updated_at: literal(null),
+        version: literal('2'),
+      }),
+    )
+  },
+)

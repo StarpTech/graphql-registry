@@ -1,4 +1,5 @@
 import test from 'ava'
+import { assert, literal, number, object, size, string } from 'superstruct'
 import { NewNamespace, Request, Response } from '../test-utils'
 import { ErrorResponse, SchemaResponseModel, SuccessResponse } from '../types'
 import { getComposedSchema } from './get-composed-schema'
@@ -33,19 +34,23 @@ test.serial('Should register new schema', async (t) => {
 
   t.is(result.success, true)
   t.is(result.data.length, 1)
-  t.truthy(result.data[0].uid)
-  t.truthy(result.data[0].created_at)
-  t.like(result.data[0], {
-    is_active: true,
-    service_id: 'foo',
-    type_defs: 'type Query { hello: String }',
-    updated_at: null,
-    version: '1',
-  })
+
+  assert(
+    result.data[0],
+    object({
+      uid: size(string(), 4, 11),
+      is_active: literal(true),
+      service_id: literal('foo'),
+      type_defs: literal('type Query { hello: String }'),
+      created_at: number(),
+      updated_at: literal(null),
+      version: literal('1'),
+    }),
+  )
 })
 
 test.serial(
-  'Should not be able create multiple schema entries when type_defs does not change',
+  'Should not create multiple schemas when client and type_defs does not change',
   async (t) => {
     NewNamespace({
       name: 'SERVICES',
@@ -71,15 +76,19 @@ test.serial(
 
     t.is(first.success, true)
     t.is(first.data.length, 1)
-    t.truthy(first.data[0].uid)
-    t.truthy(first.data[0].created_at)
-    t.like(first.data[0], {
-      is_active: true,
-      service_id: 'foo',
-      type_defs: 'type Query { hello: String }',
-      updated_at: null,
-      version: '1',
-    })
+
+    assert(
+      first.data[0],
+      object({
+        uid: size(string(), 4, 11),
+        is_active: literal(true),
+        service_id: literal('foo'),
+        type_defs: literal('type Query { hello: String }'),
+        created_at: number(),
+        updated_at: literal(null),
+        version: literal('1'),
+      }),
+    )
 
     req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -101,15 +110,19 @@ test.serial(
 
     t.is(current.success, true)
     t.is(current.data.length, 1)
-    t.truthy(current.data[0].updated_at)
-    t.truthy(current.data[0].uid)
-    t.truthy(current.data[0].created_at)
-    t.like(current.data[0], {
-      is_active: true,
-      service_id: 'foo',
-      type_defs: 'type Query { hello: String }',
-      version: '1',
-    })
+
+    assert(
+      first.data[0],
+      object({
+        uid: size(string(), 4, 11),
+        is_active: literal(true),
+        service_id: literal('foo'),
+        type_defs: literal('type Query { hello: String }'),
+        created_at: number(),
+        updated_at: literal(null),
+        version: literal('1'),
+      }),
+    )
   },
 )
 
@@ -150,24 +163,32 @@ test.serial(
 
     t.is(result.success, true)
     t.is(result.data.length, 2)
-    t.truthy(result.data[0].uid)
-    t.truthy(result.data[0].created_at)
-    t.like(result.data[0], {
-      is_active: true,
-      service_id: 'foo',
-      type_defs: 'type Query { hello: String }',
-      updated_at: null,
-      version: '1',
-    })
-    t.truthy(result.data[1].uid)
-    t.truthy(result.data[1].created_at)
-    t.like(result.data[1], {
-      is_active: true,
-      service_id: 'bar',
-      type_defs: 'type Query2 { hello: String }',
-      updated_at: null,
-      version: '2',
-    })
+
+    assert(
+      result.data[0],
+      object({
+        uid: size(string(), 4, 11),
+        is_active: literal(true),
+        service_id: literal('foo'),
+        type_defs: literal('type Query { hello: String }'),
+        created_at: number(),
+        updated_at: literal(null),
+        version: literal('1'),
+      }),
+    )
+
+    assert(
+      result.data[1],
+      object({
+        uid: size(string(), 4, 11),
+        is_active: literal(true),
+        service_id: literal('bar'),
+        type_defs: literal('type Query2 { hello: String }'),
+        created_at: number(),
+        updated_at: literal(null),
+        version: literal('2'),
+      }),
+    )
   },
 )
 
@@ -208,7 +229,7 @@ test.serial('Should not be able to push invalid schema', async (t) => {
   })
 })
 
-test('Should be able to store multiple versions of the same schema and client', async (t) => {
+test('Should be able to store multiple versions with the same schema and client combination', async (t) => {
   NewNamespace({
     name: 'SERVICES',
   })
@@ -243,12 +264,46 @@ test('Should be able to store multiple versions of the same schema and client', 
 
   t.is(result.success, true)
   t.is(result.data.length, 1)
-  t.truthy(result.data[0].uid)
-  t.truthy(result.data[0].created_at)
-  t.like(result.data[0], {
-    is_active: true,
-    service_id: 'foo',
-    type_defs: 'type Query { hello: String }',
-    version: '2',
+
+  assert(
+    result.data[0],
+    object({
+      uid: size(string(), 4, 11),
+      is_active: literal(true),
+      service_id: literal('foo'),
+      type_defs: literal('type Query { hello: String }'),
+      created_at: number(),
+      updated_at: number(),
+      version: literal('2'),
+    }),
+  )
+})
+
+test('Should reject schema because it is not compatible with registry state', async (t) => {
+  NewNamespace({
+    name: 'SERVICES',
   })
+
+  let req = Request('POST', '', {
+    type_defs: 'type Query { hello: String }',
+    version: '1',
+    name: 'foo',
+  })
+  let res = Response()
+  await registerSchema(req, res)
+
+  t.is(res.statusCode, 200)
+
+  req = Request('POST', '', {
+    type_defs: 'type Query { hello: String }',
+    version: '1',
+    name: 'bar',
+  })
+  res = Response()
+  await registerSchema(req, res)
+
+  const result = (res.body as any) as ErrorResponse
+
+  t.is(res.statusCode, 400)
+  t.true(result.error.includes('Field "Query.hello" can only be defined once.'))
 })

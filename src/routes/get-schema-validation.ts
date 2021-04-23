@@ -37,9 +37,16 @@ export const getSchemaValidation: Handler = async function (req, res) {
     name: s,
   }))
 
-  const schemas: SchemaResponseModel[] = await findSchemasByServiceVersions(
+  const { schemas, error: findError } = await findSchemasByServiceVersions(
     allServiceVersions,
   )
+
+  if (findError) {
+    return res.send(400, {
+      success: false,
+      error: findError?.message,
+    })
+  }
 
   let serviceSchemas = schemas
     .map((s) => ({

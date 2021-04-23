@@ -44,11 +44,18 @@ export const getComposedSchemaByVersions: Handler = async function (req, res) {
     version: s.version,
   }))
 
-  const result: SchemaResponseModel[] = await findSchemasByServiceVersions(
+  const { schemas, error: findError } = await findSchemasByServiceVersions(
     allServiceVersions,
   )
 
-  const serviceSchemas = result.map((s) => ({
+  if (findError) {
+    return res.send(400, {
+      success: false,
+      error: findError?.message,
+    })
+  }
+
+  const serviceSchemas = schemas.map((s) => ({
     name: s.service_id,
     typeDefs: s.type_defs,
   }))
@@ -64,7 +71,7 @@ export const getComposedSchemaByVersions: Handler = async function (req, res) {
 
   const responseBody: SuccessResponse<SchemaResponseModel[]> = {
     success: true,
-    data: result,
+    data: schemas,
   }
 
   res.send(200, responseBody)

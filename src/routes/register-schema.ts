@@ -56,7 +56,17 @@ export const registerSchema: Handler = async function (req, res) {
       name: s,
     }))
 
-  const schemas = await findSchemasByServiceVersions(allServiceVersions)
+  const { schemas, error: findError } = await findSchemasByServiceVersions(
+    allServiceVersions,
+  )
+
+  if (findError) {
+    return res.send(400, {
+      success: false,
+      error: findError?.message,
+    })
+  }
+
   const serviceSchemas = schemas.map((s) => ({
     name: s.service_id,
     typeDefs: s.type_defs,
@@ -112,7 +122,7 @@ export const registerSchema: Handler = async function (req, res) {
    */
   let schemaId = schema.uid
   let allVersions = await listSchemaVersions(input.name)
-  
+
   let schemaVersion = allVersions.find(
     (s) => s.schema_id === schemaId && s.version === input.version,
   )

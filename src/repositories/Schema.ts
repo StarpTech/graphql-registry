@@ -7,6 +7,7 @@ import {
   find as findServiceSchemaVersion,
   findLatestServiceSchemaVersion,
 } from './SchemaVersion'
+import { SchemaResponseModel } from '../types'
 
 // cloudflare global kv binding
 declare const SERVICES: KV.Namespace
@@ -43,13 +44,15 @@ export function findByTypeDefs(serviceName: string, typeDefs: string) {
 
 export async function findByServiceVersions(
   services: ServiceSchemaVersionMatch[],
-) {
+): Promise<{ schemas: SchemaResponseModel[]; error: Error | null }> {
   const schemas = []
+  let error: Error | null = null
   for await (const service of services) {
     const serviceItem = await findService(service.name)
 
     if (!serviceItem) {
-      throw new Error(`Service "${service.name}" does not exist`)
+      error = new Error(`Service "${service.name}" does not exist`)
+      break
     }
 
     if (!serviceItem.is_active) {
@@ -59,7 +62,8 @@ export async function findByServiceVersions(
     const links = await listSchemaVersionLinks(service.name)
 
     if (links.length === 0) {
-      throw new Error(`Service "${service.name}" has no versions registered`)
+      error = new Error(`Service "${service.name}" has no versions registered`)
+      break
     }
 
     if (service.version) {
@@ -73,23 +77,26 @@ export async function findByServiceVersions(
         )
 
         if (!schemaVersion) {
-          throw new Error(
+          error = new Error(
             `Service "${service.name}" has no schema in version "${service.version}" registered`,
           )
+          break
         }
 
         const schema = await find(service.name, schemaVersion.schema_id)
 
         if (!schema) {
-          throw new Error(
+          error = new Error(
             `Service "${service.name}" has no schema with id "${schemaVersion.schema_id}" registered`,
           )
+          break
         }
 
         if (!schema.is_active) {
-          throw new Error(
+          error = new Error(
             `Schema with id "${schemaVersion.schema_id}" is not active`,
           )
+          break
         }
 
         schemas.push({
@@ -97,23 +104,26 @@ export async function findByServiceVersions(
           version: schemaVersion.version,
         })
       } else {
-        throw new Error(
+        error = new Error(
           `Service "${service.name}" in version "${service.version}" is not registered`,
         )
+        break
       }
     } else {
       const schemaVersion = await findLatestServiceSchemaVersion(service.name)
-      
+
       if (!schemaVersion) {
-        throw new Error(`Service "${service.name}" has no schema registered`)
+        error = new Error(`Service "${service.name}" has no schema registered`)
+        break
       }
 
       const schema = await find(service.name, schemaVersion.schema_id)
 
       if (!schema) {
-        throw new Error(
+        error = new Error(
           `Service "${service.name}" has no schema with id "${schemaVersion.schema_id}" registered`,
         )
+        break
       }
 
       schemas.push({
@@ -123,7 +133,7 @@ export async function findByServiceVersions(
     }
   }
 
-  return schemas
+  return { error, schemas }
 }
 
 export function save(serviceName: string, item: Schema) {
