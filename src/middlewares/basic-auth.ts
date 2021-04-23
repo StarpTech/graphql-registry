@@ -1,6 +1,7 @@
 // mostly copied from https://github.com/jshttp/basic-auth
 
 import type { Handler } from 'worktop'
+import timingSafeEqual from '../timing-safe-equal'
 
 // cloudflare global secret
 declare const ALLOWED_CLIENT_SECRETS: string
@@ -21,9 +22,14 @@ export const basicAuth: Handler = async function (req, res) {
     }
 
     if (
-      !ALLOWED_CLIENT_SECRETS.split(',').find(
-        (secret) => secret === cred.name && secret === cred.pass,
-      )
+      !ALLOWED_CLIENT_SECRETS ||
+      !ALLOWED_CLIENT_SECRETS.trim()
+        .split(',')
+        .find(
+          (secret) =>
+            timingSafeEqual(Buffer.from(secret), Buffer.from(cred.name)) &&
+            timingSafeEqual(Buffer.from(secret), Buffer.from(cred.pass)),
+        )
     ) {
       return res.send(401)
     }

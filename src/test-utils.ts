@@ -9,6 +9,9 @@ globalThis.crypto = {
   },
 }
 
+globalThis.btoa = (x) => Buffer.from(x).toString('base64');
+globalThis.atob = (x) => Buffer.from(x, 'base64').toString();
+
 // @ts-ignore - just for instanceof check
 globalThis.ReadableStream = class ReadableStream {}
 
@@ -20,8 +23,8 @@ export const Mock = (x?: any) => {
   return (f.args = () => args), f
 }
 
-export const Headers = () => {
-  let raw = new Map()
+export const Headers = (init: readonly [string, string][] | null) => {
+  let raw = new Map(init)
   let set = raw.set.bind(raw)
   // @ts-ignore - mutating
   raw.set = (k, v) => set(k, String(v))
@@ -37,7 +40,7 @@ export const Headers = () => {
 }
 
 export const Response = () => {
-  let headers = Headers()
+  let headers = Headers(null)
   let body: any,
     finished = false,
     statusCode = 0
@@ -67,8 +70,8 @@ export const Request = (
   method = 'GET',
   queryString = '',
   payload: object | null = null,
+  headers: Headers = Headers(null),
 ): ServerRequest => {
-  let headers = Headers()
   let query = new URLSearchParams(queryString)
   return {
     method,
