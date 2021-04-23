@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="logo.svg" alt="graphql-registry" width="200" />
+  <img src="logo.png" alt="graphql-registry" width="300" />
 </div>
 
 <br>
@@ -132,7 +132,7 @@ Check [How KV works](https://developers.cloudflare.com/workers/learning/how-kv-w
 npm run dev
 ```
 
-For debugger support check out the branch [`commonjs_support_conditional`](https://github.com/StarpTech/worktop/tree/commonjs_support_conditional). Install and the build the repopsitory. Reference the local repository with `file:../worktop` in the package.json. Additionally, replace `./bin/register` with `ts-node/register` in the package.json. Background: https://github.com/lukeed/worktop/issues/31.
+For debugger support check out the master branch of [`worktop`](https://github.com/lukeed/worktop) and reference it as local dependency `file:../worktop` in the package.json. Additionally, replace `./bin/register` with `ts-node/register` in the package.json. The fix hasn't been released yet.
 
 ### Credits
 
