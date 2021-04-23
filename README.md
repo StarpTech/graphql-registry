@@ -15,7 +15,7 @@
 ### Features
 
 - Stores versioned schemas for GraphQL-federated services
-- Serves schema for graphql gateway based on provided services & their versions
+- Serves schema for GraphQL gateway based on provided services & their versions
 - Validates new schema to be compatible with other running services
 - Everywhere fast, secure and accessible due to [Cloudflare infrastructure](https://developers.cloudflare.com/workers/learning/how-workers-works)
 - Global distributed, low-latency store for [persisted queries](https://www.apollographql.com/docs/apollo-server/performance/apq/)
