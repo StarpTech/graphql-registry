@@ -9,8 +9,8 @@ globalThis.crypto = {
   },
 }
 
-globalThis.btoa = (x) => Buffer.from(x).toString('base64');
-globalThis.atob = (x) => Buffer.from(x, 'base64').toString();
+globalThis.btoa = (x) => Buffer.from(x).toString('base64')
+globalThis.atob = (x) => Buffer.from(x, 'base64').toString()
 
 // @ts-ignore - just for instanceof check
 globalThis.ReadableStream = class ReadableStream {}

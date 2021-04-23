@@ -1,7 +1,7 @@
 import * as DB from 'worktop/kv'
 import type { KV } from 'worktop/kv'
 import { sort } from 'fast-sort'
-import ULID from '../ulid'
+import { ulid } from 'worktop/utils'
 
 // cloudflare global kv binding
 declare const SERVICES: KV.Namespace
@@ -57,7 +57,7 @@ export async function findLatestServiceSchemaVersion(serviceName: string) {
 
 export async function insert(serviceName: string, version: NewSchemaVersion) {
   const values: SchemaVersion = {
-    uid: ULID(),
+    uid: ulid(),
     schema_id: version.schema_id,
     version: version.version,
     service_name: version.service_name,

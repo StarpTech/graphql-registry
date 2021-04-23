@@ -1,5 +1,5 @@
 import test from 'ava'
-import { Headers, NewNamespace, Request, Response } from '../test-utils'
+import { Headers, Request, Response } from '../test-utils'
 import { basicAuth } from './basic-auth'
 
 test.serial(

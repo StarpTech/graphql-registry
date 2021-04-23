@@ -20,7 +20,7 @@
       "ts"
     ],
     "require": [
-      "./bin/register"
+      "ts-node/register"
     ],
     "nodeArguments": []
   },
@@ -28,7 +28,6 @@
     "@cloudflare/workers-types": "^2.2.1",
     "@cloudflare/wrangler": "^1.16.0",
     "ava": "^3.15.0",
-    "esbuild": "^0.11.12",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
@@ -46,6 +45,6 @@
     "graphql": "^15.5.0",
     "superstruct": "^0.15.1",
     "ulid": "^2.3.0",
-    "worktop": "latest"
+    "worktop": "^0.5.0"
   }
 }
