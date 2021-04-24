@@ -20,6 +20,16 @@
 - Everywhere fast, secure and accessible due to [Cloudflare infrastructure](https://developers.cloudflare.com/workers/learning/how-workers-works)
 - Global distributed, low-latency store for [persisted queries](https://www.apollographql.com/docs/apollo-server/performance/apq/) with TTL (timestamp and duration).
 
+### Use cases
+
+- Management of a federated data graph
+  - Source of truth for what is running in your infrastrucutre.
+  - Register schema updates to see it its compatible with the current schema.
+  - Pull the latest schema in your gateway without restarting your servers.
+  - Deploy multiple instances of the registry to cover graph variants (staging, production).
+- Enable Persisted Queries with [TTL](https://www.apollographql.com/docs/apollo-server/performance/apq/#adjusting-cache-time-to-live-ttl) support.
+- :sunglasses: Build your own Apollo Studio.
+
 ### Schema federation
 
 GET - `/schema/latest` Returns the last registered schema definition of all services.
