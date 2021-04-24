@@ -9,8 +9,11 @@ import { getSchemaDiff } from './routes/get-schema-diff'
 import { getSchemaValidation } from './routes/get-schema-validation'
 import { registerSchema } from './routes/register-schema'
 import { deletePersistedQuery } from './routes/delete-persisted-query'
+import { healthcheck } from './routes/healthcheck'
 
 const API = new Router()
+
+API.add('GET', '/health', healthcheck)
 
 // Federation
 API.add('POST', '/schema/push', compose(basicAuth, registerSchema))

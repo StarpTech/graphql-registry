@@ -90,6 +90,10 @@ POST - `/schema/validate` Validate schema between provided and latest schemas.
 </p>
 </details>
 
+### Monitoring
+
+GET - `/health` healthcheck endpoint.
+
 ### Persisted Queries
 
 GET - `/persisted_query?key=foo` Looks up persisted query from KV Storage.
