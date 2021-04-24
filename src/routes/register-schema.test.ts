@@ -112,14 +112,14 @@ test.serial(
     t.is(current.data.length, 1)
 
     assert(
-      first.data[0],
+      current.data[0],
       object({
         uid: size(string(), 4, 11),
         is_active: literal(true),
         service_id: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
         created_at: number(),
-        updated_at: literal(null),
+        updated_at: number(), // updated
         version: literal('1'),
       }),
     )

@@ -1,5 +1,6 @@
 import test from 'ava'
 import { NewNamespace, Request, Response } from '../test-utils'
+import { ErrorResponse } from '../types'
 import { getSchemaDiff } from './get-schema-diff'
 import { registerSchema } from './register-schema'
 
@@ -77,4 +78,21 @@ test.serial('Should detect a breaking change', async (t) => {
       },
     ],
   })
+})
+
+test.serial('Should return 400 when type_defs is missing', async (t) => {
+  NewNamespace({
+    name: 'SERVICES',
+  })
+
+  let req = Request('POST', '', {
+    name: 'foo',
+  })
+  let res = Response()
+  await getSchemaDiff(req, res)
+
+  const body = (res.body as any) as ErrorResponse
+
+  t.is(res.statusCode, 400)
+  t.is(body.success, false)
 })
