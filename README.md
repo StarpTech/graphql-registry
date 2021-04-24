@@ -30,6 +30,8 @@
 - Enable Persisted Queries with [TTL](https://www.apollographql.com/docs/apollo-server/performance/apq/#adjusting-cache-time-to-live-ttl) support.
 - :sunglasses: Build your own Apollo Studio.
 
+[**Read more**](https://principledgraphql.com/integrity#3-track-the-schema-in-a-registry)
+
 ### Schema federation
 
 GET - `/schema/latest` Returns the last registered schema definition of all services.
