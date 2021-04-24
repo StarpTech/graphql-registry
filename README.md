@@ -66,7 +66,7 @@ POST - `/schema/compose` Returns the last registered schema definition of all se
 </p>
 </details>
 
-PUT - `/schema/deactivate` Deactivates a schema by id. The schema is no longer part of any result. You can re-activate it by register.
+PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer be part of any result. You can re-activate it by register again.
 
 <details>
 <summary>Example Request</summary>
