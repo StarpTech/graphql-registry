@@ -90,10 +90,6 @@ POST - `/schema/validate` Validate schema between provided and latest schemas.
 </p>
 </details>
 
-### Monitoring
-
-GET - `/health` healthcheck endpoint.
-
 ### Persisted Queries
 
 GET - `/persisted_query?key=foo` Looks up persisted query from KV Storage.
@@ -104,7 +100,7 @@ POST - `/persisted_query` Adds persisted query to the KV Storage.
 <summary>Example Request</summary>
 <p>
 
-```json
+```jsonc
 {
   "key": "apq:foo",
   "query": "query",
@@ -130,6 +126,10 @@ DELETE - `/persisted_query` Deletes persisted query from KV Storage.
 
 </p>
 </details>
+
+### Monitoring
+
+GET - `/health` healthcheck endpoint.
 
 ### Authentication
 
