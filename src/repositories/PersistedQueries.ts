@@ -20,7 +20,15 @@ export function remove(pqKey: string) {
   return DB.remove(PERSISTED_QUERIES, key)
 }
 
-export function save(pqKey: string, query: string) {
+export function save(
+  pqKey: string,
+  query: string,
+  expiration?: { ttl?: number; expiration?: number },
+) {
   const key = key_item(pqKey)
-  return DB.write(PERSISTED_QUERIES, key, query, false)
+
+  return DB.write(PERSISTED_QUERIES, key, query, false, {
+    expirationTtl: expiration?.ttl,
+    expiration: expiration?.expiration,
+  })
 }

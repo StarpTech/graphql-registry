@@ -35,3 +35,22 @@ test.serial(
     t.deepEqual(store, new Map())
   },
 )
+test.serial('Should accept ttl values', async (t) => {
+  const store = NewNamespace({
+    name: 'PERSISTED_QUERIES',
+  })
+
+  const req = Request('POST', '', {
+    key: '123',
+    query: 'query',
+    ttl: 300,
+    expiration: Date.now(),
+  })
+  const res = Response()
+  await addPersistedQuery(req, res)
+  t.is(res.statusCode, 200)
+  t.deepEqual(res.body as any, {
+    success: true,
+  })
+  t.deepEqual(store, new Map([['pq::123', 'query']]))
+})

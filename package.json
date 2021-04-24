@@ -53,7 +53,7 @@
     "graphql": "^15.5.0",
     "superstruct": "^0.15.1",
     "ulid": "^2.3.0",
-    "worktop": "^0.5.0"
+    "worktop": "file:worktop-master.tgz"
   },
   "keywords": [
     "serviceworker",

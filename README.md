@@ -18,7 +18,7 @@
 - Serves schema for GraphQL gateway based on provided services & their versions
 - Validates new schema to be compatible with other running services
 - Everywhere fast, secure and accessible due to [Cloudflare infrastructure](https://developers.cloudflare.com/workers/learning/how-workers-works)
-- Global distributed, low-latency store for [persisted queries](https://www.apollographql.com/docs/apollo-server/performance/apq/)
+- Global distributed, low-latency store for [persisted queries](https://www.apollographql.com/docs/apollo-server/performance/apq/) with TTL (timestamp and duration).
 
 ### Schema federation
 
@@ -107,7 +107,9 @@ POST - `/persisted_query` Adds persisted query to the KV Storage.
 ```json
 {
   "key": "apq:foo",
-  "query": "query"
+  "query": "query",
+  "expiration": 1619269775623, // specific date as unix-timestamp
+  "ttl": 600 // 5min
 }
 ```
 
