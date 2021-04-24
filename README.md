@@ -151,8 +151,6 @@ Check [How KV works](https://developers.cloudflare.com/workers/learning/how-kv-w
 npm run dev
 ```
 
-For debugger support check out the master branch of [`worktop`](https://github.com/lukeed/worktop) and reference it as local dependency `file:../worktop` in the package.json. Additionally, replace `./bin/register` with `ts-node/register` in the package.json. The fix hasn't been released yet.
-
 ### Credits
 
 - https://github.com/lukeed/worktop - We use it as web framework.
