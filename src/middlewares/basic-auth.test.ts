@@ -21,13 +21,23 @@ test.serial(
 )
 
 test.serial(
-  'Should return 401 when authorization header is empty',
+  'Should return WWW-Authenticate challenge when authorization header is empty',
   async (t) => {
     let req = Request('GET', '', null, Headers([['authorization', '']]))
     let res = Response()
     await basicAuth(req, res)
 
     t.is(res.statusCode, 401)
+
+    req = Request('GET', '', null, Headers([]))
+    res = Response()
+    await basicAuth(req, res)
+
+    t.is(res.statusCode, 401)
+    t.deepEqual(
+      res.headers.get('WWW-Authenticate'),
+      'Basic realm="Access to GraphQL Registry", charset="UTF-8"',
+    )
   },
 )
 

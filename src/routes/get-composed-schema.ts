@@ -1,8 +1,7 @@
 import type { Handler } from 'worktop'
 import { list as listServices } from '../repositories/Service'
-import { findByServiceVersions as findSchemasByServiceVersions } from '../repositories/Schema'
 import { composeAndValidateSchema } from '../federation'
-import { SchemaResponseModel } from '../types'
+import { SchemaService } from '../services/Schema'
 
 /**
  * Simplified version of /schema/compose where latest versions from different services is composed. Needed mostly for debugging
@@ -25,14 +24,23 @@ export const getComposedSchema: Handler = async function (req, res) {
     name: s,
   }))
 
-  const { schemas, error: findError } = await findSchemasByServiceVersions(
-    allServiceVersions,
-  )
+  const schmemaService = new SchemaService()
+  const {
+    schemas,
+    error: findError,
+  } = await schmemaService.findByServiceVersions(allServiceVersions)
 
   if (findError) {
     return res.send(400, {
       success: false,
       error: findError?.message,
+    })
+  }
+
+  if (!schemas.length) {
+    return res.send(200, {
+      success: true,
+      data: [],
     })
   }
 

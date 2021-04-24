@@ -1,5 +1,6 @@
 import { Router, compose } from 'worktop'
 import { listen } from 'worktop/cache'
+import { ScheduledEvent } from './types'
 import { basicAuth } from './middlewares/basic-auth'
 import { addPersistedQuery } from './routes/add-persisted-query'
 import { getComposedSchema } from './routes/get-composed-schema'
@@ -10,6 +11,7 @@ import { getSchemaValidation } from './routes/get-schema-validation'
 import { registerSchema } from './routes/register-schema'
 import { deletePersistedQuery } from './routes/delete-persisted-query'
 import { healthcheck } from './routes/healthcheck'
+import { deactivateSchema } from './routes/deactivate-schema'
 
 const API = new Router()
 
@@ -18,6 +20,7 @@ API.add('GET', '/health', healthcheck)
 // Federation
 API.add('POST', '/schema/push', compose(basicAuth, registerSchema))
 API.add('GET', '/schema/latest', compose(basicAuth, getComposedSchema))
+API.add('PUT', '/schema/deactivate', compose(basicAuth, deactivateSchema))
 API.add(
   'POST',
   '/schema/compose',

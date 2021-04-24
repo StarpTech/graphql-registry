@@ -1,4 +1,4 @@
-import { GraphQLError, parse } from 'graphql'
+import { parse } from 'graphql'
 import { composeAndValidate } from '@apollo/federation'
 
 export interface ServiceSchema {

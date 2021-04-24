@@ -2,6 +2,7 @@ import test from 'ava'
 import { assert, literal, number, object, size, string } from 'superstruct'
 import { NewNamespace, Request, Response } from '../test-utils'
 import { SuccessResponse, SchemaResponseModel, ErrorResponse } from '../types'
+import { deactivateSchema } from './deactivate-schema'
 import { getComposedSchemaByVersions } from './get-composed-schema-versions'
 import { registerSchema } from './register-schema'
 
@@ -61,7 +62,8 @@ test.serial('Should return a specific schema version', async (t) => {
   assert(
     result.data[0],
     object({
-      uid: size(string(), 4, 11),
+      uid: size(string(), 26, 26),
+      hash: size(string(), 4, 11),
       is_active: literal(true),
       service_id: literal('bar'),
       type_defs: literal('type Query2 { hello: String }'),
@@ -144,3 +146,49 @@ test.serial('Should return 400 when no version was specified', async (t) => {
     'At path: services.0.version -- Expected a string, but received: undefined',
   )
 })
+
+test.serial(
+  'Should return 400 when schema in specified version was deactivated',
+  async (t) => {
+    NewNamespace({
+      name: 'SERVICES',
+    })
+
+    let req = Request('POST', '', {
+      type_defs: 'type Query { hello: String }',
+      version: '1',
+      name: 'foo',
+    })
+    let res = Response()
+    await registerSchema(req, res)
+
+    t.is(res.statusCode, 200)
+
+    let result = (res.body as any) as SuccessResponse<SchemaResponseModel>
+
+    req = Request('PUT', '', {
+      schemaId: result.data.uid,
+    })
+    res = Response()
+    await deactivateSchema(req, res)
+    t.is(res.statusCode, 200)
+
+    req = Request('POST', '', {
+      services: [
+        {
+          name: 'foo',
+          version: '1',
+        },
+      ],
+    })
+    res = Response()
+    await getComposedSchemaByVersions(req, res)
+
+    t.is(res.statusCode, 400)
+
+    const errResponse = (res.body as any) as ErrorResponse
+
+    t.false(errResponse.success)
+    t.true(errResponse.error.includes('is not active'))
+  },
+)

@@ -14,7 +14,7 @@ export interface SchemaVersion {
   created_at: number
 }
 
-export interface SchemaVersionMetadata {
+export interface SchemaVersionIndex {
   uid: string
   schema_id: string
   version: string
@@ -27,14 +27,12 @@ export const key_owner = (serviceName: string) =>
 export const key_item = (serviceName: string, version: string) =>
   `services::${serviceName}::versions::${version}`
 
-export async function list(
-  serviceName: string,
-): Promise<SchemaVersionMetadata[]> {
+export async function list(serviceName: string): Promise<SchemaVersionIndex[]> {
   const key = key_owner(serviceName)
-  return (await DB.read<SchemaVersionMetadata[]>(SERVICES, key, 'json')) || []
+  return (await DB.read<SchemaVersionIndex[]>(SERVICES, key, 'json')) || []
 }
 
-export function sync(serviceName: string, versions: SchemaVersionMetadata[]) {
+export function syncIndex(serviceName: string, versions: SchemaVersionIndex[]) {
   const key = key_owner(serviceName)
   return DB.write(SERVICES, key, versions)
 }
@@ -47,12 +45,6 @@ export function find(serviceName: string, version: string) {
 export function save(serviceName: string, item: SchemaVersion) {
   const key = key_item(serviceName, item.version)
   return DB.write(SERVICES, key, item)
-}
-
-export async function findLatestServiceSchemaVersion(serviceName: string) {
-  const all = await list(serviceName)
-  // because list is lexicographically sorted
-  return all[0]
 }
 
 export async function insert(serviceName: string, version: NewSchemaVersion) {
@@ -76,7 +68,7 @@ export async function insert(serviceName: string, version: NewSchemaVersion) {
 
   const sorted = sort(allVersions).desc((u) => u.uid)
 
-  if (!(await sync(serviceName, sorted))) {
+  if (!(await syncIndex(serviceName, sorted))) {
     return false
   }
 

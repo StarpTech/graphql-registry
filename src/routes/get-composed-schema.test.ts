@@ -2,6 +2,7 @@ import test from 'ava'
 import { assert, literal, number, object, size, string } from 'superstruct'
 import { NewNamespace, Request, Response } from '../test-utils'
 import { SuccessResponse, SchemaResponseModel } from '../types'
+import { deactivateSchema } from './deactivate-schema'
 import { getComposedSchema } from './get-composed-schema'
 import { registerSchema } from './register-schema'
 
@@ -44,7 +45,8 @@ test.serial('Should return schema of two services', async (t) => {
   assert(
     result.data[0],
     object({
-      uid: size(string(), 4, 11),
+      uid: size(string(), 26, 26),
+      hash: size(string(), 4, 11),
       is_active: literal(true),
       service_id: literal('foo'),
       type_defs: literal('type Query { hello: String }'),
@@ -57,7 +59,8 @@ test.serial('Should return schema of two services', async (t) => {
   assert(
     result.data[1],
     object({
-      uid: size(string(), 4, 11),
+      uid: size(string(), 26, 26),
+      hash: size(string(), 4, 11),
       is_active: literal(true),
       service_id: literal('bar'),
       type_defs: literal('type Query2 { hello: String }'),
@@ -129,7 +132,8 @@ test.serial(
     assert(
       result.data[0],
       object({
-        uid: size(string(), 4, 11),
+        uid: size(string(), 26, 26),
+        hash: size(string(), 4, 11),
         is_active: literal(true),
         service_id: literal('foo'),
         type_defs: literal('type Query { hello: String world: String }'),
@@ -142,7 +146,8 @@ test.serial(
     assert(
       result.data[1],
       object({
-        uid: size(string(), 4, 11),
+        uid: size(string(), 26, 26),
+        hash: size(string(), 4, 11),
         is_active: literal(true),
         service_id: literal('bar'),
         type_defs: literal('type Query { firstname: String lastName: String }'),
@@ -151,5 +156,44 @@ test.serial(
         version: literal('2'),
       }),
     )
+  },
+)
+
+test.serial(
+  'Should return no schema because schema was deactivated and no version was specified',
+  async (t) => {
+    NewNamespace({
+      name: 'SERVICES',
+    })
+
+    let req = Request('POST', '', {
+      type_defs: 'type Query { hello: String }',
+      version: '1',
+      name: 'foo',
+    })
+    let res = Response()
+    await registerSchema(req, res)
+
+    t.is(res.statusCode, 200)
+
+    let result = (res.body as any) as SuccessResponse<SchemaResponseModel>
+
+    req = Request('PUT', '', {
+      schemaId: result.data.uid,
+    })
+    res = Response()
+    await deactivateSchema(req, res)
+    t.is(res.statusCode, 200)
+
+    req = Request('GET', '')
+    res = Response()
+    await getComposedSchema(req, res)
+
+    t.is(res.statusCode, 200)
+
+    const all = (res.body as any) as SuccessResponse<SchemaResponseModel[]>
+
+    t.is(all.success, true)
+    t.is(all.data.length, 0)
   },
 )

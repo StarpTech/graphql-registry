@@ -13,6 +13,9 @@ const USER_PASS_REGEXP = /^([^:]*):(.*)$/
 export const basicAuth: Handler = async function (req, res) {
   const authHeaderVal = req.headers.get('authorization')
   if (!authHeaderVal) {
+    res.setHeader('WWW-Authenticate', [
+      'Basic realm="Access to GraphQL Registry", charset="UTF-8"',
+    ])
     return res.send(401)
   }
   if (authHeaderVal) {

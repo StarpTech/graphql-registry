@@ -1,8 +1,8 @@
 import type { Handler } from 'worktop'
 import { array, object, size, string, validate } from 'superstruct'
-import { findByServiceVersions as findSchemasByServiceVersions } from '../repositories/Schema'
 import { composeAndValidateSchema } from '../federation'
 import { SchemaResponseModel, SuccessResponse } from '../types'
+import { SchemaService } from '../services/Schema'
 
 interface ServiceVersionMatch {
   name: string
@@ -44,9 +44,11 @@ export const getComposedSchemaByVersions: Handler = async function (req, res) {
     version: s.version,
   }))
 
-  const { schemas, error: findError } = await findSchemasByServiceVersions(
-    allServiceVersions,
-  )
+  const schmemaService = new SchemaService()
+  const {
+    schemas,
+    error: findError,
+  } = await schmemaService.findByServiceVersions(allServiceVersions)
 
   if (findError) {
     return res.send(400, {

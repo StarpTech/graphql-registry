@@ -38,7 +38,8 @@ test.serial('Should register new schema', async (t) => {
   assert(
     result.data[0],
     object({
-      uid: size(string(), 4, 11),
+      uid: size(string(), 26, 26),
+      hash: size(string(), 4, 11),
       is_active: literal(true),
       service_id: literal('foo'),
       type_defs: literal('type Query { hello: String }'),
@@ -80,7 +81,8 @@ test.serial(
     assert(
       first.data[0],
       object({
-        uid: size(string(), 4, 11),
+        uid: size(string(), 26, 26),
+        hash: size(string(), 4, 11),
         is_active: literal(true),
         service_id: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
@@ -114,7 +116,8 @@ test.serial(
     assert(
       current.data[0],
       object({
-        uid: size(string(), 4, 11),
+        uid: size(string(), 26, 26),
+        hash: size(string(), 4, 11),
         is_active: literal(true),
         service_id: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
@@ -167,7 +170,8 @@ test.serial(
     assert(
       result.data[0],
       object({
-        uid: size(string(), 4, 11),
+        uid: size(string(), 26, 26),
+        hash: size(string(), 4, 11),
         is_active: literal(true),
         service_id: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
@@ -180,7 +184,8 @@ test.serial(
     assert(
       result.data[1],
       object({
-        uid: size(string(), 4, 11),
+        uid: size(string(), 26, 26),
+        hash: size(string(), 4, 11),
         is_active: literal(true),
         service_id: literal('bar'),
         type_defs: literal('type Query2 { hello: String }'),
@@ -268,7 +273,8 @@ test('Should be able to store multiple versions with the same schema and client 
   assert(
     result.data[0],
     object({
-      uid: size(string(), 4, 11),
+      uid: size(string(), 26, 26),
+      hash: size(string(), 4, 11),
       is_active: literal(true),
       service_id: literal('foo'),
       type_defs: literal('type Query { hello: String }'),

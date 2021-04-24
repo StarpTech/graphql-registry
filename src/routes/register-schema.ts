@@ -10,11 +10,10 @@ import {
   insert as insertSchemaVersion,
 } from '../repositories/SchemaVersion'
 import {
-  findByTypeDefs as findSchemaByTypeDefs,
   insert as insertSchema,
   save as saveSchema,
-  findByServiceVersions as findSchemasByServiceVersions,
 } from '../repositories/Schema'
+import { SchemaService } from '../services/Schema'
 import { composeAndValidateSchema } from '../federation'
 import { SchemaResponseModel, SuccessResponse } from '../types'
 
@@ -56,9 +55,11 @@ export const registerSchema: Handler = async function (req, res) {
       name: s,
     }))
 
-  const { schemas, error: findError } = await findSchemasByServiceVersions(
-    allServiceVersions,
-  )
+  const schmemaService = new SchemaService()
+  const {
+    schemas,
+    error: findError,
+  } = await schmemaService.findByServiceVersions(allServiceVersions)
 
   if (findError) {
     return res.send(400, {
@@ -100,9 +101,9 @@ export const registerSchema: Handler = async function (req, res) {
   /**
    * Create new schema
    */
-  let schema = await findSchemaByTypeDefs(service.name, input.type_defs)
+  let schema = await schmemaService.findByTypeDefsHash(input.type_defs)
   if (!schema) {
-    schema = await insertSchema(input.name, {
+    schema = await insertSchema({
       type_defs: input.type_defs,
       is_active: true,
       service_id: service.name,
@@ -111,10 +112,12 @@ export const registerSchema: Handler = async function (req, res) {
       throw new Error('Could not create schema')
     }
   } else {
-    await saveSchema(input.name, {
+    schema = {
       ...schema,
+      is_active: true,
       updated_at: Date.now(),
-    })
+    }
+    await saveSchema(schema)
   }
 
   /**
@@ -141,7 +144,13 @@ export const registerSchema: Handler = async function (req, res) {
   const responseBody: SuccessResponse<SchemaResponseModel> = {
     success: true,
     data: {
-      ...schema,
+      uid: schema.uid,
+      created_at: schema.created_at,
+      updated_at: schema.updated_at,
+      is_active: schema.is_active,
+      service_id: schema.service_id,
+      type_defs: schema.type_defs,
+      hash: schema.hash,
       version: schemaVersion.version,
     },
   }

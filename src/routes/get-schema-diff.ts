@@ -2,9 +2,8 @@ import type { Handler } from 'worktop'
 import { object, size, string, validate } from 'superstruct'
 import { diff } from '@graphql-inspector/core'
 import { list as listServices } from '../repositories/Service'
-import { findByServiceVersions as findSchemasByServiceVersions } from '../repositories/Schema'
 import { composeAndValidateSchema } from '../federation'
-import { SchemaResponseModel } from '../types'
+import { SchemaService } from '../services/Schema'
 
 interface GetSchemaDiffRequest {
   name: string
@@ -38,9 +37,11 @@ export const getSchemaDiff: Handler = async function (req, res) {
     name: s,
   }))
 
-  const { schemas, error: findError } = await findSchemasByServiceVersions(
-    allServiceVersions,
-  )
+  const schmemaService = new SchemaService()
+  const {
+    schemas,
+    error: findError,
+  } = await schmemaService.findByServiceVersions(allServiceVersions)
 
   if (findError) {
     return res.send(400, {

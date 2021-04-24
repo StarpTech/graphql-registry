@@ -1,11 +1,20 @@
 import { ServerRequest } from 'worktop/request'
 import { ServerResponse } from 'worktop/response'
-import { randomBytes } from 'crypto'
+import { createHash, randomBytes } from 'crypto'
 
 globalThis.crypto = {
   // @ts-ignore
   getRandomValues(arr: Uint8Array) {
     return randomBytes(arr.length)
+  },
+  // @ts-ignore
+  subtle: {
+    // @ts-ignore
+    async digest(algorithm: string, data: string) {
+      const hash = createHash('sha256')
+      hash.update(data)
+      return hash.digest()
+    },
   },
 }
 

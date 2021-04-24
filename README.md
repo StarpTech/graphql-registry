@@ -66,6 +66,21 @@ POST - `/schema/compose` Returns the last registered schema definition of all se
 </p>
 </details>
 
+PUT - `/schema/deactivate` Deactivates a schema by id. The schema is no longer part of any result. You can re-activate it by register.
+
+<details>
+<summary>Example Request</summary>
+<p>
+
+```json
+{
+  "schemaId": "916348424"
+}
+```
+
+</p>
+</details>
+
 ### Validation
 
 POST - `/schema/diff` Returns the schema report of all services and the provided new schema.
@@ -161,6 +176,12 @@ Check [How KV works](https://developers.cloudflare.com/workers/learning/how-kv-w
 
 ```sh
 npm run dev
+```
+
+#### Detailed logs
+
+```sh
+wrangler tail
 ```
 
 ### Credits

@@ -1,13 +1,8 @@
 import * as DB from 'worktop/kv'
 import fnv1a from '@sindresorhus/fnv1a'
 import type { KV } from 'worktop/kv'
-import { find as findService } from './Service'
-import {
-  list as listSchemaVersionLinks,
-  find as findServiceSchemaVersion,
-  findLatestServiceSchemaVersion,
-} from './SchemaVersion'
-import { SchemaResponseModel } from '../types'
+import { sort } from 'fast-sort'
+import { ulid } from 'worktop/utils'
 
 // cloudflare global kv binding
 declare const SERVICES: KV.Namespace
@@ -16,134 +11,60 @@ export interface Schema {
   uid: string
   service_id: string
   is_active: boolean
+  hash: string
   type_defs: string
   updated_at: number | null
   created_at: number
 }
 
-export interface ServiceSchemaVersionMatch {
-  name: string
-  version?: string
+export interface SchemaIndex {
+  uid: string
+  service_id: string
+  hash: string
 }
 
-export type NewSchema = Omit<Schema, 'created_at' | 'updated_at' | 'uid'>
+export type NewSchema = Omit<
+  Schema,
+  'created_at' | 'updated_at' | 'uid' | 'hash'
+>
 
-export const key_item = (serviceName: string, uid: string) =>
-  `services::${serviceName}::schemas::${uid}`
+export const key_owner = () => `schemas`
+export const key_item = (uid: string) => `schemas::${uid}`
 
-export function find(serviceName: string, uid: string) {
-  const key = key_item(serviceName, uid)
+export function find(uid: string) {
+  const key = key_item(uid)
   return DB.read<Schema>(SERVICES, key, 'json')
 }
 
-export function findByTypeDefs(serviceName: string, typeDefs: string) {
-  const uid = fnv1a(typeDefs).toString()
-  const key = key_item(serviceName, uid)
+export async function findByHash(hash: string) {
+  const all = await list()
+  return all.find((s) => s.hash === hash)
+}
+
+export async function list(): Promise<SchemaIndex[]> {
+  const key = key_owner()
+  return (await DB.read<SchemaIndex[]>(SERVICES, key, 'json')) || []
+}
+
+export function syncIndex(versions: SchemaIndex[]) {
+  const key = key_owner()
+  return DB.write(SERVICES, key, versions)
+}
+
+export function remove(uid: string) {
+  const key = key_item(uid)
   return DB.read<Schema>(SERVICES, key, 'json')
 }
 
-export async function findByServiceVersions(
-  services: ServiceSchemaVersionMatch[],
-): Promise<{ schemas: SchemaResponseModel[]; error: Error | null }> {
-  const schemas = []
-  let error: Error | null = null
-  for await (const service of services) {
-    const serviceItem = await findService(service.name)
-
-    if (!serviceItem) {
-      error = new Error(`Service "${service.name}" does not exist`)
-      break
-    }
-
-    if (!serviceItem.is_active) {
-      continue
-    }
-
-    const links = await listSchemaVersionLinks(service.name)
-
-    if (links.length === 0) {
-      error = new Error(`Service "${service.name}" has no versions registered`)
-      break
-    }
-
-    if (service.version) {
-      const matchedLink = links.find(
-        (schemaVersion) => schemaVersion.version === service.version,
-      )
-      if (matchedLink) {
-        const schemaVersion = await findServiceSchemaVersion(
-          service.name,
-          service.version,
-        )
-
-        if (!schemaVersion) {
-          error = new Error(
-            `Service "${service.name}" has no schema in version "${service.version}" registered`,
-          )
-          break
-        }
-
-        const schema = await find(service.name, schemaVersion.schema_id)
-
-        if (!schema) {
-          error = new Error(
-            `Service "${service.name}" has no schema with id "${schemaVersion.schema_id}" registered`,
-          )
-          break
-        }
-
-        if (!schema.is_active) {
-          error = new Error(
-            `Schema with id "${schemaVersion.schema_id}" is not active`,
-          )
-          break
-        }
-
-        schemas.push({
-          ...schema,
-          version: schemaVersion.version,
-        })
-      } else {
-        error = new Error(
-          `Service "${service.name}" in version "${service.version}" is not registered`,
-        )
-        break
-      }
-    } else {
-      const schemaVersion = await findLatestServiceSchemaVersion(service.name)
-
-      if (!schemaVersion) {
-        error = new Error(`Service "${service.name}" has no schema registered`)
-        break
-      }
-
-      const schema = await find(service.name, schemaVersion.schema_id)
-
-      if (!schema) {
-        error = new Error(
-          `Service "${service.name}" has no schema with id "${schemaVersion.schema_id}" registered`,
-        )
-        break
-      }
-
-      schemas.push({
-        ...schema,
-        version: schemaVersion.version,
-      })
-    }
-  }
-
-  return { error, schemas }
-}
-
-export function save(serviceName: string, item: Schema) {
-  const key = key_item(serviceName, item.uid)
+export function save(item: Schema) {
+  const key = key_item(item.uid)
   return DB.write(SERVICES, key, item)
 }
 
-export async function insert(serviceName: string, schema: NewSchema) {
+export async function insert(schema: NewSchema) {
   const values: Schema = {
-    uid: fnv1a(schema.type_defs).toString(),
+    uid: ulid(),
+    hash: fnv1a(schema.type_defs).toString(),
     service_id: schema.service_id,
     is_active: schema.is_active,
     type_defs: schema.type_defs,
@@ -151,7 +72,19 @@ export async function insert(serviceName: string, schema: NewSchema) {
     updated_at: null,
   }
 
-  if (!(await save(serviceName, values))) {
+  if (!(await save(values))) {
+    return false
+  }
+
+  let allSchemas = (await list()).concat({
+    uid: values.uid,
+    service_id: values.service_id,
+    hash: values.hash,
+  })
+
+  const sorted = sort(allSchemas).desc((u) => u.uid)
+
+  if (!(await syncIndex(sorted))) {
     return false
   }
 
