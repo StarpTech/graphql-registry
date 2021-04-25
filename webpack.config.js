@@ -9,7 +9,7 @@ module.exports = {
   },
   mode,
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.js'],
     fallback: { buffer: false, crypto: false, url: false, util: false },
     plugins: [],
   },
@@ -20,7 +20,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts?$/,
         loader: 'ts-loader',
       },
     ],
