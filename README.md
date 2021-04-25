@@ -12,23 +12,15 @@
 
 <div align="center">Serverless GraphQL registry build with <a href="https://developers.cloudflare.com/workers/learning/how-workers-works">Cloudflare Worker</a> &amp; <a href="https://developers.cloudflare.com/workers/learning/how-kv-works">KV Storage</a></div>
 
+> There should be a single source of truth for registering and tracking the graph.
+
 ### Features
 
-- Stores versioned schemas for GraphQL-federated services
+- Stores versioned schemas for all GraphQL-federated services
 - Serves schema for GraphQL gateway based on provided services & their versions
 - Validates new schema to be compatible with other running services
 - Everywhere fast, secure and accessible due to [Cloudflare infrastructure](https://developers.cloudflare.com/workers/learning/how-workers-works)
-- Global distributed, low-latency store for [persisted queries](https://www.apollographql.com/docs/apollo-server/performance/apq/) with TTL (timestamp and duration).
-
-### Use cases
-
-- Management of a federated data graph
-  - Source of truth for what is running in your infrastrucutre.
-  - Register schema updates to see it its compatible with the current schema.
-  - Pull the latest schema in your gateway without restarting your servers.
-  - Deploy multiple instances of the registry to cover graph variants (staging, production).
-- Enable Persisted Queries with [TTL](https://www.apollographql.com/docs/apollo-server/performance/apq/#adjusting-cache-time-to-live-ttl) support.
-- :sunglasses: Build your own Apollo Studio.
+- Global distributed, low-latency store for [persisted queries](https://www.apollographql.com/docs/apollo-server/performance/apq/) with [TTL](https://www.apollographql.com/docs/apollo-server/performance/apq/#adjusting-cache-time-to-live-ttl) (timestamp and duration).
 
 [**Read more**](https://principledgraphql.com/integrity#3-track-the-schema-in-a-registry)
 
