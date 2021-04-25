@@ -12,6 +12,8 @@
 
 <div align="center">Serverless GraphQL registry build with <a href="https://developers.cloudflare.com/workers/learning/how-workers-works">Cloudflare Worker</a> &amp; <a href="https://developers.cloudflare.com/workers/learning/how-kv-works">KV Storage</a></div>
 
+<br/>
+
 > There should be a single source of truth for registering and tracking the graph.
 
 ### Features
