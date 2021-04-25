@@ -19,7 +19,7 @@ const validateRequest = object({
   services: array(
     object({
       version: size(string(), 1, 100),
-      service_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
+      name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
     }),
   ),
 })
@@ -50,7 +50,7 @@ export const getComposedSchemaByVersions: Handler = async function (req, res) {
   }
 
   const allServiceVersions: ServiceVersionMatch[] = input.services.map((s) => ({
-    name: s.service_name,
+    name: s.name,
     version: s.version,
   }))
 

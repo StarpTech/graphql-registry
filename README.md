@@ -182,6 +182,13 @@ Check [How KV works](https://developers.cloudflare.com/workers/learning/how-kv-w
 npm run dev
 ```
 
+### Benchmark
+
+Run a benchmark with:
+```
+docker run -e SECRET=<basic_auth_secret> -e URL=<worker_url> -i loadimpact/k6 run - < benchmark/composed-schema.js
+```
+
 #### Detailed logs
 
 ```sh

@@ -46,7 +46,7 @@ test.serial('Should return a specific schema version', async (t) => {
     graph_name: 'my_graph',
     services: [
       {
-        service_name: 'bar',
+        name: 'bar',
         version: '2',
       },
     ],
@@ -97,7 +97,7 @@ test.serial(
       graph_name: 'my_graph',
       services: [
         {
-          service_name: 'foo',
+          name: 'foo',
           version: '2',
         },
       ],
@@ -180,7 +180,7 @@ test.serial(
       graph_name: 'my_graph',
       services: [
         {
-          service_name: 'foo',
+          name: 'foo',
           version: '1',
         },
       ],
