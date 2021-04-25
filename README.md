@@ -14,7 +14,7 @@
 
 <br/>
 
-> There should be a single source of truth for registering and tracking the graph.
+> There should be a **single source of truth** for registering and tracking the graph.
 
 ### Features
 
