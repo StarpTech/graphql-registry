@@ -75,7 +75,7 @@ export const registerSchema: Handler = async function (req, res) {
   }
 
   const serviceSchemas = schemas.map((s) => ({
-    name: s.service_id,
+    name: s.service_name,
     typeDefs: s.type_defs,
   }))
 
@@ -129,7 +129,7 @@ export const registerSchema: Handler = async function (req, res) {
       type_defs: input.type_defs,
       is_active: true,
       graph_name: graph.name,
-      service_id: service.name,
+      service_name: service.name,
     })
     if (!schema) {
       throw new Error('Could not create schema')
@@ -172,7 +172,7 @@ export const registerSchema: Handler = async function (req, res) {
       created_at: schema.created_at,
       updated_at: schema.updated_at,
       is_active: schema.is_active,
-      service_id: schema.service_id,
+      service_name: schema.service_name,
       type_defs: schema.type_defs,
       hash: schema.hash,
       version: schemaVersion.version,

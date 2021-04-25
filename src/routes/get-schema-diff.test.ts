@@ -1,11 +1,11 @@
 import test from 'ava'
-import { createEmptyNamespaces, Request, Response } from '../test-utils'
+import { createEmptyKVNamespaces, Request, Response } from '../test-utils'
 import { ErrorResponse } from '../types'
 import { getSchemaDiff } from './get-schema-diff'
 import { registerSchema } from './register-schema'
 
 test.serial('Should calculate schema diff', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -42,7 +42,7 @@ test.serial('Should calculate schema diff', async (t) => {
 })
 
 test.serial('Should detect a breaking change', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String world: String }',
@@ -81,7 +81,7 @@ test.serial('Should detect a breaking change', async (t) => {
 })
 
 test.serial('Should return 400 when type_defs is missing', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     graph_name: 'my_graph',

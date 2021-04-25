@@ -92,15 +92,15 @@ export const Request = (
   } as ServerRequest
 }
 
-export const createEmptyNamespaces = (namespaces: string[]) => {
+export const createEmptyKVNamespaces = (namespaces: string[]) => {
   for (const namespace of namespaces) {
-    NewNamespace({
+    NewKVNamespace({
       name: namespace,
     })
   }
 }
 
-export const NewNamespace = (
+export const NewKVNamespace = (
   bindingConfig: { name: string },
   store: Map<string, any> = new Map(),
 ) => {

@@ -12,6 +12,7 @@ import { deletePersistedQuery } from './routes/delete-persisted-query'
 import { healthcheck } from './routes/healthcheck'
 import { deactivateSchema } from './routes/deactivate-schema'
 import { getGraphs } from './routes/get-graphs'
+import { garbageCollectSchemas } from './routes/garbage-collect'
 
 const API = new Router()
 
@@ -26,6 +27,11 @@ API.add(
   'POST',
   '/schema/compose',
   compose(basicAuth, getComposedSchemaByVersions),
+)
+API.add(
+  'POST',
+  '/schema/garbage_collect',
+  compose(basicAuth, garbageCollectSchemas),
 )
 
 // Tooling

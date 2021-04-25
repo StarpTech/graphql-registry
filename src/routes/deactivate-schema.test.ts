@@ -1,12 +1,12 @@
 import test from 'ava'
-import { createEmptyNamespaces, Request, Response } from '../test-utils'
+import { createEmptyKVNamespaces, Request, Response } from '../test-utils'
 import { SchemaResponseModel, SuccessResponse } from '../types'
 import { deactivateSchema } from './deactivate-schema'
 import { getComposedSchema } from './get-composed-schema'
 import { registerSchema } from './register-schema'
 
 test.serial('Should deactivate schema', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',

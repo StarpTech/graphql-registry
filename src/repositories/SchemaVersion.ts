@@ -52,6 +52,15 @@ export function find(graphName: string, serviceName: string, version: string) {
   return DB.read<SchemaVersion>(VERSIONS, key, 'json')
 }
 
+export function remove(
+  graphName: string,
+  serviceName: string,
+  version: string,
+) {
+  const key = key_item(graphName, serviceName, version)
+  return DB.remove(VERSIONS, key)
+}
+
 export function save(
   graphName: string,
   serviceName: string,

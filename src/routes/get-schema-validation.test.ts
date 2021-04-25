@@ -1,11 +1,11 @@
 import test from 'ava'
-import { createEmptyNamespaces, Request, Response } from '../test-utils'
+import { createEmptyKVNamespaces, Request, Response } from '../test-utils'
 import { ErrorResponse } from '../types'
 import { getSchemaValidation } from './get-schema-validation'
 import { registerSchema } from './register-schema'
 
 test.serial('Should validate schema as valid', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -33,7 +33,7 @@ test.serial('Should validate schema as valid', async (t) => {
 })
 
 test.serial('Should validate schema as invalid', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -66,7 +66,7 @@ test.serial('Should validate schema as invalid', async (t) => {
 })
 
 test.serial('Should return 400 when type_defs is missing', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     service_name: 'foo',

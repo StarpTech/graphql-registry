@@ -1,9 +1,9 @@
 import test from 'ava'
 import { addPersistedQuery } from './add-persisted-query'
-import { NewNamespace, Request, Response } from '../test-utils'
+import { NewKVNamespace, Request, Response } from '../test-utils'
 
 test.serial('Should store PQ from KV', async (t) => {
-  const store = NewNamespace({
+  const store = NewKVNamespace({
     name: 'PERSISTED_QUERIES',
   })
 
@@ -19,7 +19,7 @@ test.serial('Should store PQ from KV', async (t) => {
 test.serial(
   'Should return validation error because no query was provided',
   async (t) => {
-    const store = NewNamespace({
+    const store = NewKVNamespace({
       name: 'PERSISTED_QUERIES',
     })
 
@@ -36,7 +36,7 @@ test.serial(
   },
 )
 test.serial('Should accept ttl values', async (t) => {
-  const store = NewNamespace({
+  const store = NewKVNamespace({
     name: 'PERSISTED_QUERIES',
   })
 

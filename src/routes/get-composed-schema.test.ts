@@ -1,13 +1,13 @@
 import test from 'ava'
 import { assert, literal, number, object, size, string } from 'superstruct'
-import { createEmptyNamespaces, Request, Response } from '../test-utils'
+import { createEmptyKVNamespaces, Request, Response } from '../test-utils'
 import { SuccessResponse, SchemaResponseModel } from '../types'
 import { deactivateSchema } from './deactivate-schema'
 import { getComposedSchema } from './get-composed-schema'
 import { registerSchema } from './register-schema'
 
 test.serial('Should return schema of two services', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -49,7 +49,7 @@ test.serial('Should return schema of two services', async (t) => {
       graph_name: literal('my_graph'),
       hash: size(string(), 4, 11),
       is_active: literal(true),
-      service_id: literal('foo'),
+      service_name: literal('foo'),
       type_defs: literal('type Query { hello: String }'),
       created_at: number(),
       updated_at: literal(null),
@@ -64,7 +64,7 @@ test.serial('Should return schema of two services', async (t) => {
       graph_name: literal('my_graph'),
       hash: size(string(), 4, 11),
       is_active: literal(true),
-      service_id: literal('bar'),
+      service_name: literal('bar'),
       type_defs: literal('type Query2 { hello: String }'),
       created_at: number(),
       updated_at: literal(null),
@@ -76,7 +76,7 @@ test.serial('Should return schema of two services', async (t) => {
 test.serial(
   'Should always return the latest schema of a service',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -140,7 +140,7 @@ test.serial(
         graph_name: literal('my_graph'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('foo'),
+        service_name: literal('foo'),
         type_defs: literal('type Query { hello: String world: String }'),
         created_at: number(),
         updated_at: literal(null),
@@ -155,7 +155,7 @@ test.serial(
         graph_name: literal('my_graph'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('bar'),
+        service_name: literal('bar'),
         type_defs: literal('type Query { firstname: String lastName: String }'),
         created_at: number(),
         updated_at: literal(null),
@@ -168,7 +168,7 @@ test.serial(
 test.serial(
   'Should return no schema because schema was deactivated and no version was specified',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',

@@ -62,7 +62,7 @@ export const getComposedSchema: Handler = async function (req, res) {
   }
 
   const serviceSchemas = schemas.map((s) => ({
-    name: s.service_id,
+    name: s.service_name,
     typeDefs: s.type_defs,
   }))
 

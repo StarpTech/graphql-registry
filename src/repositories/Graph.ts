@@ -11,10 +11,6 @@ export interface Graph {
   created_at: number
 }
 
-export interface GraphIndex {
-  name: string
-}
-
 export type NewGraph = Omit<Graph, 'created_at' | 'updated_at' | 'uid'>
 
 export const key_owner = () => `graphs`
@@ -25,19 +21,19 @@ export function find(name: string) {
   return DB.read<Graph>(GRAPHS, key, 'json')
 }
 
-export async function list(): Promise<GraphIndex[]> {
+export async function list(): Promise<Graph['name'][]> {
   const key = key_owner()
-  return (await DB.read<GraphIndex[]>(GRAPHS, key, 'json')) || []
+  return (await DB.read<Graph['name'][]>(GRAPHS, key, 'json')) || []
 }
 
-export function syncIndex(versions: GraphIndex[]) {
+export function syncIndex(versions: string[]) {
   const key = key_owner()
   return DB.write(GRAPHS, key, versions)
 }
 
 export function remove(name: string) {
   const key = key_item(name)
-  return DB.read<Graph>(GRAPHS, key, 'json')
+  return DB.remove(GRAPHS, key)
 }
 
 export function save(item: Graph) {
@@ -57,9 +53,7 @@ export async function insert(graph: NewGraph) {
     return false
   }
 
-  let allGraphs = (await list()).concat({
-    name: values.name,
-  })
+  let allGraphs = (await list()).concat(values.name)
 
   if (!(await syncIndex(allGraphs))) {
     return false

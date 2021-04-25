@@ -1,11 +1,11 @@
 import test from 'ava'
-import { NewNamespace, Request, Response } from '../test-utils'
+import { NewKVNamespace, Request, Response } from '../test-utils'
 import { addPersistedQuery } from './add-persisted-query'
 import { getPersistedQuery } from './get-persisted-query'
 import { deletePersistedQuery } from './delete-persisted-query'
 
 test.serial('Should delete PQ from KV', async (t) => {
-  NewNamespace({
+  NewKVNamespace({
     name: 'PERSISTED_QUERIES',
   })
 
@@ -35,7 +35,7 @@ test.serial('Should delete PQ from KV', async (t) => {
 })
 
 test.serial('Should return 400 when key was not provided', async (t) => {
-  NewNamespace({
+  NewKVNamespace({
     name: 'PERSISTED_QUERIES',
   })
 

@@ -1,12 +1,12 @@
 import test from 'ava'
 import { assert, literal, number, object, size, string } from 'superstruct'
-import { createEmptyNamespaces, Request, Response } from '../test-utils'
+import { createEmptyKVNamespaces, Request, Response } from '../test-utils'
 import { ErrorResponse, SchemaResponseModel, SuccessResponse } from '../types'
 import { getComposedSchema } from './get-composed-schema'
 import { registerSchema } from './register-schema'
 
 test.serial('Should register new schema', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -41,7 +41,7 @@ test.serial('Should register new schema', async (t) => {
       graph_name: literal('my_graph'),
       hash: size(string(), 4, 11),
       is_active: literal(true),
-      service_id: literal('foo'),
+      service_name: literal('foo'),
       type_defs: literal('type Query { hello: String }'),
       created_at: number(),
       updated_at: literal(null),
@@ -53,7 +53,7 @@ test.serial('Should register new schema', async (t) => {
 test.serial(
   'Should not create multiple schemas when client and type_defs does not change',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -84,7 +84,7 @@ test.serial(
         graph_name: literal('my_graph'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('foo'),
+        service_name: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
         created_at: number(),
         updated_at: literal(null),
@@ -121,7 +121,7 @@ test.serial(
         graph_name: literal('my_graph'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('foo'),
+        service_name: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
         created_at: number(),
         updated_at: number(), // updated
@@ -134,7 +134,7 @@ test.serial(
 test.serial(
   'Should be able to register schemas from multiple clients',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -176,7 +176,7 @@ test.serial(
         graph_name: literal('my_graph'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('foo'),
+        service_name: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
         created_at: number(),
         updated_at: literal(null),
@@ -191,7 +191,7 @@ test.serial(
         graph_name: literal('my_graph'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('bar'),
+        service_name: literal('bar'),
         type_defs: literal('type Query2 { hello: String }'),
         created_at: number(),
         updated_at: literal(null),
@@ -202,7 +202,7 @@ test.serial(
 )
 
 test.serial('Should not be able to push invalid schema', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'foo',
@@ -240,7 +240,7 @@ test.serial('Should not be able to push invalid schema', async (t) => {
 test.serial(
   'Should be able to store multiple versions with the same schema and client combination',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -282,7 +282,7 @@ test.serial(
         graph_name: literal('my_graph'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('foo'),
+        service_name: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
         created_at: number(),
         updated_at: number(),
@@ -295,7 +295,7 @@ test.serial(
 test.serial(
   'Should reject schema because it is not compatible with registry state',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -329,7 +329,7 @@ test.serial(
 test.serial(
   'Should return correct latest service schema with multiple graphs',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -371,7 +371,7 @@ test.serial(
         graph_name: literal('my_graph'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('foo'),
+        service_name: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
         created_at: number(),
         updated_at: literal(null),
@@ -397,7 +397,7 @@ test.serial(
         graph_name: literal('my_graph_2'),
         hash: size(string(), 4, 11),
         is_active: literal(true),
-        service_id: literal('foo'),
+        service_name: literal('foo'),
         type_defs: literal('type Query { hello: String }'),
         created_at: number(),
         updated_at: literal(null),

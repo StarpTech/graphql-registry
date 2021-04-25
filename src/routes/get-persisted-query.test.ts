@@ -1,10 +1,10 @@
 import test from 'ava'
 import { key_item } from '../repositories/PersistedQueries'
-import { NewNamespace, Request, Response } from '../test-utils'
+import { NewKVNamespace, Request, Response } from '../test-utils'
 import { getPersistedQuery } from './get-persisted-query'
 
 test.serial('Should load PQ from KV', async (t) => {
-  NewNamespace(
+  NewKVNamespace(
     {
       name: 'PERSISTED_QUERIES',
     },
@@ -21,7 +21,7 @@ test.serial('Should load PQ from KV', async (t) => {
 })
 
 test.serial('Should return 404 when key does not exist', async (t) => {
-  NewNamespace({
+  NewKVNamespace({
     name: 'PERSISTED_QUERIES',
   })
 

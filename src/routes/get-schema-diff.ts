@@ -65,7 +65,7 @@ export const getSchemaDiff: Handler = async function (req, res) {
   }
 
   let serviceSchemas = schemas.map((s) => ({
-    name: s.service_id,
+    name: s.service_name,
     typeDefs: s.type_defs,
   }))
 

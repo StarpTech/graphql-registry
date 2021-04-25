@@ -1,11 +1,11 @@
 import test from 'ava'
-import { createEmptyNamespaces, Request, Response } from '../test-utils'
+import { createEmptyKVNamespaces, Request, Response } from '../test-utils'
 import { SuccessResponse } from '../types'
 import { getGraphs } from './get-graphs'
 import { registerSchema } from './register-schema'
 
 test.serial('Should return all registered graphs', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',

@@ -39,7 +39,7 @@ POST - `/schema/push` Creates a new graph and schema for a service.
 <summary>Example Request</summary>
 <p>
 
-```json
+```jsonc
 {
   "type_defs": "type Query { hello: String }",
   "version": "1",
@@ -57,10 +57,10 @@ POST - `/schema/compose` Returns the last registered schema definition of all se
 <summary>Example Request</summary>
 <p>
 
-```json
+```jsonc
 {
   "graph_name": "my_graph",
-  "services": [{ "name": "foo", "version": "1" }]
+  "services": [{ "name": "foo", "version": "1" }] // if versions can't be found it fails
 }
 ```
 
@@ -73,10 +73,25 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 <summary>Example Request</summary>
 <p>
 
-```json
+```jsonc
 {
   "graph_name": "my_graph",
   "schemaId": "916348424"
+}
+```
+
+</p>
+</details>
+
+POST - `/schema/garbage_collect` Removes all schemas except the most recent N of every service. Returns the removed schemas. This could be called by a [trigger](https://developers.cloudflare.com/workers/platform/cron-triggers).
+
+<details>
+<summary>Example Request</summary>
+<p>
+
+```jsonc
+{
+  "num_schemas_keep": 10 // minimum is 10
 }
 ```
 
@@ -147,9 +162,9 @@ DELETE - `/persisted_query` Deletes persisted query from KV Storage.
 <summary>Example Request</summary>
 <p>
 
-```json
+```jsonc
 {
-  "key": "apq:foo"
+  "key": "foo"
 }
 ```
 
@@ -185,6 +200,7 @@ npm run dev
 ### Benchmark
 
 Run a benchmark with:
+
 ```
 docker run -e SECRET=<basic_auth_secret> -e URL=<worker_url> -i loadimpact/k6 run - < benchmark/composed-schema.js
 ```

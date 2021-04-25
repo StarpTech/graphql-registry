@@ -13,6 +13,6 @@ export const getGraphs: Handler = async function (req, res) {
 
   res.send(200, {
     success: true,
-    data: allGraphs.map((graph) => graph.name),
+    data: allGraphs.map((graph) => graph),
   })
 }

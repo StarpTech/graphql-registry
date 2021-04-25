@@ -10,7 +10,7 @@ declare const SCHEMAS: KV.Namespace
 export interface Schema {
   uid: string
   graph_name: string
-  service_id: string
+  service_name: string
   is_active: boolean
   hash: string
   type_defs: string
@@ -20,7 +20,7 @@ export interface Schema {
 
 export interface SchemaIndex {
   uid: string
-  service_id: string
+  service_name: string
   graph_name: string
   hash: string
 }
@@ -57,7 +57,7 @@ export function syncIndex(graph_name: string, versions: SchemaIndex[]) {
 
 export function remove(graph_name: string, uid: string) {
   const key = key_item(graph_name, uid)
-  return DB.read<Schema>(SCHEMAS, key, 'json')
+  return DB.remove(SCHEMAS, key)
 }
 
 export function save(item: Schema) {
@@ -70,7 +70,7 @@ export async function insert(schema: NewSchema) {
     uid: ulid(),
     graph_name: schema.graph_name,
     hash: fnv1a(schema.type_defs).toString(),
-    service_id: schema.service_id,
+    service_name: schema.service_name,
     is_active: schema.is_active,
     type_defs: schema.type_defs,
     created_at: Date.now(),
@@ -83,7 +83,7 @@ export async function insert(schema: NewSchema) {
 
   let allSchemas = (await list(schema.graph_name)).concat({
     uid: values.uid,
-    service_id: values.service_id,
+    service_name: values.service_name,
     graph_name: values.graph_name,
     hash: values.hash,
   })

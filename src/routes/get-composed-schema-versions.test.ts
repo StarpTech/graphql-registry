@@ -1,13 +1,13 @@
 import test from 'ava'
 import { assert, literal, number, object, size, string } from 'superstruct'
-import { createEmptyNamespaces, Request, Response } from '../test-utils'
+import { createEmptyKVNamespaces, Request, Response } from '../test-utils'
 import { SuccessResponse, SchemaResponseModel, ErrorResponse } from '../types'
 import { deactivateSchema } from './deactivate-schema'
 import { getComposedSchemaByVersions } from './get-composed-schema-versions'
 import { registerSchema } from './register-schema'
 
 test.serial('Should return a specific schema version', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -68,7 +68,7 @@ test.serial('Should return a specific schema version', async (t) => {
       graph_name: literal('my_graph'),
       hash: size(string(), 4, 11),
       is_active: literal(true),
-      service_id: literal('bar'),
+      service_name: literal('bar'),
       type_defs: literal('type Query2 { hello: String }'),
       created_at: number(),
       updated_at: literal(null),
@@ -80,7 +80,7 @@ test.serial('Should return a specific schema version', async (t) => {
 test.serial(
   'Should return 404 when schema in version could not be found',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
@@ -115,7 +115,7 @@ test.serial(
 )
 
 test.serial('Should return 400 when no version was specified', async (t) => {
-  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+  createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
@@ -153,7 +153,7 @@ test.serial('Should return 400 when no version was specified', async (t) => {
 test.serial(
   'Should return 400 when schema in specified version was deactivated',
   async (t) => {
-    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
+    createEmptyKVNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
