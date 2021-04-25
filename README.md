@@ -215,4 +215,3 @@ wrangler tail
 
 - https://github.com/lukeed/worktop - We use it as web framework.
 - https://github.com/pipedrive/graphql-schema-registry - Served as great inspiration of a schema registry in Node.js
-- <div>Icons made by <a href="" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
