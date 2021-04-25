@@ -1,5 +1,6 @@
 import type { Handler } from 'worktop'
 import { list as listServices } from '../repositories/Service'
+import { find as findGraph } from '../repositories/Graph'
 import { composeAndValidateSchema } from '../federation'
 import { SchemaService } from '../services/Schema'
 
@@ -11,7 +12,23 @@ import { SchemaService } from '../services/Schema'
  * @returns
  */
 export const getComposedSchema: Handler = async function (req, res) {
-  const allServiceNames = await listServices()
+  const graphName = req.query.get('graph_name')
+  if (!graphName) {
+    return res.send(400, {
+      success: false,
+      error: 'No graph name was provided',
+    })
+  }
+
+  const graph = await findGraph(graphName)
+  if (!graph) {
+    return res.send(404, {
+      success: false,
+      error: `Graph with name "${graphName}" does not exist`,
+    })
+  }
+
+  const allServiceNames = await listServices(graphName)
 
   if (!allServiceNames.length) {
     return res.send(200, {
@@ -28,7 +45,7 @@ export const getComposedSchema: Handler = async function (req, res) {
   const {
     schemas,
     error: findError,
-  } = await schmemaService.findByServiceVersions(allServiceVersions)
+  } = await schmemaService.findByServiceVersions(graphName, allServiceVersions)
 
   if (findError) {
     return res.send(400, {

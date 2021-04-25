@@ -92,6 +92,14 @@ export const Request = (
   } as ServerRequest
 }
 
+export const createEmptyNamespaces = (namespaces: string[]) => {
+  for (const namespace of namespaces) {
+    NewNamespace({
+      name: namespace,
+    })
+  }
+}
+
 export const NewNamespace = (
   bindingConfig: { name: string },
   store: Map<string, any> = new Map(),

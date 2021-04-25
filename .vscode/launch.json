@@ -9,9 +9,12 @@
       "request": "launch",
       "name": "Debug AVA test file",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
-      "runtimeArgs": ["${file}"],
+      "runtimeArgs": ["--serial", "${file}"],
       "outputCapture": "std",
-      "skipFiles": ["<node_internals>/**/*.js"]
+      "skipFiles": [
+        "<node_internals>/**/*.js",
+        "${workspaceFolder}/node_modules/**/*.js"
+      ]
     }
   ]
 }

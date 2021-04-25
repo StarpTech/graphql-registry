@@ -1,18 +1,21 @@
 import type { Handler } from 'worktop'
-import { object, size, string, validate } from 'superstruct'
+import { object, pattern, size, string, validate } from 'superstruct'
 import { diff } from '@graphql-inspector/core'
 import { list as listServices } from '../repositories/Service'
+import { find as findGraph } from '../repositories/Graph'
 import { composeAndValidateSchema } from '../federation'
 import { SchemaService } from '../services/Schema'
 
 interface GetSchemaDiffRequest {
-  name: string
+  service_name: string
   type_defs: string
+  graph_name: string
 }
 
 const validateRequest = object({
   type_defs: size(string(), 1, 10000),
-  name: size(string(), 1, 100),
+  service_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
+  graph_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
 })
 
 /**
@@ -32,7 +35,15 @@ export const getSchemaDiff: Handler = async function (req, res) {
     })
   }
 
-  const allServiceNames = await listServices()
+  const graph = await findGraph(input.graph_name)
+  if (!graph) {
+    return res.send(404, {
+      success: false,
+      error: `Graph with name "${input.graph_name}" does not exist`,
+    })
+  }
+
+  const allServiceNames = await listServices(input.graph_name)
   const allServiceVersions = allServiceNames.map((s) => ({
     name: s,
   }))
@@ -41,7 +52,10 @@ export const getSchemaDiff: Handler = async function (req, res) {
   const {
     schemas,
     error: findError,
-  } = await schmemaService.findByServiceVersions(allServiceVersions)
+  } = await schmemaService.findByServiceVersions(
+    input.graph_name,
+    allServiceVersions,
+  )
 
   if (findError) {
     return res.send(400, {
@@ -67,9 +81,9 @@ export const getSchemaDiff: Handler = async function (req, res) {
   }
 
   serviceSchemas = serviceSchemas
-    .filter((schema) => schema.name !== input.name)
+    .filter((schema) => schema.name !== input.service_name)
     .concat({
-      name: input.name,
+      name: input.service_name,
       typeDefs: input.type_defs,
     })
 

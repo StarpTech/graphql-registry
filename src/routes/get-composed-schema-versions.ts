@@ -1,6 +1,7 @@
 import type { Handler } from 'worktop'
-import { array, object, size, string, validate } from 'superstruct'
+import { array, object, pattern, size, string, validate } from 'superstruct'
 import { composeAndValidateSchema } from '../federation'
+import { find as findGraph } from '../repositories/Graph'
 import { SchemaResponseModel, SuccessResponse } from '../types'
 import { SchemaService } from '../services/Schema'
 
@@ -14,10 +15,11 @@ interface GetSchemaByVersionsRequest {
 }
 
 const validateRequest = object({
+  graph_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
   services: array(
     object({
       version: size(string(), 1, 100),
-      name: size(string(), 1, 100),
+      service_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
     }),
   ),
 })
@@ -39,8 +41,16 @@ export const getComposedSchemaByVersions: Handler = async function (req, res) {
     })
   }
 
+  const graph = await findGraph(input.graph_name)
+  if (!graph) {
+    return res.send(404, {
+      success: false,
+      error: `Graph with name "${input.graph_name}" does not exist`,
+    })
+  }
+
   const allServiceVersions: ServiceVersionMatch[] = input.services.map((s) => ({
-    name: s.name,
+    name: s.service_name,
     version: s.version,
   }))
 
@@ -48,7 +58,10 @@ export const getComposedSchemaByVersions: Handler = async function (req, res) {
   const {
     schemas,
     error: findError,
-  } = await schmemaService.findByServiceVersions(allServiceVersions)
+  } = await schmemaService.findByServiceVersions(
+    input.graph_name,
+    allServiceVersions,
+  )
 
   if (findError) {
     return res.send(400, {

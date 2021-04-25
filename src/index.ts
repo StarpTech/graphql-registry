@@ -11,6 +11,7 @@ import { registerSchema } from './routes/register-schema'
 import { deletePersistedQuery } from './routes/delete-persisted-query'
 import { healthcheck } from './routes/healthcheck'
 import { deactivateSchema } from './routes/deactivate-schema'
+import { getGraphs } from './routes/get-graphs'
 
 const API = new Router()
 
@@ -19,6 +20,7 @@ API.add('GET', '/health', healthcheck)
 // Federation
 API.add('POST', '/schema/push', compose(basicAuth, registerSchema))
 API.add('GET', '/schema/latest', compose(basicAuth, getComposedSchema))
+API.add('GET', '/graphs', compose(basicAuth, getGraphs))
 API.add('PUT', '/schema/deactivate', compose(basicAuth, deactivateSchema))
 API.add(
   'POST',

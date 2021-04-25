@@ -17,21 +17,22 @@ export interface ServiceSchemaVersionMatch {
 }
 
 export class SchemaService {
-  async findByTypeDefsHash(typeDefs: string) {
+  async findByHash(graphName: string, typeDefs: string) {
     const hash = await fnv1a(typeDefs)
-    const meta = await findSchemaByHash(hash.toString())
+    const meta = await findSchemaByHash(graphName, hash.toString())
     if (!meta) {
       return false
     }
-    return findSchemaById(meta.uid)
+    return findSchemaById(graphName, meta.uid)
   }
   async findByServiceVersions(
+    graphName: string,
     services: ServiceSchemaVersionMatch[],
   ): Promise<{ schemas: SchemaWithVersionModel[]; error: Error | null }> {
     const schemas = []
     let error: Error | null = null
     for await (const service of services) {
-      const serviceItem = await findService(service.name)
+      const serviceItem = await findService(graphName, service.name)
 
       if (!serviceItem) {
         error = new Error(`Service "${service.name}" does not exist`)
@@ -42,7 +43,7 @@ export class SchemaService {
         continue
       }
 
-      const links = await listSchemaVersionLinks(service.name)
+      const links = await listSchemaVersionLinks(graphName, service.name)
 
       if (links.length === 0) {
         error = new Error(
@@ -57,6 +58,7 @@ export class SchemaService {
         )
         if (matchedLink) {
           const schemaVersion = await findServiceSchemaVersion(
+            graphName,
             service.name,
             service.version,
           )
@@ -68,7 +70,10 @@ export class SchemaService {
             break
           }
 
-          const schema = await findSchemaById(schemaVersion.schema_id)
+          const schema = await findSchemaById(
+            graphName,
+            schemaVersion.schema_id,
+          )
 
           if (!schema) {
             error = new Error(
@@ -97,6 +102,7 @@ export class SchemaService {
       } else {
         const schemaVersionService = new SchemaVersionService()
         const schemaVersion = await schemaVersionService.findLatestVersion(
+          graphName,
           service.name,
         )
 
@@ -107,7 +113,7 @@ export class SchemaService {
           break
         }
 
-        const schema = await findSchemaById(schemaVersion.schema_id)
+        const schema = await findSchemaById(graphName, schemaVersion.schema_id)
 
         if (!schema) {
           error = new Error(

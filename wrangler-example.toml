@@ -7,8 +7,11 @@ route = ""
 zone_id = ""
 target_type = "javascript"
 kv_namespaces = [ 
-         { binding = "PERSISTED_QUERIES", id = "<insert>", preview_id = "<insert>" },
-         { binding = "SERVICES", id = "<insert>", preview_id = "<insert>" }
+    { binding = "SCHEMAS", id = "<insert>" },
+    { binding = "SERVICES", id = "<insert>" },
+    { binding = "GRAPHS", id = "<insert>" },
+    { binding = "VERSIONS", id = "<insert>" },
+    { binding = "PERSISTED_QUERIES", id = "<insert>" }
 ]
 
 [dev]

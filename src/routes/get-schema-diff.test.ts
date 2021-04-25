@@ -1,18 +1,17 @@
 import test from 'ava'
-import { NewNamespace, Request, Response } from '../test-utils'
+import { createEmptyNamespaces, Request, Response } from '../test-utils'
 import { ErrorResponse } from '../types'
 import { getSchemaDiff } from './get-schema-diff'
 import { registerSchema } from './register-schema'
 
 test.serial('Should calculate schema diff', async (t) => {
-  NewNamespace({
-    name: 'SERVICES',
-  })
+  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
     version: '1',
-    name: 'foo',
+    service_name: 'foo',
+    graph_name: 'my_graph',
   })
   let res = Response()
   await registerSchema(req, res)
@@ -20,7 +19,8 @@ test.serial('Should calculate schema diff', async (t) => {
   t.is(res.statusCode, 200)
 
   req = Request('POST', '', {
-    name: 'foo',
+    graph_name: 'my_graph',
+    service_name: 'foo',
     type_defs: 'type Query { hello: String world: String }',
   })
   res = Response()
@@ -42,14 +42,13 @@ test.serial('Should calculate schema diff', async (t) => {
 })
 
 test.serial('Should detect a breaking change', async (t) => {
-  NewNamespace({
-    name: 'SERVICES',
-  })
+  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String world: String }',
     version: '1',
-    name: 'foo',
+    service_name: 'foo',
+    graph_name: 'my_graph',
   })
   let res = Response()
   await registerSchema(req, res)
@@ -57,7 +56,8 @@ test.serial('Should detect a breaking change', async (t) => {
   t.is(res.statusCode, 200)
 
   req = Request('POST', '', {
-    name: 'foo',
+    graph_name: 'my_graph',
+    service_name: 'foo',
     type_defs: 'type Query { hello: String }',
   })
   res = Response()
@@ -81,12 +81,11 @@ test.serial('Should detect a breaking change', async (t) => {
 })
 
 test.serial('Should return 400 when type_defs is missing', async (t) => {
-  NewNamespace({
-    name: 'SERVICES',
-  })
+  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
-    name: 'foo',
+    graph_name: 'my_graph',
+    service_name: 'foo',
   })
   let res = Response()
   await getSchemaDiff(req, res)

@@ -5,10 +5,11 @@ import { sort } from 'fast-sort'
 import { ulid } from 'worktop/utils'
 
 // cloudflare global kv binding
-declare const SERVICES: KV.Namespace
+declare const SCHEMAS: KV.Namespace
 
 export interface Schema {
   uid: string
+  graph_name: string
   service_id: string
   is_active: boolean
   hash: string
@@ -20,6 +21,7 @@ export interface Schema {
 export interface SchemaIndex {
   uid: string
   service_id: string
+  graph_name: string
   hash: string
 }
 
@@ -28,42 +30,45 @@ export type NewSchema = Omit<
   'created_at' | 'updated_at' | 'uid' | 'hash'
 >
 
-export const key_owner = () => `schemas`
-export const key_item = (uid: string) => `schemas::${uid}`
+export const key_owner = (graph_name: string) =>
+  `graphs::${graph_name}::schemas`
+export const key_item = (graph_name: string, uid: string) =>
+  `graphs::${graph_name}::schemas::${uid}`
 
-export function find(uid: string) {
-  const key = key_item(uid)
-  return DB.read<Schema>(SERVICES, key, 'json')
+export function find(graph_name: string, uid: string) {
+  const key = key_item(graph_name, uid)
+  return DB.read<Schema>(SCHEMAS, key, 'json')
 }
 
-export async function findByHash(hash: string) {
-  const all = await list()
+export async function findByHash(graph_name: string, hash: string) {
+  const all = await list(graph_name)
   return all.find((s) => s.hash === hash)
 }
 
-export async function list(): Promise<SchemaIndex[]> {
-  const key = key_owner()
-  return (await DB.read<SchemaIndex[]>(SERVICES, key, 'json')) || []
+export async function list(graph_name: string): Promise<SchemaIndex[]> {
+  const key = key_owner(graph_name)
+  return (await DB.read<SchemaIndex[]>(SCHEMAS, key, 'json')) || []
 }
 
-export function syncIndex(versions: SchemaIndex[]) {
-  const key = key_owner()
-  return DB.write(SERVICES, key, versions)
+export function syncIndex(graph_name: string, versions: SchemaIndex[]) {
+  const key = key_owner(graph_name)
+  return DB.write(SCHEMAS, key, versions)
 }
 
-export function remove(uid: string) {
-  const key = key_item(uid)
-  return DB.read<Schema>(SERVICES, key, 'json')
+export function remove(graph_name: string, uid: string) {
+  const key = key_item(graph_name, uid)
+  return DB.read<Schema>(SCHEMAS, key, 'json')
 }
 
 export function save(item: Schema) {
-  const key = key_item(item.uid)
-  return DB.write(SERVICES, key, item)
+  const key = key_item(item.graph_name, item.uid)
+  return DB.write(SCHEMAS, key, item)
 }
 
 export async function insert(schema: NewSchema) {
   const values: Schema = {
     uid: ulid(),
+    graph_name: schema.graph_name,
     hash: fnv1a(schema.type_defs).toString(),
     service_id: schema.service_id,
     is_active: schema.is_active,
@@ -76,15 +81,16 @@ export async function insert(schema: NewSchema) {
     return false
   }
 
-  let allSchemas = (await list()).concat({
+  let allSchemas = (await list(schema.graph_name)).concat({
     uid: values.uid,
     service_id: values.service_id,
+    graph_name: values.graph_name,
     hash: values.hash,
   })
 
   const sorted = sort(allSchemas).desc((u) => u.uid)
 
-  if (!(await syncIndex(sorted))) {
+  if (!(await syncIndex(schema.graph_name, sorted))) {
     return false
   }
 

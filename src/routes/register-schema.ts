@@ -1,10 +1,11 @@
 import type { Handler } from 'worktop'
-import { object, size, string, validate } from 'superstruct'
+import { object, pattern, size, string, validate } from 'superstruct'
 import {
   find as findService,
   insert as insertService,
   list as listServices,
 } from '../repositories/Service'
+import { find as findGraph, insert as insertGraph } from '../repositories/Graph'
 import {
   list as listSchemaVersions,
   insert as insertSchemaVersion,
@@ -18,15 +19,17 @@ import { composeAndValidateSchema } from '../federation'
 import { SchemaResponseModel, SuccessResponse } from '../types'
 
 interface RegisterRequest {
-  name: string
+  service_name: string
   version: string
   type_defs: string
+  graph_name: string
 }
 
 const validateRequest = object({
   version: size(string(), 1, 100),
   type_defs: size(string(), 1, 10000),
-  name: size(string(), 1, 100),
+  service_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
+  graph_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
 })
 
 /**
@@ -48,9 +51,9 @@ export const registerSchema: Handler = async function (req, res) {
   /**
    * Validate new schema with existing schemas of all services
    */
-  const allServiceNames = await listServices()
+  const allServiceNames = await listServices(input.graph_name)
   const allServiceVersions = allServiceNames
-    .filter((s) => s !== input.name)
+    .filter((s) => s !== input.service_name)
     .map((s) => ({
       name: s,
     }))
@@ -59,7 +62,10 @@ export const registerSchema: Handler = async function (req, res) {
   const {
     schemas,
     error: findError,
-  } = await schmemaService.findByServiceVersions(allServiceVersions)
+  } = await schmemaService.findByServiceVersions(
+    input.graph_name,
+    allServiceVersions,
+  )
 
   if (findError) {
     return res.send(400, {
@@ -74,7 +80,7 @@ export const registerSchema: Handler = async function (req, res) {
   }))
 
   serviceSchemas.push({
-    name: input.name,
+    name: input.service_name,
     typeDefs: input.type_defs,
   })
 
@@ -90,22 +96,39 @@ export const registerSchema: Handler = async function (req, res) {
   /**
    * Create new service
    */
-  let service = await findService(input.name)
+  let service = await findService(input.graph_name, input.service_name)
   if (!service) {
-    service = await insertService(input.name, { is_active: true })
+    service = await insertService(input.graph_name, input.service_name, {
+      is_active: true,
+    })
     if (!service) {
       throw new Error('Could not create service')
     }
   }
 
   /**
+   * Create new graph
+   */
+  let graph = await findGraph(input.graph_name)
+  if (!graph) {
+    graph = await insertGraph({ is_active: true, name: input.graph_name })
+    if (!graph) {
+      throw new Error('Could not create graph')
+    }
+  }
+
+  /**
    * Create new schema
    */
-  let schema = await schmemaService.findByTypeDefsHash(input.type_defs)
+  let schema = await schmemaService.findByHash(
+    input.graph_name,
+    input.type_defs,
+  )
   if (!schema) {
     schema = await insertSchema({
       type_defs: input.type_defs,
       is_active: true,
+      graph_name: graph.name,
       service_id: service.name,
     })
     if (!schema) {
@@ -124,15 +147,15 @@ export const registerSchema: Handler = async function (req, res) {
    * Create new schema version
    */
   let schemaId = schema.uid
-  let allVersions = await listSchemaVersions(input.name)
+  let allVersions = await listSchemaVersions(graph.name, service.name)
 
   let schemaVersion = allVersions.find(
     (s) => s.schema_id === schemaId && s.version === input.version,
   )
   if (!schemaVersion) {
-    let newVersion = await insertSchemaVersion(input.name, {
+    let newVersion = await insertSchemaVersion(graph.name, service.name, {
       schema_id: schema.uid,
-      service_name: input.name,
+      service_name: service.name,
       version: input.version,
     })
     if (!newVersion) {
@@ -145,6 +168,7 @@ export const registerSchema: Handler = async function (req, res) {
     success: true,
     data: {
       uid: schema.uid,
+      graph_name: schema.graph_name,
       created_at: schema.created_at,
       updated_at: schema.updated_at,
       is_active: schema.is_active,

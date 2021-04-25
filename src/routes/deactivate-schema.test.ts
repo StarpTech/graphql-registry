@@ -1,20 +1,18 @@
 import test from 'ava'
-import { assert, literal, number, object, size, string } from 'superstruct'
-import { NewNamespace, Request, Response } from '../test-utils'
-import { ErrorResponse, SchemaResponseModel, SuccessResponse } from '../types'
+import { createEmptyNamespaces, Request, Response } from '../test-utils'
+import { SchemaResponseModel, SuccessResponse } from '../types'
 import { deactivateSchema } from './deactivate-schema'
 import { getComposedSchema } from './get-composed-schema'
 import { registerSchema } from './register-schema'
 
 test.serial('Should deactivate schema', async (t) => {
-  NewNamespace({
-    name: 'SERVICES',
-  })
+  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
     version: '1',
-    name: 'foo',
+    service_name: 'foo',
+    graph_name: 'my_graph',
   })
   let res = Response()
   await registerSchema(req, res)
@@ -23,7 +21,7 @@ test.serial('Should deactivate schema', async (t) => {
 
   let result = (res.body as any) as SuccessResponse<SchemaResponseModel>
 
-  req = Request('GET', '')
+  req = Request('GET', 'graph_name=my_graph')
   res = Response()
   await getComposedSchema(req, res)
 
@@ -34,13 +32,14 @@ test.serial('Should deactivate schema', async (t) => {
   t.is(all.data.length, 1)
 
   req = Request('PUT', '', {
+    graph_name: 'my_graph',
     schemaId: result.data.uid,
   })
   res = Response()
   await deactivateSchema(req, res)
   t.is(res.statusCode, 200)
 
-  req = Request('GET', '')
+  req = Request('GET', 'graph_name=my_graph')
   res = Response()
   await getComposedSchema(req, res)
 

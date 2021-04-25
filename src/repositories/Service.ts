@@ -13,31 +13,36 @@ export interface Service {
 
 export type NewService = Omit<Service, 'name' | 'created_at' | 'updated_at'>
 
-export const key_owner = () => `services`
-export const key_item = (serviceName: string) => `services::${serviceName}`
+export const key_owner = (graphName: string) => `graphs::${graphName}::services`
+export const key_item = (graphName: string, serviceName: string) =>
+  `graphs::${graphName}::services::${serviceName}`
 
-export function find(serviceName: string) {
-  const key = key_item(serviceName)
+export function find(graphName: string, serviceName: string) {
+  const key = key_item(graphName, serviceName)
   return DB.read<Service>(SERVICES, key, 'json')
 }
 
-export async function list() {
-  const key = key_owner()
+export async function list(graphName: string) {
+  const key = key_owner(graphName)
   return (await DB.read<Service['name'][]>(SERVICES, key)) || []
 }
 
-export function sync(ids: string[]) {
-  const key = key_owner()
+export function sync(graphName: string, ids: string[]) {
+  const key = key_owner(graphName)
   return DB.write(SERVICES, key, ids)
 }
 
-export function save(serviceName: string, item: Service) {
-  const key = key_item(serviceName)
+export function save(graphName: string, serviceName: string, item: Service) {
+  const key = key_item(graphName, serviceName)
   return DB.write(SERVICES, key, item)
 }
 
-export async function insert(serviceName: string, service: NewService) {
-  const exists = await find(serviceName)
+export async function insert(
+  graphName: string,
+  serviceName: string,
+  service: NewService,
+) {
+  const exists = await find(graphName, serviceName)
 
   if (exists) {
     return false
@@ -51,13 +56,13 @@ export async function insert(serviceName: string, service: NewService) {
     updated_at: null,
   }
 
-  if (!(await save(serviceName, values))) {
+  if (!(await save(graphName, serviceName, values))) {
     return false
   }
 
-  let allServices = (await list()).concat(serviceName)
+  let allServices = (await list(graphName)).concat(serviceName)
 
-  if (!(await sync(allServices))) {
+  if (!(await sync(graphName, allServices))) {
     return false
   }
 

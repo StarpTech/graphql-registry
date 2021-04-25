@@ -16,6 +16,7 @@
 
 ### Features
 
+- Create multiple versions of the graph (for example, staging and production, or different development branches)
 - Stores versioned schemas for all GraphQL-federated services
 - Serves schema for GraphQL gateway based on provided services & their versions
 - Validates new schema to be compatible with other running services
@@ -26,9 +27,11 @@
 
 ### Schema federation
 
-GET - `/schema/latest` Returns the last registered schema definition of all services.
+GET - `/graphs` Returns all registered graphs.
 
-POST - `/schema/push` Validates and registers new schema for a service.
+GET - `/schema/latest?graph_name=my_graph` Returns the last registered schema definition of all services.
+
+POST - `/schema/push` Creates a new graph and schema for a service.
 
 <details>
 <summary>Example Request</summary>
@@ -38,7 +41,8 @@ POST - `/schema/push` Validates and registers new schema for a service.
 {
   "type_defs": "type Query { hello: String }",
   "version": "1",
-  "name": "foo"
+  "graph_name": "my_graph",
+  "service_name": "foo"
 }
 ```
 
@@ -53,6 +57,7 @@ POST - `/schema/compose` Returns the last registered schema definition of all se
 
 ```json
 {
+  "graph_name": "my_graph",
   "services": [{ "name": "foo", "version": "1" }]
 }
 ```
@@ -68,6 +73,7 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 
 ```json
 {
+  "graph_name": "my_graph",
   "schemaId": "916348424"
 }
 ```
@@ -85,6 +91,7 @@ POST - `/schema/diff` Returns the schema report of all services and the provided
 
 ```json
 {
+  "graph_name": "my_graph",
   "type_defs": "type Query { hello: String }",
   "name": "foo"
 }
@@ -101,6 +108,7 @@ POST - `/schema/validate` Validate schema between provided and latest schemas.
 
 ```json
 {
+  "graph_name": "my_graph",
   "type_defs": "type Query { hello: String }",
   "name": "foo"
 }

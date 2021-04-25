@@ -4,7 +4,7 @@ import { sort } from 'fast-sort'
 import { ulid } from 'worktop/utils'
 
 // cloudflare global kv binding
-declare const SERVICES: KV.Namespace
+declare const VERSIONS: KV.Namespace
 
 export interface SchemaVersion {
   uid: string
@@ -22,32 +22,50 @@ export interface SchemaVersionIndex {
 
 export type NewSchemaVersion = Omit<SchemaVersion, 'created_at' | 'uid'>
 
-export const key_owner = (serviceName: string) =>
-  `services::${serviceName}::versions`
-export const key_item = (serviceName: string, version: string) =>
-  `services::${serviceName}::versions::${version}`
+export const key_owner = (graphName: string, serviceName: string) =>
+  `graphs::${graphName}::services::${serviceName}::versions`
+export const key_item = (
+  graphName: string,
+  serviceName: string,
+  version: string,
+) => `graphs::${graphName}::services::${serviceName}::versions::${version}`
 
-export async function list(serviceName: string): Promise<SchemaVersionIndex[]> {
-  const key = key_owner(serviceName)
-  return (await DB.read<SchemaVersionIndex[]>(SERVICES, key, 'json')) || []
+export async function list(
+  graphName: string,
+  serviceName: string,
+): Promise<SchemaVersionIndex[]> {
+  const key = key_owner(graphName, serviceName)
+  return (await DB.read<SchemaVersionIndex[]>(VERSIONS, key, 'json')) || []
 }
 
-export function syncIndex(serviceName: string, versions: SchemaVersionIndex[]) {
-  const key = key_owner(serviceName)
-  return DB.write(SERVICES, key, versions)
+export function syncIndex(
+  graphName: string,
+  serviceName: string,
+  versions: SchemaVersionIndex[],
+) {
+  const key = key_owner(graphName, serviceName)
+  return DB.write(VERSIONS, key, versions)
 }
 
-export function find(serviceName: string, version: string) {
-  const key = key_item(serviceName, version)
-  return DB.read<SchemaVersion>(SERVICES, key, 'json')
+export function find(graphName: string, serviceName: string, version: string) {
+  const key = key_item(graphName, serviceName, version)
+  return DB.read<SchemaVersion>(VERSIONS, key, 'json')
 }
 
-export function save(serviceName: string, item: SchemaVersion) {
-  const key = key_item(serviceName, item.version)
-  return DB.write(SERVICES, key, item)
+export function save(
+  graphName: string,
+  serviceName: string,
+  item: SchemaVersion,
+) {
+  const key = key_item(graphName, serviceName, item.version)
+  return DB.write(VERSIONS, key, item)
 }
 
-export async function insert(serviceName: string, version: NewSchemaVersion) {
+export async function insert(
+  graphName: string,
+  serviceName: string,
+  version: NewSchemaVersion,
+) {
   const values: SchemaVersion = {
     uid: ulid(),
     schema_id: version.schema_id,
@@ -56,11 +74,11 @@ export async function insert(serviceName: string, version: NewSchemaVersion) {
     created_at: Date.now(),
   }
 
-  if (!(await save(serviceName, values))) {
+  if (!(await save(graphName, serviceName, values))) {
     return false
   }
 
-  let allVersions = (await list(serviceName)).concat({
+  let allVersions = (await list(graphName, serviceName)).concat({
     uid: values.uid,
     version: values.version,
     schema_id: values.schema_id,
@@ -68,7 +86,7 @@ export async function insert(serviceName: string, version: NewSchemaVersion) {
 
   const sorted = sort(allVersions).desc((u) => u.uid)
 
-  if (!(await syncIndex(serviceName, sorted))) {
+  if (!(await syncIndex(graphName, serviceName, sorted))) {
     return false
   }
 

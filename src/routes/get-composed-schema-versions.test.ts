@@ -1,20 +1,19 @@
 import test from 'ava'
 import { assert, literal, number, object, size, string } from 'superstruct'
-import { NewNamespace, Request, Response } from '../test-utils'
+import { createEmptyNamespaces, Request, Response } from '../test-utils'
 import { SuccessResponse, SchemaResponseModel, ErrorResponse } from '../types'
 import { deactivateSchema } from './deactivate-schema'
 import { getComposedSchemaByVersions } from './get-composed-schema-versions'
 import { registerSchema } from './register-schema'
 
 test.serial('Should return a specific schema version', async (t) => {
-  NewNamespace({
-    name: 'SERVICES',
-  })
+  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
     version: '1',
-    name: 'foo',
+    service_name: 'foo',
+    graph_name: 'my_graph',
   })
   let res = Response()
   await registerSchema(req, res)
@@ -24,7 +23,8 @@ test.serial('Should return a specific schema version', async (t) => {
   req = Request('POST', '', {
     type_defs: 'type Query2 { hello: String }',
     version: '2',
-    name: 'bar',
+    service_name: 'bar',
+    graph_name: 'my_graph',
   })
   res = Response()
   await registerSchema(req, res)
@@ -34,7 +34,8 @@ test.serial('Should return a specific schema version', async (t) => {
   req = Request('POST', '', {
     type_defs: 'type Query3 { hello: String }',
     version: '3',
-    name: 'baz',
+    service_name: 'baz',
+    graph_name: 'my_graph',
   })
   res = Response()
   await registerSchema(req, res)
@@ -42,9 +43,10 @@ test.serial('Should return a specific schema version', async (t) => {
   t.is(res.statusCode, 200)
 
   req = Request('POST', '', {
+    graph_name: 'my_graph',
     services: [
       {
-        name: 'bar',
+        service_name: 'bar',
         version: '2',
       },
     ],
@@ -63,6 +65,7 @@ test.serial('Should return a specific schema version', async (t) => {
     result.data[0],
     object({
       uid: size(string(), 26, 26),
+      graph_name: literal('my_graph'),
       hash: size(string(), 4, 11),
       is_active: literal(true),
       service_id: literal('bar'),
@@ -77,14 +80,13 @@ test.serial('Should return a specific schema version', async (t) => {
 test.serial(
   'Should return 404 when schema in version could not be found',
   async (t) => {
-    NewNamespace({
-      name: 'SERVICES',
-    })
+    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
       version: '1',
-      name: 'foo',
+      service_name: 'foo',
+      graph_name: 'my_graph',
     })
     let res = Response()
     await registerSchema(req, res)
@@ -92,9 +94,10 @@ test.serial(
     t.is(res.statusCode, 200)
 
     req = Request('POST', '', {
+      graph_name: 'my_graph',
       services: [
         {
-          name: 'foo',
+          service_name: 'foo',
           version: '2',
         },
       ],
@@ -112,14 +115,13 @@ test.serial(
 )
 
 test.serial('Should return 400 when no version was specified', async (t) => {
-  NewNamespace({
-    name: 'SERVICES',
-  })
+  createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
   let req = Request('POST', '', {
     type_defs: 'type Query { hello: String }',
     version: '1',
-    name: 'foo',
+    service_name: 'foo',
+    graph_name: 'my_graph',
   })
   let res = Response()
   await registerSchema(req, res)
@@ -127,9 +129,10 @@ test.serial('Should return 400 when no version was specified', async (t) => {
   t.is(res.statusCode, 200)
 
   req = Request('POST', '', {
+    graph_name: 'my_graph',
     services: [
       {
-        name: 'foo',
+        service_name: 'foo',
       },
     ],
   })
@@ -150,14 +153,13 @@ test.serial('Should return 400 when no version was specified', async (t) => {
 test.serial(
   'Should return 400 when schema in specified version was deactivated',
   async (t) => {
-    NewNamespace({
-      name: 'SERVICES',
-    })
+    createEmptyNamespaces(['GRAPHS', 'SERVICES', 'SCHEMAS', 'VERSIONS'])
 
     let req = Request('POST', '', {
       type_defs: 'type Query { hello: String }',
       version: '1',
-      name: 'foo',
+      service_name: 'foo',
+      graph_name: 'my_graph',
     })
     let res = Response()
     await registerSchema(req, res)
@@ -167,6 +169,7 @@ test.serial(
     let result = (res.body as any) as SuccessResponse<SchemaResponseModel>
 
     req = Request('PUT', '', {
+      graph_name: 'my_graph',
       schemaId: result.data.uid,
     })
     res = Response()
@@ -174,9 +177,10 @@ test.serial(
     t.is(res.statusCode, 200)
 
     req = Request('POST', '', {
+      graph_name: 'my_graph',
       services: [
         {
-          name: 'foo',
+          service_name: 'foo',
           version: '1',
         },
       ],
