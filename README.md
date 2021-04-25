@@ -83,21 +83,6 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 </p>
 </details>
 
-POST - `/schema/garbage_collect` Removes all schemas except the most recent N of every service. Returns the removed schemas. This could be called by a [trigger](https://developers.cloudflare.com/workers/platform/cron-triggers).
-
-<details>
-<summary>Example Request</summary>
-<p>
-
-```jsonc
-{
-  "num_schemas_keep": 10 // minimum is 10
-}
-```
-
-</p>
-</details>
-
 ### Validation
 
 POST - `/schema/diff` Returns the schema report of all services and the provided new schema.
@@ -171,7 +156,22 @@ DELETE - `/persisted_query` Deletes persisted query from KV Storage.
 </p>
 </details>
 
-### Monitoring
+### Monitoring / Maintanance
+
+POST - `/schema/garbage_collect` Removes all schemas except the most recent N of every service. Returns the removed schemas. This could be called by a [trigger](https://developers.cloudflare.com/workers/platform/cron-triggers).
+
+<details>
+<summary>Example Request</summary>
+<p>
+
+```jsonc
+{
+  "num_schemas_keep": 10 // minimum is 10
+}
+```
+
+</p>
+</details>
 
 GET - `/health` healthcheck endpoint.
 
