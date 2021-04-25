@@ -50,7 +50,7 @@
     "@graphql-inspector/core": "2.5.0",
     "@sindresorhus/fnv1a": "2.0.1",
     "fast-sort": "3.0.2",
-    "graphql": "^15.5.0",
+    "graphql": "15.5.0",
     "superstruct": "0.15.1",
     "worktop": "0.5.1"
   },
