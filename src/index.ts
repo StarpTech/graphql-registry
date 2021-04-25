@@ -1,6 +1,5 @@
 import { Router, compose } from 'worktop'
 import { listen } from 'worktop/cache'
-import { ScheduledEvent } from './types'
 import { basicAuth } from './middlewares/basic-auth'
 import { addPersistedQuery } from './routes/add-persisted-query'
 import { getComposedSchema } from './routes/get-composed-schema'

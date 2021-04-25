@@ -52,7 +52,7 @@
     "fast-sort": "3.0.2",
     "graphql": "^15.5.0",
     "superstruct": "0.15.1",
-    "worktop": "file:worktop-master.tgz"
+    "worktop": "0.5.1"
   },
   "keywords": [
     "serviceworker",
