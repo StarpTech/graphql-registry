@@ -159,6 +159,8 @@ POST - `/persisted_query` Adds persisted query to the KV Storage.
 </p>
 </details>
 
+### Delete persisted query
+
 DELETE - `/persisted_query` Deletes persisted query from KV Storage.
 
 <details>
