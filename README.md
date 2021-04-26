@@ -88,6 +88,7 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 ```jsonc
 {
   "graph_name": "my_graph",
+  "service_name": "foo",
   "schemaId": "916348424"
 }
 ```
@@ -225,7 +226,7 @@ npm run dev
 
 ## Other considerations
 
-Due to the nature of Cloudlfare KV storage reads are eventual consistent. Writes are immediately visible to other requests in the same edge location, but can take up to 60 seconds to be visible in other parts of the world. This means that writes can overwrite each other which is really bad. Because of this I evaluate Cloudflare Durable Objects which provides a transactional api. In the long term, I will propably rewrite the registry for Node.js.
+Due to the nature of Cloudlfare KV storage reads are eventual consistent. Writes are immediately visible to other requests in the same edge location, but can take up to 60 seconds to be visible in other parts of the world. This means that writes can overwrite each other which is not ideal. In theory, when one team of the same graph write schemas in parallel to the registry, one schema might get lost in transit. The Graph integrity is maintained all the time. In the long term, I will consider to rewrite the registry for Node.js in combination with a transactional database.
 
 ### Benchmark
 

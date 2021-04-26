@@ -5,11 +5,13 @@ import { find as findSchema, save as saveSchema } from '../repositories/Schema'
 
 interface DeactivateSchemaRequest {
   schemaId: string
+  service_name: string
   graph_name: string
 }
 
 const deactivateRequest = object({
   schemaId: size(string(), 1, 100),
+  service_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
   graph_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
 })
 
@@ -37,7 +39,11 @@ export const deactivateSchema: Handler = async function (req, res) {
     })
   }
 
-  let schema = await findSchema(input.graph_name, input.schemaId)
+  let schema = await findSchema(
+    input.graph_name,
+    input.service_name,
+    input.schemaId,
+  )
 
   if (!schema) {
     return res.send(404, {

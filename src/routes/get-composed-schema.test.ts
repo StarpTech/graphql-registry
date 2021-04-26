@@ -185,6 +185,7 @@ test.serial(
 
     req = Request('PUT', '', {
       graph_name: 'my_graph',
+      service_name: 'foo',
       schemaId: result.data.uid,
     })
     res = Response()

@@ -30,38 +30,49 @@ export type NewSchema = Omit<
   'created_at' | 'updated_at' | 'uid' | 'hash'
 >
 
-export const key_owner = (graph_name: string) =>
-  `graphs::${graph_name}::schemas`
-export const key_item = (graph_name: string, uid: string) =>
-  `graphs::${graph_name}::schemas::${uid}`
+export const key_owner = (graphName: string, serviceName: string) =>
+  `graphs::${graphName}::${serviceName}::schemas`
+export const key_item = (graphName: string, serviceName: string, uid: string) =>
+  `graphs::${graphName}::${serviceName}::schemas::${uid}`
 
-export function find(graph_name: string, uid: string) {
-  const key = key_item(graph_name, uid)
+export function find(graphName: string, serviceName: string, uid: string) {
+  const key = key_item(graphName, serviceName, uid)
   return DB.read<Schema>(SCHEMAS, key, 'json')
 }
 
-export async function findByHash(graph_name: string, hash: string) {
-  const all = await list(graph_name)
+export async function findByHash(
+  graphName: string,
+  serviceName: string,
+  hash: string,
+) {
+  const all = await list(graphName, serviceName)
   return all.find((s) => s.hash === hash)
 }
 
-export async function list(graph_name: string): Promise<SchemaIndex[]> {
-  const key = key_owner(graph_name)
+export async function list(
+  graphName: string,
+  serviceName: string,
+): Promise<SchemaIndex[]> {
+  const key = key_owner(graphName, serviceName)
   return (await DB.read<SchemaIndex[]>(SCHEMAS, key, 'json')) || []
 }
 
-export function syncIndex(graph_name: string, versions: SchemaIndex[]) {
-  const key = key_owner(graph_name)
+export function syncIndex(
+  graphName: string,
+  serviceName: string,
+  versions: SchemaIndex[],
+) {
+  const key = key_owner(graphName, serviceName)
   return DB.write(SCHEMAS, key, versions)
 }
 
-export function remove(graph_name: string, uid: string) {
-  const key = key_item(graph_name, uid)
+export function remove(graphName: string, serviceName: string, uid: string) {
+  const key = key_item(graphName, serviceName, uid)
   return DB.remove(SCHEMAS, key)
 }
 
 export function save(item: Schema) {
-  const key = key_item(item.graph_name, item.uid)
+  const key = key_item(item.graph_name, item.service_name, item.uid)
   return DB.write(SCHEMAS, key, item)
 }
 
@@ -81,7 +92,7 @@ export async function insert(schema: NewSchema) {
     return false
   }
 
-  let allSchemas = (await list(schema.graph_name)).concat({
+  let allSchemas = (await list(schema.graph_name, schema.service_name)).concat({
     uid: values.uid,
     service_name: values.service_name,
     graph_name: values.graph_name,
@@ -90,7 +101,7 @@ export async function insert(schema: NewSchema) {
 
   const sorted = sort(allSchemas).desc((u) => u.uid)
 
-  if (!(await syncIndex(schema.graph_name, sorted))) {
+  if (!(await syncIndex(schema.graph_name, schema.service_name, sorted))) {
     return false
   }
 

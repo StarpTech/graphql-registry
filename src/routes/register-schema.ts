@@ -122,6 +122,7 @@ export const registerSchema: Handler = async function (req, res) {
    */
   let schema = await schmemaService.findByHash(
     input.graph_name,
+    input.service_name,
     input.type_defs,
   )
   if (!schema) {

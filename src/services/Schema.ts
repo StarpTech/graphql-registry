@@ -17,13 +17,13 @@ export interface ServiceSchemaVersionMatch {
 }
 
 export class SchemaService {
-  async findByHash(graphName: string, typeDefs: string) {
+  async findByHash(graphName: string, serviceName: string, typeDefs: string) {
     const hash = await fnv1a(typeDefs)
-    const meta = await findSchemaByHash(graphName, hash.toString())
+    const meta = await findSchemaByHash(graphName, serviceName, hash.toString())
     if (!meta) {
       return false
     }
-    return findSchemaById(graphName, meta.uid)
+    return findSchemaById(graphName, serviceName, meta.uid)
   }
   async findByServiceVersions(
     graphName: string,
@@ -72,6 +72,7 @@ export class SchemaService {
 
           const schema = await findSchemaById(
             graphName,
+            service.name,
             schemaVersion.schema_id,
           )
 
@@ -113,7 +114,11 @@ export class SchemaService {
           break
         }
 
-        const schema = await findSchemaById(graphName, schemaVersion.schema_id)
+        const schema = await findSchemaById(
+          graphName,
+          service.name,
+          schemaVersion.schema_id,
+        )
 
         if (!schema) {
           error = new Error(

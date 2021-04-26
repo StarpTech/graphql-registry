@@ -3,6 +3,7 @@ import { number, object, size, validate } from 'superstruct'
 import {
   remove as removeSchema,
   list as listSchemas,
+  SchemaIndex,
 } from '../repositories/Schema'
 import { list as listGraphs } from '../repositories/Graph'
 import {
@@ -37,44 +38,51 @@ export const garbageCollectSchemas: Handler = async function (req, res) {
   }
 
   const graphs = await listGraphs()
-  const remove = []
+  const removeSchemas = new Map<string, SchemaIndex[]>()
 
-  for await (const graph of graphs) {
-    const schemaIndexes = await listSchemas(graph)
+  for (const graph of graphs) {
     const services = await listServices(graph)
     for (const service of services) {
+      const schemaIndexes = await listSchemas(graph, service)
       const serviceSchemas = schemaIndexes.filter(
         (s) => s.service_name === service,
       )
-      remove.push(...serviceSchemas.splice(input.num_schemas_keep))
+      removeSchemas.set(service, serviceSchemas.splice(input.num_schemas_keep))
     }
   }
 
   const removedSchemas = []
-  for await (const schemaIndex of remove) {
-    const schemaVersions = await listSchemaVersions(
-      schemaIndex.graph_name,
-      schemaIndex.service_name,
-    )
-    for await (const version of schemaVersions) {
-      const result = await removeVersion(
-        schemaIndex.graph_name,
-        schemaIndex.service_name,
-        version.version,
+
+  for (const [serviceName, schemaIndexesToRemove] of removeSchemas) {
+    for (const schemaIndexToRemove of schemaIndexesToRemove) {
+      const schemaVersions = await listSchemaVersions(
+        schemaIndexToRemove.graph_name,
+        schemaIndexToRemove.service_name,
+      )
+      for (const version of schemaVersions) {
+        const result = await removeVersion(
+          schemaIndexToRemove.graph_name,
+          schemaIndexToRemove.service_name,
+          version.version,
+        )
+        if (!result) {
+          continue
+        }
+      }
+      const result = await removeSchema(
+        schemaIndexToRemove.graph_name,
+        serviceName,
+        schemaIndexToRemove.uid,
       )
       if (!result) {
         continue
       }
+      removedSchemas.push({
+        graph_name: schemaIndexToRemove.graph_name,
+        schemaId: schemaIndexToRemove.uid,
+        service_name: schemaIndexToRemove.service_name,
+      })
     }
-    const result = await removeSchema(schemaIndex.graph_name, schemaIndex.uid)
-    if (!result) {
-      continue
-    }
-    removedSchemas.push({
-      graph_name: schemaIndex.graph_name,
-      schemaId: schemaIndex.uid,
-      service_name: schemaIndex.service_name,
-    })
   }
 
   res.send(200, {
