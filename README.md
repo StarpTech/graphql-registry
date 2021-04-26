@@ -226,7 +226,7 @@ npm run dev
 
 ## Other considerations
 
-Due to the nature of Cloudlfare KV storage reads are eventual consistent. Writes are immediately visible to other requests in the same edge location, but can take up to 60 seconds to be visible in other parts of the world. This means that writes can overwrite each other which is not ideal. In theory, when one team of the same graph write schemas in parallel to the registry, one schema might get lost in transit. The Graph integrity is maintained all the time. In the long term, I will consider to rewrite the registry for Node.js in combination with a transactional database.
+Due to the nature of Cloudlfare KV storage reads are eventual consistent. Writes are immediately visible to other requests in the same edge location, but can take up to 60 seconds to be visible in other parts of the world. This means that writes can overwrite each other which is not ideal. In theory, when one service of the same graph write schemas in parallel to the registry, one schema might get lost in transit. In practice, there is one graph per environment and only one publisher (for example in the CI/CD pipeline). The Graph integrity is maintained all the time. In the long term, I will consider to optimize the registry for Node.js in combination with a transactional database.
 
 ### Benchmark
 
