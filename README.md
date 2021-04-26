@@ -18,6 +18,8 @@
 
 ## Features
 
+State: Experimental
+
 - Create multiple versions of the graph (for example, staging and production, or different development branches)
 - Stores versioned schemas for all GraphQL-federated services
 - Serves schema for GraphQL gateway based on provided services & their versions
@@ -220,6 +222,10 @@ Check [How KV works](https://developers.cloudflare.com/workers/learning/how-kv-w
 ```sh
 npm run dev
 ```
+
+## Other considerations
+
+Due to the nature of Cloudlfare KV storage reads are eventual consistent. Writes are immediately visible to other requests in the same edge location, but can take up to 60 seconds to be visible in other parts of the world. This means that writes can overwrite each other which is really bad. Because of this I evaluate Cloudflare Durable Objects which provides a transactional api. In the long term, I will propably rewrite the registry for Node.js.
 
 ### Benchmark
 
