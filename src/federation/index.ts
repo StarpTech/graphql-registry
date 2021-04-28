@@ -1,0 +1,16 @@
+import fp from 'fastify-plugin'
+import garbageCollect from './garbage-collect'
+import getComposedSchema from './get-composed-schema'
+import getSchemaDiff from './get-schema-diff'
+import getSchemaValidation from './get-schema-validation'
+import listGraphs from './list-graphs'
+import registerSchema from './register-schema'
+
+export default fp(async function (fastify, opts) {
+  listGraphs(fastify)
+  registerSchema(fastify)
+  garbageCollect(fastify)
+  getComposedSchema(fastify)
+  getSchemaDiff(fastify)
+  getSchemaValidation(fastify)
+})

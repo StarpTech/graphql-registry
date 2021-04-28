@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A service is a player in one or more graphs
+model Service {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Schema        Schema[]
+  SchemaVersion SchemaVersion[]
+}
+
+// A graph consists of multiple schemas
+model Graph {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  schemas   Schema[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Every new schema pushed by anyone is a new entry
+model Schema {
+  id            Int             @id @default(autoincrement())
+  isActive      Boolean         @default(true)
+  typeDefs      String
+  graph         Graph          @relation(fields: [graphId], references: [id])
+  graphId       Int
+  service       Service        @relation(fields: [serviceId], references: [id])
+  serviceId     Int
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  SchemaVersion SchemaVersion[]
+}
+
+// Multiple services can create different versions of the same schema
+model SchemaVersion {
+  id        Int      @id @default(autoincrement())
+  isActive  Boolean  @default(true)
+  schema    Schema  @relation(fields: [schemaId], references: [id])
+  schemaId  Int
+  version   String
+  createdAt DateTime @default(now())
+  service   Service @relation(fields: [serviceId], references: [id])
+  serviceId Int
+}
