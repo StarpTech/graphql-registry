@@ -4,22 +4,28 @@ import { execSync } from 'child_process'
 import us from 'unique-string'
 import build from '../build'
 
-const test = anyTest as TestInterface<{ dbName: string; graph: string }>
+const test = anyTest as TestInterface<{
+  dbName: string
+  graph: string
+  connectionUrl: string
+}>
 
 const prismaBinary = join(process.cwd(), 'node_modules', '.bin', 'prisma')
 
 test.before(async (t) => {
   t.context = {
+    connectionUrl: '',
     graph: '',
     dbName: `test_${us()}`,
   }
-  const connectionUrl = `postgresql://postgres:changeme@localhost:5440/${t.context.dbName}?schema=public`
-  process.env.DATABASE_URL = connectionUrl
+
+  t.context.connectionUrl = `postgresql://postgres:changeme@localhost:5440/${t.context.dbName}?schema=public`
+
   execSync(
     `docker exec -t postgres_container psql -U postgres -c 'create database ${t.context.dbName};'`,
   )
   execSync(
-    `DATABASE_URL=${connectionUrl} ${prismaBinary} db push --preview-feature --skip-generate`,
+    `DATABASE_URL=${t.context.connectionUrl} ${prismaBinary} db push --preview-feature --skip-generate`,
   )
 })
 
@@ -34,7 +40,9 @@ test.after.always('cleanup', (t) => {
 })
 
 test.serial('Should register new schema', async (t) => {
-  const app = build()
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
   t.teardown(() => app.prisma.$disconnect())
 
   const res = await app.inject({
@@ -66,7 +74,9 @@ test.serial('Should register new schema', async (t) => {
 test.serial(
   'Should not create multiple schemas when client and type_defs does not change',
   async (t) => {
-    const app = build()
+    const app = build({
+      databaseConnectionUrl: t.context.connectionUrl,
+    })
     t.teardown(() => app.prisma.$disconnect())
 
     let res = await app.inject({

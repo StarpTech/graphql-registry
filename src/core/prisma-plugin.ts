@@ -12,7 +12,13 @@ export interface PrismaPluginOptions {
 }
 
 export default fp<PrismaPluginOptions>(async function (fastify, opts) {
-  const prisma = new PrismaClient()
+  const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: opts.databaseConnectionUrl,
+      },
+    },
+  })
 
   await prisma.$connect()
 
