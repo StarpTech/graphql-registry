@@ -18,9 +18,22 @@ jobs:
   test:
     name: Node.js v${{ matrix.nodejs }}
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: changeme
+        ports:
+          - 5440:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     strategy:
       matrix:
-        nodejs: [14, 16]
+        nodejs: [14]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
@@ -42,7 +55,9 @@ jobs:
       run: npm install
 
     - name: Run Tests
-      run: npm test
+      run: |
+        export DATABASE_URL="postgresql://postgres:changeme@localhost:5440/graphql-registry?schema=public"
+        npm test
 
     - name: Check Types
       run: npm run types
