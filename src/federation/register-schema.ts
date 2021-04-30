@@ -35,6 +35,10 @@ export default function registerSchema(fastify: FastifyInstance) {
     const serviceModels = await fastify.prisma.service.findMany({
       where: {
         isActive: true,
+        graph: {
+          name: input.graph_name,
+          isActive: true,
+        },
       },
       select: {
         name: true,
@@ -85,19 +89,6 @@ export default function registerSchema(fastify: FastifyInstance) {
     }
 
     /**
-     * Create new service
-     */
-    let service = await fastify.prisma.service.upsert({
-      create: {
-        name: input.service_name,
-      },
-      update: {},
-      where: {
-        name: input.service_name,
-      },
-    })
-
-    /**
      * Create new graph
      */
 
@@ -110,6 +101,28 @@ export default function registerSchema(fastify: FastifyInstance) {
         name: input.graph_name,
       },
     })
+
+    /**
+     * Create new service
+     */
+
+    let service = await fastify.prisma.service.findFirst({
+      where: {
+        name: input.service_name,
+        graph: {
+          name: input.graph_name,
+        },
+      },
+    })
+
+    if (!service) {
+      service = await fastify.prisma.service.create({
+        data: {
+          name: input.service_name,
+          graphId: graph.id,
+        },
+      })
+    }
 
     /**
      * Create new schema
@@ -173,6 +186,7 @@ export default function registerSchema(fastify: FastifyInstance) {
       success: true,
       data: {
         serviceName: schema.service.name,
+        graphName: graph.name,
         typeDefs: schema.typeDefs,
         version: input.version,
       },

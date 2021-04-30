@@ -44,8 +44,15 @@ export class SchemaService {
         name: {
           in: services.map((s) => s.name),
         },
+        graph: {
+          name: graphName,
+          isActive: true
+        },
         isActive: true,
       },
+      orderBy: {
+        name: 'asc'
+      }
     })
 
     for await (const service of serviceItems) {

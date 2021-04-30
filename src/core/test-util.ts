@@ -5,7 +5,8 @@ import us from 'unique-string'
 
 export interface TestContext {
   dbName: string
-  graph: string
+  testPrefix: string
+  graphName: string
   connectionUrl: string
 }
 
@@ -15,7 +16,8 @@ export function createTestContext() {
   return async (t: ExecutionContext<TestContext>) => {
     t.context = {
       connectionUrl: '',
-      graph: `graph_${us()}`,
+      graphName: '',
+      testPrefix: '',
       dbName: `test_${us()}`,
     }
 
@@ -24,6 +26,13 @@ export function createTestContext() {
     execSync(
       `DATABASE_URL=${t.context.connectionUrl} ${prismaBinary} db push --preview-feature --skip-generate`,
     )
+  }
+}
+
+export function createTestPrefix() {
+  return (t: ExecutionContext<TestContext>) => {
+    t.context.testPrefix = `${us()}`
+    t.context.graphName = `${t.context.testPrefix}_graph`
   }
 }
 

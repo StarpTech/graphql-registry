@@ -10,22 +10,25 @@ datasource db {
 // A service is a player in one or more graphs
 model Service {
   id            Int             @id @default(autoincrement())
-  name          String          @unique
+  name          String
   isActive      Boolean         @default(true)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  graph         Graph           @relation(fields: [graphId], references: [id])
   Schema        Schema[]
   SchemaVersion SchemaVersion[]
+  graphId       Int
 }
 
 // A graph consists of multiple schemas
 model Graph {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  isActive  Boolean  @default(true)
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  isActive  Boolean   @default(true)
   schemas   Schema[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Service   Service[]
 }
 
 // Every new schema pushed by anyone is a new entry
@@ -33,9 +36,9 @@ model Schema {
   id            Int             @id @default(autoincrement())
   isActive      Boolean         @default(true)
   typeDefs      String
-  graph         Graph          @relation(fields: [graphId], references: [id])
+  graph         Graph           @relation(fields: [graphId], references: [id])
   graphId       Int
-  service       Service        @relation(fields: [serviceId], references: [id])
+  service       Service         @relation(fields: [serviceId], references: [id])
   serviceId     Int
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -46,10 +49,10 @@ model Schema {
 model SchemaVersion {
   id        Int      @id @default(autoincrement())
   isActive  Boolean  @default(true)
-  schema    Schema  @relation(fields: [schemaId], references: [id])
+  schema    Schema   @relation(fields: [schemaId], references: [id])
   schemaId  Int
   version   String
   createdAt DateTime @default(now())
-  service   Service @relation(fields: [serviceId], references: [id])
+  service   Service  @relation(fields: [serviceId], references: [id])
   serviceId Int
 }

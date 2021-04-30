@@ -4,6 +4,7 @@ export type SchemaResponseModel = {
   serviceName: string
   typeDefs: string
   version: string
+  graphName: string
 } & Pick<SchemaVersion, 'version'>
 
 export type ResponseModel = {
