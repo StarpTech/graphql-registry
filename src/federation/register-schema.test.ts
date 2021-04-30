@@ -10,7 +10,7 @@ import {
 const test = anyTest as TestInterface<TestContext>
 test.before(createTestContext())
 test.beforeEach(createTestPrefix())
-// test.after.always('cleanup', cleanTest())
+test.after.always('cleanup', cleanTest())
 
 test('Should register new schema', async (t) => {
   const app = build({
