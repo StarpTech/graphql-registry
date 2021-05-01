@@ -1,8 +1,7 @@
-import Fastify, { FastifyReply, FastifyRequest } from 'fastify'
-import federationPlugin from './federation'
+import Fastify from 'fastify'
+import registryPlugin from './registry'
 import prismaPlugin from './core/prisma-plugin'
-import basicAuth from 'fastify-basic-auth'
-import health from './health'
+import health from './core/health'
 
 export interface buildOptions {
   databaseConnectionUrl: string
@@ -12,33 +11,13 @@ export interface buildOptions {
 export default function build(opts: buildOptions) {
   const fastify = Fastify()
 
-  async function validate(
-    username: string,
-    password: string,
-    req: FastifyRequest,
-    reply: FastifyReply,
-  ) {
-    if (
-      !opts.basicAuthSecrets ||
-      !opts.basicAuthSecrets
-        .trim()
-        .split(',')
-        .find((secret) => secret === username && secret === password)
-    ) {
-      throw new Error('Invalid credentials')
-    }
-  }
-
-  fastify.register(basicAuth, {
-    authenticate: { realm: 'GraphQL Registry' },
-    validate,
-  })
+  // Database client
   fastify.register(prismaPlugin, {
     databaseConnectionUrl: opts.databaseConnectionUrl,
   })
 
-  // Federation
-  fastify.register(federationPlugin, {
+  // Registrya
+  fastify.register(registryPlugin, {
     basicAuthSecrets: opts.basicAuthSecrets,
   })
 
