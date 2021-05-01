@@ -12,28 +12,6 @@ export class SchemaService {
     this.dbClient = client
   }
 
-  async findByHash(graphName: string, serviceName: string, typeDefs: string) {
-    const schema = await this.dbClient.schema.findFirst({
-      where: {
-        typeDefs: typeDefs,
-        graph: {
-          name: graphName,
-          isActive: true,
-        },
-        service: {
-          name: serviceName,
-          isActive: true,
-        },
-      },
-    })
-
-    if (!schema) {
-      return false
-    }
-
-    return schema
-  }
-
   async findByServiceVersions(
     graphName: string,
     services: ServiceSchemaVersionMatch[],
