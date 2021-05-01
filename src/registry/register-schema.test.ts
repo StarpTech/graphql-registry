@@ -1,5 +1,5 @@
 import anyTest, { TestInterface } from 'ava'
-import build from '../build'
+import build from '../build-server'
 import {
   cleanTest,
   createTestContext,

@@ -1,4 +1,4 @@
-import build from './build'
+import build from './build-server'
 
 const app = build({
   databaseConnectionUrl: process.env.DATABASE_URL!,
