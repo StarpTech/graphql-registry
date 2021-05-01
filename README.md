@@ -179,6 +179,7 @@ This activates authorization in the `/schema/push` endpoint. Only the client wit
 docker-compose up
 npx prisma db push --preview-feature
 npm run dev
+npm run test
 ```
 
 ### Benchmark
@@ -189,3 +190,5 @@ Run a benchmark with:
 docker-compose up --build app
 docker-compose run k6 run /benchmark/composed-schema.js
 ```
+
+Our benchmark suite is running in the CI.

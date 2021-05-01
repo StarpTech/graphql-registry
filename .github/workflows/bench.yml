@@ -1,0 +1,45 @@
+name: BENCH
+
+on:
+  push:
+    paths:
+      - '!**.md'
+      - '!*.md'
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    name: Node.js v${{ matrix.nodejs }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        nodejs: [14]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.nodejs }}
+
+      - name: Start services
+        run: | 
+          docker-compose up -d
+          ./scripts/wait-for-healthy-container.sh postgres 30
+
+      - name: Build app image
+        run: docker-compose up --build app
+
+      - name: Bench
+        run: |
+          sleep 5
+          docker-compose run k6 run /benchmark/composed-schema.js
+
+      - name: Clean services
+        if: always()
+        run: docker-compose down
