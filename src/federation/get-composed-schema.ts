@@ -1,31 +1,32 @@
 import { composeAndValidateSchema } from './federation'
 import { SchemaService } from './services/Schema'
-import { FastifyInstance } from 'fastify'
+import { FastifyInstance, FastifySchema } from 'fastify'
+
+export const schema: FastifySchema = {
+  querystring: {
+    type: 'object',
+    required: ['graph_name'],
+    properties: {
+      graph_name: { type: 'string', minLength: 1, pattern: '[a-zA-Z_\\-0-9]+' },
+    },
+  },
+}
 
 export default function getComposedSchema(fastify: FastifyInstance) {
   fastify.get<{ Querystring: { graph_name: string } }>(
     '/schema/latest',
     async (req, res) => {
-      const graphName = req.query['graph_name']
-      if (!graphName) {
-        res.code(400)
-        return {
-          success: false,
-          error: 'No graph name was provided',
-        }
-      }
-
       const graph = await fastify.prisma.graph.findMany({
         where: {
-          isActive: true,
           name: req.query.graph_name,
+          isActive: true,
         },
       })
       if (!graph) {
         res.code(404)
         return {
           success: false,
-          error: `Graph with name "${graphName}" does not exist`,
+          error: `Graph with name "${req.query.graph_name}" does not exist`,
         }
       }
 
@@ -51,7 +52,7 @@ export default function getComposedSchema(fastify: FastifyInstance) {
         schemas,
         error: findError,
       } = await schmemaService.findByServiceVersions(
-        graphName,
+        req.query.graph_name,
         allServiceVersions,
       )
 

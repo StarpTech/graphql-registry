@@ -1,5 +1,4 @@
-import { FastifyInstance } from 'fastify'
-import { array, object, pattern, size, string, validate } from 'superstruct'
+import { FastifyInstance, FastifySchema } from 'fastify'
 import { composeAndValidateSchema } from './federation'
 import { SchemaResponseModel, SuccessResponse } from '../core/types'
 import { SchemaService } from './services/Schema'
@@ -10,48 +9,58 @@ interface ServiceVersionMatch {
 }
 
 interface GetSchemaByVersionsRequest {
+  graph_name: string
   services: ServiceVersionMatch[]
 }
 
-const validateRequest = object({
-  graph_name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
-  services: array(
-    object({
-      version: size(string(), 1, 100),
-      name: size(pattern(string(), /^[a-zA-Z_\-0-9]+/), 1, 100),
-    }),
-  ),
-})
+export const schema: FastifySchema = {
+  body: {
+    type: 'object',
+    required: ['services', 'graph_name'],
+    properties: {
+      services: {
+        type: 'array',
+        items: [
+          {
+            type: 'object',
+            required: ['name'],
+            properties: {
+              name: {
+                minLength: 1,
+                pattern: '[a-zA-Z_\\-0-9]+',
+              },
+              version: {
+                minLength: 1,
+              },
+            },
+          },
+        ],
+      },
+      graph_name: { type: 'string', minLength: 1, pattern: '[a-zA-Z_\\-0-9]+' },
+    },
+  },
+}
 
 export default function getComposedSchemaVersions(fastify: FastifyInstance) {
   fastify.post<{ Body: GetSchemaByVersionsRequest }>(
     '/schema/compose',
+    { schema },
     async (req, res) => {
-      const requestBody = req.body
-      const [error, input] = validate(requestBody, validateRequest)
-      if (!input || error) {
-        res.code(400)
-        return {
-          success: false,
-          error: error?.message,
-        }
-      }
-
       const graph = await fastify.prisma.graph.findFirst({
         where: {
+          name: req.body.graph_name,
           isActive: true,
-          name: input.graph_name,
         },
       })
       if (!graph) {
         res.code(404)
         return {
           success: false,
-          error: `Graph with name "${input.graph_name}" does not exist`,
+          error: `Graph with name "${req.body.graph_name}" does not exist`,
         }
       }
 
-      const allServiceVersions: ServiceVersionMatch[] = input.services.map(
+      const allServiceVersions: ServiceVersionMatch[] = req.body.services.map(
         (s) => ({
           name: s.name,
           version: s.version,
@@ -63,7 +72,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
         schemas,
         error: findError,
       } = await schmemaService.findByServiceVersions(
-        input.graph_name,
+        req.body.graph_name,
         allServiceVersions,
       )
 
@@ -82,7 +91,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
 
       const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
 
-      if (error) {
+      if (schemaError) {
         res.code(400)
         return {
           success: false,

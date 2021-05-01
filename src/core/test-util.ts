@@ -31,7 +31,7 @@ export function createTestContext() {
 
 export function createTestPrefix() {
   return (t: ExecutionContext<TestContext>) => {
-    t.context.testPrefix = `${us()}`
+    t.context.testPrefix = us()
     t.context.graphName = `${t.context.testPrefix}_graph`
   }
 }

@@ -34,7 +34,6 @@ test('Should register new schema', async (t) => {
     res.json(),
     {
       data: {
-        graphName: t.context.graphName,
         serviceName: `${t.context.testPrefix}_foo`,
         typeDefs: `type Query { hello: String }`,
         version: '1',
@@ -280,7 +279,7 @@ test('Should reject schema because it is not compatible with registry state', as
   )
 })
 
-test.only('Should return correct latest service schema with multiple graphs', async (t) => {
+test('Should return correct latest service schema with multiple graphs', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })

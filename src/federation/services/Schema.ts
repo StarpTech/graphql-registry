@@ -18,9 +18,11 @@ export class SchemaService {
         typeDefs: typeDefs,
         graph: {
           name: graphName,
+          isActive: true
         },
         service: {
           name: serviceName,
+          isActive: true
         },
       },
     })
@@ -103,6 +105,7 @@ export class SchemaService {
       } else {
         const schemaVersion = await this.dbClient.schemaVersion.findFirst({
           where: {
+            isActive: true,
             schema: {
               graph: {
                 name: graphName,

@@ -1,28 +1,24 @@
-import { number, object, size, validate } from 'superstruct'
-import { FastifyInstance } from 'fastify'
+import { FastifyInstance, FastifySchema } from 'fastify'
 
 interface GarbageCollectRequest {
   num_schemas_keep: number
 }
 
-const garbageCollectRequest = object({
-  num_schemas_keep: size(number(), 10, 100),
-})
+export const schema: FastifySchema = {
+  body: {
+    type: 'object',
+    required: ['num_schemas_keep'],
+    properties: {
+      num_schemas_keep: { type: 'integer', minimum: 10, maximum: 100 },
+    },
+  },
+}
 
 export default function garbageCollect(fastify: FastifyInstance) {
   fastify.post<{ Body: GarbageCollectRequest }>(
     '/schema/garbage_collect',
+    { schema },
     async (req, res) => {
-      const requestBody = req.body
-      const [error, input] = validate(requestBody, garbageCollectRequest)
-      if (!input || error) {
-        res.code(400)
-        return {
-          success: false,
-          error: error?.message,
-        }
-      }
-
       const schemasToKeep = await fastify.prisma.schema.findMany({
         orderBy: {
           updatedAt: 'desc',
