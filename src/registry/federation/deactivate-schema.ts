@@ -10,7 +10,7 @@ export const schema: FastifySchema = {
     type: 'object',
     required: ['schemaId', 'graph_name'],
     properties: {
-      schemaId: { type: 'integer', minLength: 1 }
+      schemaId: { type: 'integer', minLength: 1 },
     },
   },
 }

@@ -25,7 +25,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: changeme
         ports:
-          - 5440:5432
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -54,9 +54,12 @@ jobs:
     - name: Install
       run: npm install
 
+    - name: Create database schema
+      run:  npx prisma db push --preview-feature 
+
     - name: Run Tests
       run: |
-        export DATABASE_URL="postgresql://postgres:changeme@localhost:5440/graphql-registry?schema=public"
+        export DATABASE_URL="postgresql://postgres:changeme@localhost:5432/graphql-registry?schema=public"
         npm test
 
     - name: Check Types

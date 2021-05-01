@@ -386,5 +386,8 @@ test('Should return 400 because an service has no active schema registered', asy
   })
 
   t.is(res.statusCode, 400)
-  t.deepEqual(res.json().error, `Service "${t.context.testPrefix}_foo" has no schema version registered`)
+  t.deepEqual(
+    res.json().error,
+    `Service "${t.context.testPrefix}_foo" has no schema version registered`,
+  )
 })

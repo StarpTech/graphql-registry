@@ -167,6 +167,7 @@ wrangler secret put ALLOWED_CLIENT_SECRETS
 
 ```
 docker-compose up
+npx prisma db push --preview-feature
 npm run dev
 ```
 

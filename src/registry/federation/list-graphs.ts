@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 
-export default function listGraphs (fastify: FastifyInstance) {
-   fastify.get('/graphs', async (req, res) => {
+export default function listGraphs(fastify: FastifyInstance) {
+  fastify.get('/graphs', async (req, res) => {
     const allGraphs = await fastify.prisma.graph.findMany()
 
     res.send({

@@ -116,7 +116,7 @@ export class SchemaService {
                 name: service.name,
                 isActive: true,
               },
-              isActive: true
+              isActive: true,
             },
           },
           // very unlikely that a schema from the same service in the same graph was created at the same milisecond
