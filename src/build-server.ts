@@ -26,5 +26,21 @@ export default function build(opts: buildOptions) {
   // Health check
   fastify.register(health)
 
+  fastify.setErrorHandler(function (err, request, reply) {
+    if (err.validation) {
+      reply.code(400)
+      reply.send({
+        success: false,
+        error: err.message,
+      })
+      return
+    }
+    reply.code(err.statusCode || 500)
+    reply.send({
+      success: false,
+      error: err.message,
+    })
+  })
+
   return fastify
 }

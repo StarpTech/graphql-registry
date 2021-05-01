@@ -133,9 +133,8 @@ test('Should return 400 because type_def is missing', async (t) => {
   t.deepEqual(
     res.json(),
     {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: "body should have required property 'type_defs'",
+      success: false,
+      error: "body should have required property 'type_defs'",
     },
     'message',
   )

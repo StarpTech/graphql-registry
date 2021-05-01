@@ -85,9 +85,8 @@ test('Should not be possible to delete all schemas', async (t) => {
   t.deepEqual(
     res.json(),
     {
-      error: 'Bad Request',
-      message: 'body.num_schemas_keep should be >= 10',
-      statusCode: 400,
+      error: 'body.num_schemas_keep should be >= 10',
+      success: false
     },
     'response payload match',
   )
