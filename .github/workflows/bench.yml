@@ -50,7 +50,7 @@ jobs:
         run: DATABASE_URL="postgresql://postgres:changeme@localhost:5440/graphql-registry?schema=public" npx prisma db push --preview-feature
 
       - name: Build app image
-        run: docker-compose up --build app
+        run: docker-compose up -d app
 
       - name: Bench
         run: |
