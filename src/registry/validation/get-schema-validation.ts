@@ -1,9 +1,8 @@
 import { FastifyInstance, FastifySchema } from 'fastify'
-import { diff } from '@graphql-inspector/core'
-import { composeAndValidateSchema } from './federation'
-import { SchemaService } from './services/Schema'
+import { composeAndValidateSchema } from '../../core/federation'
+import { SchemaService } from '../../core/services/Schema'
 
-interface GetSchemaDiffRequest {
+interface GetSchemaValidationRequest {
   service_name: string
   type_defs: string
   graph_name: string
@@ -25,12 +24,12 @@ export const schema: FastifySchema = {
   },
 }
 
-export default function getSchemaDiff(fastify: FastifyInstance) {
-  fastify.post<{ Body: GetSchemaDiffRequest }>(
-    '/schema/diff',
+export default function getSchemaValidation(fastify: FastifyInstance) {
+  fastify.post<{ Body: GetSchemaValidationRequest }>(
+    '/schema/validate',
     { schema },
     async (req, res) => {
-      const graph = await fastify.prisma.graph.findFirst({
+      const graph = await fastify.prisma.graph.deleteMany({
         where: {
           name: req.body.graph_name,
           isActive: true,
@@ -79,29 +78,11 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
         }
       }
 
-      let serviceSchemas = schemas.map((s) => ({
-        name: s.serviceName,
-        typeDefs: s.typeDefs,
-      }))
-
-      let original = composeAndValidateSchema(serviceSchemas)
-      if (!original.schema) {
-        res.code(400)
-        return {
-          success: false,
-          error: original.error,
-        }
-      }
-
-      if (original.error) {
-        res.code(400)
-        return {
-          success: false,
-          error: original.error,
-        }
-      }
-
-      serviceSchemas = serviceSchemas
+      let serviceSchemas = schemas
+        .map((s) => ({
+          name: s.serviceName,
+          typeDefs: s.typeDefs,
+        }))
         .filter((schema) => schema.name !== req.body.service_name)
         .concat({
           name: req.body.service_name,
@@ -124,11 +105,8 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
         }
       }
 
-      const result = diff(original.schema, updated.schema)
-
       return {
         success: true,
-        data: result,
       }
     },
   )

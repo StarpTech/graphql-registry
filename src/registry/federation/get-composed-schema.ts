@@ -1,5 +1,5 @@
-import { composeAndValidateSchema } from './federation'
-import { SchemaService } from './services/Schema'
+import { composeAndValidateSchema } from '../../core/federation'
+import { SchemaService } from '../../core/services/Schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 
 export const schema: FastifySchema = {

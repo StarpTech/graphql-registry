@@ -1,6 +1,6 @@
-import { SchemaService } from './services/Schema'
-import { composeAndValidateSchema } from './federation'
-import { SchemaResponseModel, SuccessResponse } from '../core/types'
+import { SchemaService } from '../../core/services/Schema'
+import { composeAndValidateSchema } from '../../core/federation'
+import { SchemaResponseModel, SuccessResponse } from '../../core/types'
 import { FastifyInstance, FastifySchema } from 'fastify'
 
 export interface RegisterRequest {
