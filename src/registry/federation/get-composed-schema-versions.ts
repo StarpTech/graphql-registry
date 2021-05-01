@@ -42,69 +42,60 @@ export const schema: FastifySchema = {
 }
 
 export default function getComposedSchemaVersions(fastify: FastifyInstance) {
-  fastify.post<{ Body: GetSchemaByVersionsRequest }>(
-    '/schema/compose',
-    { schema },
-    async (req, res) => {
-      const graph = await fastify.prisma.graph.findFirst({
-        where: {
-          name: req.body.graph_name,
-          isActive: true,
-        },
-      })
-      if (!graph) {
-        res.code(400)
-        return {
-          success: false,
-          error: `Graph with name "${req.body.graph_name}" does not exist`,
-        }
+  fastify.post<{ Body: GetSchemaByVersionsRequest }>('/schema/compose', { schema }, async (req, res) => {
+    const graph = await fastify.prisma.graph.findFirst({
+      where: {
+        name: req.body.graph_name,
+        isActive: true,
+      },
+    })
+    if (!graph) {
+      res.code(400)
+      return {
+        success: false,
+        error: `Graph with name "${req.body.graph_name}" does not exist`,
       }
+    }
 
-      const allServiceVersions: ServiceVersionMatch[] = req.body.services.map(
-        (s) => ({
-          name: s.name,
-          version: s.version,
-        }),
-      )
+    const allServiceVersions: ServiceVersionMatch[] = req.body.services.map((s) => ({
+      name: s.name,
+      version: s.version,
+    }))
 
-      const schmemaService = new SchemaService(fastify.prisma)
-      const {
-        schemas,
-        error: findError,
-      } = await schmemaService.findByServiceVersions(
-        req.body.graph_name,
-        allServiceVersions,
-      )
+    const schmemaService = new SchemaService(fastify.prisma)
+    const { schemas, error: findError } = await schmemaService.findByServiceVersions(
+      req.body.graph_name,
+      allServiceVersions,
+    )
 
-      if (findError) {
-        res.code(400)
-        return {
-          success: false,
-          error: findError.message,
-        }
+    if (findError) {
+      res.code(400)
+      return {
+        success: false,
+        error: findError.message,
       }
+    }
 
-      const serviceSchemas = schemas.map((s) => ({
-        name: s.serviceName,
-        typeDefs: s.typeDefs,
-      }))
+    const serviceSchemas = schemas.map((s) => ({
+      name: s.serviceName,
+      typeDefs: s.typeDefs,
+    }))
 
-      const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
+    const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
 
-      if (schemaError) {
-        res.code(400)
-        return {
-          success: false,
-          error: schemaError,
-        }
+    if (schemaError) {
+      res.code(400)
+      return {
+        success: false,
+        error: schemaError,
       }
+    }
 
-      const responseBody: SuccessResponse<SchemaResponseModel[]> = {
-        success: true,
-        data: schemas,
-      }
+    const responseBody: SuccessResponse<SchemaResponseModel[]> = {
+      success: true,
+      data: schemas,
+    }
 
-      return responseBody
-    },
-  )
+    return responseBody
+  })
 }

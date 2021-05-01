@@ -1,11 +1,6 @@
 import anyTest, { TestInterface } from 'ava'
 import build from '../../build-server'
-import {
-  cleanTest,
-  createTestContext,
-  createTestPrefix,
-  TestContext,
-} from '../../core/test-util'
+import { cleanTest, createTestContext, createTestPrefix, TestContext } from '../../core/test-util'
 
 const test = anyTest as TestInterface<TestContext>
 test.before(createTestContext())
@@ -29,6 +24,7 @@ test('Should keep the most recent 10 schemas of every service in the graph', asy
         graph_name: `${t.context.graphName}`,
       },
     })
+
     t.is(res.statusCode, 200)
     res = await app.inject({
       method: 'POST',
@@ -86,7 +82,7 @@ test('Should not be possible to delete all schemas', async (t) => {
     res.json(),
     {
       error: 'body.num_schemas_keep should be >= 10',
-      success: false
+      success: false,
     },
     'response payload match',
   )

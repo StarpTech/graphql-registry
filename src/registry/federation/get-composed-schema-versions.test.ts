@@ -1,11 +1,6 @@
 import anyTest, { TestInterface } from 'ava'
 import build from '../../build-server'
-import {
-  cleanTest,
-  createTestContext,
-  createTestPrefix,
-  TestContext,
-} from '../../core/test-util'
+import { cleanTest, createTestContext, createTestPrefix, TestContext } from '../../core/test-util'
 
 const test = anyTest as TestInterface<TestContext>
 test.before(createTestContext())

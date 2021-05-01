@@ -14,10 +14,7 @@ export interface registryOptions {
   jwtSecret?: string
 }
 
-export default async function Registry(
-  fastify: FastifyInstance,
-  opts: registryOptions,
-) {
+export default async function Registry(fastify: FastifyInstance, opts: registryOptions) {
   // Authentication, only valid in this register scope
   if (opts.basicAuth) {
     fastify.register(basicAuth, {

@@ -12,10 +12,7 @@ export class SchemaService {
     this.dbClient = client
   }
 
-  async findByServiceVersions(
-    graphName: string,
-    services: ServiceSchemaVersionMatch[],
-  ) {
+  async findByServiceVersions(graphName: string, services: ServiceSchemaVersionMatch[]) {
     const schemas = []
     let error: Error | null = null
 
@@ -69,9 +66,7 @@ export class SchemaService {
         })
 
         if (!schema) {
-          error = new Error(
-            `Service "${service.name}" has no schema in version "${version}" registered`,
-          )
+          error = new Error(`Service "${service.name}" has no schema in version "${version}" registered`)
           break
         }
 
@@ -107,9 +102,7 @@ export class SchemaService {
         })
 
         if (!schemaVersion) {
-          error = new Error(
-            `Service "${service.name}" has no schema version registered`,
-          )
+          error = new Error(`Service "${service.name}" has no schema version registered`)
           break
         }
 

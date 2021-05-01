@@ -32,9 +32,7 @@ export function createTestContext() {
 
     t.context.connectionUrl = `postgresql://postgres:changeme@localhost:5440/${t.context.dbName}?schema=public`
 
-    execSync(
-      `DATABASE_URL=${t.context.connectionUrl} ${prismaBinary} db push --preview-feature --skip-generate`,
-    )
+    execSync(`DATABASE_URL=${t.context.connectionUrl} ${prismaBinary} db push --preview-feature --skip-generate`)
   }
 }
 
@@ -47,8 +45,6 @@ export function createTestPrefix() {
 
 export function cleanTest() {
   return (t: ExecutionContext<TestContext>) => {
-    execSync(
-      `docker exec -t postgres psql -U postgres -c 'drop database ${t.context.dbName};'`,
-    )
+    execSync(`docker exec -t postgres psql -U postgres -c 'drop database ${t.context.dbName};'`)
   }
 }

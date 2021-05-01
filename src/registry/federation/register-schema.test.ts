@@ -1,12 +1,6 @@
 import anyTest, { TestInterface } from 'ava'
 import build from '../../build-server'
-import {
-  cleanTest,
-  createTestContext,
-  createTestPrefix,
-  getJwtHeader,
-  TestContext,
-} from '../../core/test-util'
+import { cleanTest, createTestContext, createTestPrefix, getJwtHeader, TestContext } from '../../core/test-util'
 
 const test = anyTest as TestInterface<TestContext>
 test.before(createTestContext())
@@ -263,9 +257,7 @@ test('Should reject schema because it is not compatible with registry state', as
   })
 
   t.is(res.statusCode, 400)
-  t.true(
-    res.json().error.includes('Field "Query.hello" can only be defined once.'),
-  )
+  t.true(res.json().error.includes('Field "Query.hello" can only be defined once.'))
 })
 
 test('Should return correct latest service schema with multiple graphs', async (t) => {
@@ -387,10 +379,7 @@ test('Should return 400 because an service has no active schema registered', asy
   })
 
   t.is(res.statusCode, 400)
-  t.deepEqual(
-    res.json().error,
-    `Service "${t.context.testPrefix}_foo" has no schema version registered`,
-  )
+  t.deepEqual(res.json().error, `Service "${t.context.testPrefix}_foo" has no schema version registered`)
 })
 
 test('Should be able to register a schema with a valid JWT', async (t) => {

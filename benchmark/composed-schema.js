@@ -12,7 +12,7 @@ const BASE_URL = `${__ENV.URL}`
 
 const requestOptions = {
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
 }
 
@@ -23,11 +23,7 @@ export function setup() {
     graph_name: 'my_graph',
     service_name: 'foo',
   }
-  let res = http.post(
-    `${BASE_URL}/schema/push`,
-    JSON.stringify(data),
-    requestOptions,
-  )
+  let res = http.post(`${BASE_URL}/schema/push`, JSON.stringify(data), requestOptions)
 
   if (
     !check(res, {
@@ -43,11 +39,7 @@ export function setup() {
     graph_name: 'my_graph',
     service_name: 'bar',
   }
-  res = http.post(
-    `${BASE_URL}/schema/push`,
-    JSON.stringify(data),
-    requestOptions,
-  )
+  res = http.post(`${BASE_URL}/schema/push`, JSON.stringify(data), requestOptions)
 
   if (
     !check(res, {
@@ -66,11 +58,7 @@ export default () => {
       { name: 'bar', version: '1' },
     ],
   }
-  const res = http.post(
-    `${BASE_URL}/schema/compose`,
-    JSON.stringify(data),
-    requestOptions,
-  )
+  const res = http.post(`${BASE_URL}/schema/compose`, JSON.stringify(data), requestOptions)
 
   check(res, {
     'returns success': (resp) => resp.json('success'),
