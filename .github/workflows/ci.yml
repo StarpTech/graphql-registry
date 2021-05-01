@@ -47,7 +47,7 @@ jobs:
         run: npm install
 
       - name: Run Tests
-        run: npm test
+        run: npm test -- --concurrency 4
 
       - name: Compiles
         run: npm run build

@@ -27,10 +27,27 @@ jobs:
         with:
           node-version: ${{ matrix.nodejs }}
 
+      - name: (env) cache
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Start services
-        run: | 
+        run: |
           docker-compose up -d
           ./scripts/wait-for-healthy-container.sh postgres 30
+
+      - name: Install
+        run: npm install
+
+      - name: Create db schema
+        run: DATABASE_URL="postgresql://postgres:changeme@localhost:5440/graphql-registry?schema=public" npx prisma db push --preview-feature
 
       - name: Build app image
         run: docker-compose up --build app
