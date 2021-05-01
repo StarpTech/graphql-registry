@@ -54,7 +54,6 @@ jobs:
 
       - name: Bench
         run: |
-          sleep 5
           docker-compose run k6 run /benchmark/composed-schema.js
 
       - name: Clean services
