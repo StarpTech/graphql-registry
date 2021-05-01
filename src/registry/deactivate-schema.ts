@@ -15,7 +15,7 @@ export const schema: FastifySchema = {
   },
 }
 
-export default function registerSchema(fastify: FastifyInstance) {
+export default function deactivateSchema(fastify: FastifyInstance) {
   fastify.post<{ Body: DeactivateSchemaRequest }>(
     '/schema/deactivate',
     async (req, res) => {

@@ -64,3 +64,6 @@ jobs:
 
     - name: Compiles
       run: npm run build
+
+    - name: Build docker image
+      run: docker build -t graphql-registry:latest .
