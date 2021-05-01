@@ -7,6 +7,11 @@ services:
     ports:
       - "3001:3000"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       DATABASE_URL: postgresql://postgres:changeme@postgres:5432/graphql-registry?schema=public
     profiles:
