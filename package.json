@@ -8,7 +8,7 @@
     "start": "node -r dotenv/config build/index.js",
     "build": "tsc",
     "dev": "cross-env TS_NODE_TRANSPILE_ONLY=true nodemon -L --nolazy --watch 'src/**/*.ts' --exec node --inspect=0.0.0.0:9229 -r ts-node/register -r dotenv/config src/index.ts",
-    "test": "ava src/**/*.test.ts",
+    "test": "ava",
     "test:watch": "npm run test -- --watch",
     "cov": "nyc --reporter=lcov --reporter=text-summary -- npm run test",
     "format": "prettier --write '**/*.{js,ts,json,md}'",
@@ -21,6 +21,9 @@
     "build"
   ],
   "ava": {
+    "files": [
+      "src/**/*.test.ts"
+    ],
     "extensions": [
       "ts"
     ],

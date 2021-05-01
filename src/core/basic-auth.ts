@@ -7,7 +7,7 @@ export interface basicAuthOptions {
   basicAuthSecrets?: string
 }
 
-export default fp<basicAuthOptions>(async function BasicAuth (fastify, opts) {
+export default fp<basicAuthOptions>(async function BasicAuth(fastify, opts) {
   async function validate(
     username: string,
     password: string,
@@ -21,6 +21,8 @@ export default fp<basicAuthOptions>(async function BasicAuth (fastify, opts) {
         .split(',')
         .find(
           (secret) =>
+            secret.length === username.length &&
+            secret.length === password.length &&
             timingSafeEqual(Buffer.from(secret), Buffer.from(username)) &&
             timingSafeEqual(Buffer.from(secret), Buffer.from(password)),
         )
