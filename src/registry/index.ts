@@ -10,7 +10,6 @@ import listGraphs from './federation/list-graphs'
 import registerSchema from './federation/register-schema'
 import deactivateSchema from './federation/deactivate-schema'
 import jwtAuth from '../core/jwt-auth'
-import envSchema from '../core/env.schema'
 export interface registryOptions {
   basicAuth?: string
   jwtSecret?: string
@@ -27,10 +26,6 @@ export default async function Registry(fastify: FastifyInstance, opts: registryO
       secret: opts.jwtSecret,
     })
   }
-
-  fastify.register(fastifyEnv, {
-    schema: envSchema,
-  })
 
   fastify.after(() => {
     if (opts.basicAuth) {
