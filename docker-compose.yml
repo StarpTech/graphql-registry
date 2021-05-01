@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://postgres:changeme@postgres:5432/graphql-registry?schema=public
-      BASIC_AUTH_SECRETS: 123
+      BASIC_AUTH: 123
     profiles:
       - test
 

@@ -4,7 +4,7 @@ import basicAuth from 'fastify-basic-auth'
 import { timingSafeEqual } from 'crypto'
 
 export interface basicAuthOptions {
-  basicAuthSecrets?: string
+  basicAuthSecrets: string
 }
 
 export default fp<basicAuthOptions>(async function BasicAuth(fastify, opts) {
@@ -37,8 +37,6 @@ export default fp<basicAuthOptions>(async function BasicAuth(fastify, opts) {
   })
 
   fastify.after(() => {
-    if (opts.basicAuthSecrets) {
-      fastify.addHook('onRequest', fastify.basicAuth)
-    }
+    fastify.addHook('onRequest', fastify.basicAuth)
   })
 })

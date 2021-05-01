@@ -2,12 +2,21 @@ import { ExecutionContext } from 'ava'
 import { execSync } from 'child_process'
 import { join } from 'path'
 import us from 'unique-string'
+import jwt from 'jsonwebtoken'
 
 export interface TestContext {
   dbName: string
   testPrefix: string
   graphName: string
   connectionUrl: string
+}
+
+export function getJwtHeader(issuerServices: string[]) {
+  const jwtSecret = 'secret'
+  const jwtToken = jwt.sign({ services: issuerServices }, jwtSecret)
+  return {
+    authorization: `Bearer ${jwtToken}`,
+  }
 }
 
 export function createTestContext() {

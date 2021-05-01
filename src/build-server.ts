@@ -5,7 +5,8 @@ import health from './core/health'
 
 export interface buildOptions {
   databaseConnectionUrl: string
-  basicAuthSecrets?: string
+  basicAuth?: string
+  jwtSecret?: string
 }
 
 export default function build(opts: buildOptions) {
@@ -18,7 +19,8 @@ export default function build(opts: buildOptions) {
 
   // Registry
   fastify.register(registryPlugin, {
-    basicAuthSecrets: opts.basicAuthSecrets,
+    basicAuth: opts.basicAuth,
+    jwtSecret: opts.jwtSecret,
   })
 
   // Health check

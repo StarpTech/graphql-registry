@@ -33,6 +33,20 @@ export default function registerSchema(fastify: FastifyInstance) {
     { schema },
     async (req, res) => {
       /**
+       * Validate if user is able to register a schema in the name of the service
+       */
+
+      if (
+        req.user &&
+        !req.user.services.find((service) => service === req.body.service_name)
+      ) {
+        res.code(401)
+        return {
+          success: false,
+          error: `You are not authorized to access service "${req.body.service_name}"`,
+        }
+      }
+      /**
        * Validate new schema with existing schemas of all services
        */
 

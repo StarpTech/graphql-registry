@@ -15,7 +15,7 @@ test.after.always('cleanup', cleanTest())
 test('Should return 200 because credentials are valid', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
-    basicAuthSecrets: '123',
+    basicAuth: '123',
   })
   t.teardown(() => app.prisma.$disconnect())
 
@@ -36,7 +36,7 @@ test('Should return 200 because credentials are valid', async (t) => {
 test('Should support multiple secrets comma separated', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
-    basicAuthSecrets: '123,456',
+    basicAuth: '123,456',
   })
   t.teardown(() => app.prisma.$disconnect())
 
@@ -57,7 +57,7 @@ test('Should support multiple secrets comma separated', async (t) => {
 test('Should return 401 because credentials are invalid', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
-    basicAuthSecrets: '123',
+    basicAuth: '123',
   })
   t.teardown(() => app.prisma.$disconnect())
 

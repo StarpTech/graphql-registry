@@ -155,13 +155,23 @@ POST - `/schema/garbage_collect` Removes all schemas except the most recent N of
 
 GET - `/health` healthcheck endpoint.
 
-## Authentication
+## Authentication & Authorization
 
-Clients authenticate via [`Basic-Auth`](https://en.wikipedia.org/wiki/Basic_access_authentication). You have to set the cloudflare secret `ALLOWED_CLIENT_SECRETS=secret1,secret2`. The secret is used as user and pass combination.
+### Basic Auth
 
-```sh
-wrangler secret put ALLOWED_CLIENT_SECRETS
+You have to set `BASIC_AUTH=secret1,secret2` to enbale basic auth. The secret is used as user and pass combination.
+
+### JWT Bearer Token
+
+You have to set `JWT_SECRET=secret` to enable jwt. The jwt payload must match the following schema:
+
+```jsonc
+{
+  "services": ["foo"] // names of the granted services
+}
 ```
+
+This activates authorization in the `/schema/push` endpoint. Only the client with the valid jwt is be able to register schemas in the name of the service. You can use [jwt.io](https://jwt.io/) to construct a jwt.
 
 ### Development
 

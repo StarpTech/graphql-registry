@@ -8,8 +8,10 @@ import getSchemaValidation from './validation/get-schema-validation'
 import listGraphs from './federation/list-graphs'
 import registerSchema from './federation/register-schema'
 import deactivateSchema from './federation/deactivate-schema'
+import jwtAuth from '../core/jwt-auth'
 export interface registryOptions {
-  basicAuthSecrets?: string
+  basicAuth?: string
+  jwtSecret?: string
 }
 
 export default async function Registry(
@@ -17,8 +19,20 @@ export default async function Registry(
   opts: registryOptions,
 ) {
   // Authentication, only valid in this register scope
-  fastify.register(basicAuth, {
-    basicAuthSecrets: opts.basicAuthSecrets,
+  if (opts.basicAuth) {
+    fastify.register(basicAuth, {
+      basicAuthSecrets: opts.basicAuth,
+    })
+  } else if (opts.jwtSecret) {
+    fastify.register(jwtAuth, {
+      secret: opts.jwtSecret,
+    })
+  }
+
+  fastify.after(() => {
+    if (opts.basicAuth) {
+      fastify.addHook('onRequest', fastify.basicAuth)
+    }
   })
 
   listGraphs(fastify)

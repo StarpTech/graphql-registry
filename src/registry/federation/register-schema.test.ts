@@ -4,6 +4,7 @@ import {
   cleanTest,
   createTestContext,
   createTestPrefix,
+  getJwtHeader,
   TestContext,
 } from '../../core/test-util'
 
@@ -389,5 +390,105 @@ test('Should return 400 because an service has no active schema registered', asy
   t.deepEqual(
     res.json().error,
     `Service "${t.context.testPrefix}_foo" has no schema version registered`,
+  )
+})
+
+test('Should be able to register a schema with a valid JWT', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+    jwtSecret: 'secret',
+  })
+  t.teardown(() => app.prisma.$disconnect())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    headers: {
+      ...getJwtHeader([`${t.context.testPrefix}_foo`]),
+    },
+    payload: {
+      type_defs: `type Query { hello: String }`,
+      version: '1',
+      service_name: `${t.context.testPrefix}_foo`,
+      graph_name: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+  t.like(
+    res.json(),
+    {
+      data: {
+        serviceName: `${t.context.testPrefix}_foo`,
+        typeDefs: `type Query { hello: String }`,
+        version: '1',
+      },
+      success: true,
+    },
+    'response payload match',
+  )
+})
+
+test('Should not be able to register a schema with a jwt token that is not authorized for the service', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+    jwtSecret: 'secret',
+  })
+  t.teardown(() => app.prisma.$disconnect())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    headers: {
+      ...getJwtHeader([`bar_client`]), // bar is not authorized
+    },
+    payload: {
+      type_defs: `type Query { hello: String }`,
+      version: '1',
+      service_name: `${t.context.testPrefix}_foo`,
+      graph_name: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 401)
+  t.like(
+    res.json(),
+    {
+      error: `You are not authorized to access service "${t.context.testPrefix}_foo"`,
+      success: false,
+    },
+    'response payload match',
+  )
+})
+
+test('Should not be able to register a schema with a jwt token with empty services', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+    jwtSecret: 'secret',
+  })
+  t.teardown(() => app.prisma.$disconnect())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    headers: {
+      ...getJwtHeader([]), // bar is not authorized
+    },
+    payload: {
+      type_defs: `type Query { hello: String }`,
+      version: '1',
+      service_name: `${t.context.testPrefix}_foo`,
+      graph_name: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 401)
+  t.like(
+    res.json(),
+    {
+      error: `You are not authorized to access service "${t.context.testPrefix}_foo"`,
+      success: false,
+    },
+    'response payload match',
   )
 })
