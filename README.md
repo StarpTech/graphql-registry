@@ -8,6 +8,9 @@
   <a href="https://github.com/StarpTech/graphql-registry/actions?query=workflow%3ACI">
     <img src="https://github.com/StarpTech/graphql-registry/workflows/CI/badge.svg?event=push" alt="CI" />
   </a>
+  <a href="https://github.com/StarpTech/graphql-registry/actions?query=workflow%3ABENCH">
+    <img src="https://github.com/StarpTech/graphql-registry/workflows/BENCH/badge.svg?event=push" alt="BENCH" />
+  </a>
 </div>
 
 <div align="center">GraphQL registry</div>
@@ -176,7 +179,8 @@ This activates authorization in the `/schema/push` endpoint. Only the client wit
 ### Development
 
 ```
-docker-compose up
+docker-compose up postgres
+# Create db schema
 npx prisma db push --preview-feature
 npm run dev
 npm run test
@@ -187,6 +191,7 @@ npm run test
 Run a benchmark with:
 
 ```
+docker-compose up postgres
 docker-compose up --build app
 docker-compose run k6 run /benchmark/composed-schema.js
 ```
