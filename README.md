@@ -175,5 +175,6 @@ npm run dev
 Run a benchmark with:
 
 ```
-docker run -e SECRET=123 -e URL=http://127.0.0.1:3000 -i loadimpact/k6 run - < benchmark/composed-schema.js
+docker-compose run app
+docker-compose run k6 run /benchmark/composed-schema.js
 ```

@@ -1,8 +1,20 @@
-version: '3.5'
+version: '3.8'
 
 services:
+  app:
+    container_name: graphql-registry
+    build: .
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:changeme@postgres:5432/graphql-registry?schema=public
+      BASIC_AUTH_SECRETS: 123
+    profiles:
+      - test
+
   postgres:
-    container_name: postgres_container
+    container_name: postgres
     image: postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -11,3 +23,16 @@ services:
     ports:
       - "5440:5432"
     restart: unless-stopped
+
+  k6:
+    container_name: k6
+    image: loadimpact/k6:latest
+    environment:
+      SECRET: 123
+      URL: http://graphql-registry:3000
+    depends_on:
+      - app
+    volumes:
+      - ./benchmark:/benchmark
+    profiles:
+      - test
