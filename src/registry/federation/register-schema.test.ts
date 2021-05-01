@@ -30,7 +30,7 @@ test('Should register new schema', async (t) => {
   })
 
   t.is(res.statusCode, 200)
-  t.deepEqual(
+  t.like(
     res.json(),
     {
       data: {
@@ -86,20 +86,16 @@ test('Should not create multiple schemas when client and type_defs does not chan
 
   t.is(res.statusCode, 200)
 
-  t.deepEqual(
-    res.json(),
-    {
-      data: [
-        {
-          serviceName: `${t.context.testPrefix}_foo`,
-          typeDefs: `type Query { hello: String }`,
-          version: '2',
-        },
-      ],
-      success: true,
-    },
-    'response payload match',
-  )
+  const response = res.json()
+
+  t.true(response.success)
+  t.is(response.data.length, 1)
+
+  t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: `type Query { hello: String }`,
+    version: '2',
+  })
 })
 
 test('Should be able to register schemas from multiple clients', async (t) => {
@@ -144,25 +140,21 @@ test('Should be able to register schemas from multiple clients', async (t) => {
 
   t.is(res.statusCode, 200)
 
-  t.deepEqual(
-    res.json(),
-    {
-      data: [
-        {
-          serviceName: `${t.context.testPrefix}_bar`,
-          typeDefs: `type Query { world: String }`,
-          version: '2',
-        },
-        {
-          serviceName: `${t.context.testPrefix}_foo`,
-          typeDefs: `type Query { hello: String }`,
-          version: '1',
-        },
-      ],
-      success: true,
-    },
-    'response payload match',
-  )
+  const response = res.json()
+
+  t.true(response.success)
+
+  t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_bar`,
+    typeDefs: `type Query { world: String }`,
+    version: '2',
+  })
+
+  t.like(response.data[1], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: `type Query { hello: String }`,
+    version: '1',
+  })
 })
 
 test('Should not be able to push invalid schema', async (t) => {
@@ -227,20 +219,16 @@ test('Should be able to store multiple versions with the same schema and client 
 
   t.is(res.statusCode, 200)
 
-  t.deepEqual(
-    res.json(),
-    {
-      data: [
-        {
-          serviceName: `${t.context.testPrefix}_foo`,
-          typeDefs: `type Query { world: String }`,
-          version: '2',
-        },
-      ],
-      success: true,
-    },
-    'response payload match',
-  )
+  const response = res.json()
+
+  t.true(response.success)
+  t.is(response.data.length, 1)
+
+  t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: `type Query { world: String }`,
+    version: '2',
+  })
 })
 
 test('Should reject schema because it is not compatible with registry state', async (t) => {
@@ -321,20 +309,16 @@ test('Should return correct latest service schema with multiple graphs', async (
 
   t.is(res.statusCode, 200)
 
-  t.deepEqual(
-    res.json(),
-    {
-      data: [
-        {
-          serviceName: `${t.context.testPrefix}_foo`,
-          typeDefs: `type Query { hello: String }`,
-          version: '1',
-        },
-      ],
-      success: true,
-    },
-    'response payload match',
-  )
+  let response = res.json()
+
+  t.true(response.success)
+  t.is(response.data.length, 1)
+
+  t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: `type Query { hello: String }`,
+    version: '1',
+  })
 
   res = await app.inject({
     method: 'GET',
@@ -346,18 +330,61 @@ test('Should return correct latest service schema with multiple graphs', async (
 
   t.is(res.statusCode, 200)
 
-  t.deepEqual(
-    res.json(),
-    {
-      data: [
-        {
-          serviceName: `${t.context.testPrefix}_foo`,
-          typeDefs: `type Query { hello: String }`,
-          version: '2',
-        },
-      ],
-      success: true,
+  response = res.json()
+
+  t.true(response.success)
+  t.is(response.data.length, 1)
+
+  t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: `type Query { hello: String }`,
+    version: '2',
+  })
+})
+
+test('Should return 400 because an service has no active schema registered', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.prisma.$disconnect())
+
+  let res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      type_defs: `type Query { hello: String }`,
+      version: '1',
+      service_name: `${t.context.testPrefix}_foo`,
+      graph_name: t.context.graphName,
     },
-    'response payload match',
-  )
+  })
+
+  t.is(res.statusCode, 200)
+
+  const schemaId = res.json().data.schemaId
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/deactivate',
+    payload: {
+      schemaId,
+      graph_name: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      type_defs: `type Query { hello: String }`,
+      version: '1',
+      service_name: `${t.context.testPrefix}_bar`,
+      graph_name: t.context.graphName,
+    },
+  })
+
+  t.is(res.statusCode, 400)
+  t.deepEqual(res.json().error, `Service "${t.context.testPrefix}_foo" has no schema version registered`)
 })

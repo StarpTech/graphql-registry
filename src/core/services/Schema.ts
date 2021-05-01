@@ -18,11 +18,11 @@ export class SchemaService {
         typeDefs: typeDefs,
         graph: {
           name: graphName,
-          isActive: true
+          isActive: true,
         },
         service: {
           name: serviceName,
-          isActive: true
+          isActive: true,
         },
       },
     })
@@ -48,13 +48,13 @@ export class SchemaService {
         },
         graph: {
           name: graphName,
-          isActive: true
+          isActive: true,
         },
         isActive: true,
       },
       orderBy: {
-        name: 'asc'
-      }
+        name: 'asc',
+      },
     })
 
     for await (const service of serviceItems) {
@@ -78,7 +78,7 @@ export class SchemaService {
               isActive: true,
             },
             SchemaVersion: {
-              every: {
+              some: {
                 isActive: true,
                 version: version,
               },
@@ -98,6 +98,7 @@ export class SchemaService {
         }
 
         schemas.push({
+          schemaId: schema.id,
           serviceName: service.name,
           typeDefs: schema.typeDefs,
           version: schema.SchemaVersion[0].version,
@@ -115,6 +116,7 @@ export class SchemaService {
                 name: service.name,
                 isActive: true,
               },
+              isActive: true
             },
           },
           // very unlikely that a schema from the same service in the same graph was created at the same milisecond
@@ -134,6 +136,7 @@ export class SchemaService {
         }
 
         schemas.push({
+          schemaId: schemaVersion.id,
           serviceName: service.name,
           typeDefs: schemaVersion.schema.typeDefs,
           version: schemaVersion.version,

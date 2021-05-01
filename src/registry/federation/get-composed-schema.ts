@@ -15,6 +15,7 @@ export const schema: FastifySchema = {
 export default function getComposedSchema(fastify: FastifyInstance) {
   fastify.get<{ Querystring: { graph_name: string } }>(
     '/schema/latest',
+    { schema },
     async (req, res) => {
       const graph = await fastify.prisma.graph.findMany({
         where: {
@@ -23,7 +24,7 @@ export default function getComposedSchema(fastify: FastifyInstance) {
         },
       })
       if (!graph) {
-        res.code(404)
+        res.code(400)
         return {
           success: false,
           error: `Graph with name "${req.query.graph_name}" does not exist`,

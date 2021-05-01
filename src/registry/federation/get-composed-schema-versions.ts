@@ -53,7 +53,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
         },
       })
       if (!graph) {
-        res.code(404)
+        res.code(400)
         return {
           success: false,
           error: `Graph with name "${req.body.graph_name}" does not exist`,

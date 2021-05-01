@@ -1,6 +1,7 @@
 import { SchemaVersion } from '@prisma/client'
 
 export type SchemaResponseModel = {
+  schemaId: number
   serviceName: string
   typeDefs: string
   version: string

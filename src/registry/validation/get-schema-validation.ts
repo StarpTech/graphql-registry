@@ -29,14 +29,14 @@ export default function getSchemaValidation(fastify: FastifyInstance) {
     '/schema/validate',
     { schema },
     async (req, res) => {
-      const graph = await fastify.prisma.graph.deleteMany({
+      const graph = await fastify.prisma.graph.findFirst({
         where: {
           name: req.body.graph_name,
           isActive: true,
         },
       })
       if (!graph) {
-        res.code(404)
+        res.code(400)
         return {
           success: false,
           error: `Graph with name "${req.body.graph_name}" does not exist`,

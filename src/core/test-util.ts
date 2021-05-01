@@ -39,7 +39,7 @@ export function createTestPrefix() {
 export function cleanTest() {
   return (t: ExecutionContext<TestContext>) => {
     execSync(
-      `docker exec -t postgres_container psql -U postgres -c 'drop database ${t.context.dbName};'`,
+      `docker exec -t postgres psql -U postgres -c 'drop database ${t.context.dbName};'`,
     )
   }
 }

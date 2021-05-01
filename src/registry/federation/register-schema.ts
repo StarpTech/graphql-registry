@@ -190,6 +190,7 @@ export default function registerSchema(fastify: FastifyInstance) {
       const responseBody: SuccessResponse<SchemaResponseModel> = {
         success: true,
         data: {
+          schemaId: schema.id,
           serviceName: schema.service.name,
           typeDefs: schema.typeDefs,
           version: req.body.version,
