@@ -1,5 +1,4 @@
 import { FastifyInstance } from 'fastify'
-import fastifyEnv from 'fastify-env'
 import basicAuth from '../core/basic-auth'
 import garbageCollect from './maintanance/garbage-collect'
 import getComposedSchema from './federation/get-composed-schema'
