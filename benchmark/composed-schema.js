@@ -1,6 +1,5 @@
-import encoding from 'k6/encoding'
 import http from 'k6/http'
-import { check } from 'k6'
+import { check, fail } from 'k6'
 
 export let options = {
   vus: 2,
@@ -10,15 +9,10 @@ export let options = {
   },
 }
 const BASE_URL = `${__ENV.URL}`
-const username = `${__ENV.SECRET}`
-const password = `${__ENV.SECRET}`
 
-const credentials = `${username}:${password}`
-const encodedCredentials = encoding.b64encode(credentials)
 const requestOptions = {
   headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Basic ${encodedCredentials}`,
+    'Content-Type': 'application/json'
   },
 }
 

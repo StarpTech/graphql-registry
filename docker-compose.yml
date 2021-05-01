@@ -9,7 +9,6 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://postgres:changeme@postgres:5432/graphql-registry?schema=public
-      BASIC_AUTH: 123
     profiles:
       - test
 
@@ -28,7 +27,6 @@ services:
     container_name: k6
     image: loadimpact/k6:latest
     environment:
-      SECRET: 123
       URL: http://graphql-registry:3000
     depends_on:
       - app

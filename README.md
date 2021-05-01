@@ -186,6 +186,6 @@ npm run dev
 Run a benchmark with:
 
 ```
-docker-compose run app
+docker-compose up --build app
 docker-compose run k6 run /benchmark/composed-schema.js
 ```
