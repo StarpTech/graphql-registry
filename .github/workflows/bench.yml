@@ -44,7 +44,7 @@ jobs:
           ./scripts/wait-for-healthy-container.sh postgres 30
 
       - name: Install
-        run: npm install
+        run: npm ci --prefer-offline --no-audit
 
       - name: Create db schema
         run: DATABASE_URL="postgresql://postgres:changeme@localhost:5440/graphql-registry?schema=public" npx prisma db push --preview-feature
