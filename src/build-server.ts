@@ -16,7 +16,7 @@ export default function build(opts: buildOptions) {
     databaseConnectionUrl: opts.databaseConnectionUrl,
   })
 
-  // Registrya
+  // Registry
   fastify.register(registryPlugin, {
     basicAuthSecrets: opts.basicAuthSecrets,
   })
