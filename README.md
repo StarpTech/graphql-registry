@@ -23,7 +23,7 @@
 
 State: Experimental
 
-- Create multiple graph (for example, staging and production, or different development branches)
+- Create multiple graphs (for example, staging and production, or different development branches)
 - Stores versioned schemas for all GraphQL-federated services
 - Serves schema for GraphQL gateway based on provided services & their versions
 - Validates new schema to be compatible with other running services
