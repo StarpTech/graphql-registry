@@ -2,5 +2,3 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npm test
-
-npx --yes pretty-quick
