@@ -30,6 +30,7 @@ model Service {
   Schema    Schema[]
   SchemaTag SchemaTag[]
   graphId   Int
+  @@index(fields: [name, isActive, graphId], name: "find_service_index")
 }
 
 // A schema is owned by one service and belongs to a specific graph.
@@ -44,6 +45,7 @@ model Schema {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   SchemaTag SchemaTag[]
+  @@index(fields: [typeDefs, graphId, serviceId, isActive], name: "find_schema_index")
 }
 
 // Every schema has at least one schema tag. A schema can be tagged with multiple versions e.g "latest", "v1".
@@ -57,4 +59,5 @@ model SchemaTag {
   createdAt DateTime @default(now())
   service   Service  @relation(fields: [serviceId], references: [id])
   serviceId Int
+  @@index(fields: [schemaId, serviceId, isActive, version], name: "find_tag_index")
 }

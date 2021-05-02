@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifySchema } from 'fastify'
+import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaService } from '../../core/services/Schema'
 
@@ -33,11 +34,7 @@ export default function getSchemaValidation(fastify: FastifyInstance) {
       },
     })
     if (!graph) {
-      res.code(400)
-      return {
-        success: false,
-        error: `Graph with name "${req.body.graph_name}" does not exist`,
-      }
+      throw InvalidGraphNameError(req.body.graph_name)
     }
 
     const serviceModels = await fastify.prisma.service.findMany({
@@ -65,11 +62,7 @@ export default function getSchemaValidation(fastify: FastifyInstance) {
     )
 
     if (findError) {
-      res.code(400)
-      return {
-        success: false,
-        error: findError.message,
-      }
+      throw SchemaVersionLookupError(findError.message)
     }
 
     let serviceSchemas = schemas
@@ -85,18 +78,10 @@ export default function getSchemaValidation(fastify: FastifyInstance) {
 
     const updated = composeAndValidateSchema(serviceSchemas)
     if (!updated.schema) {
-      res.code(400)
-      return {
-        success: false,
-        error: updated.error,
-      }
+      throw SchemaCompositionError(updated.error)
     }
     if (updated.error) {
-      res.code(400)
-      return {
-        success: false,
-        error: updated.error,
-      }
+      throw SchemaCompositionError(updated.error)
     }
 
     return {

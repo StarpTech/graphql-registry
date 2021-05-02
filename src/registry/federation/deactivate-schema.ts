@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifySchema } from 'fastify'
+import { SchemaNotFoundError } from '../../core/errrors'
 
 interface DeactivateSchemaRequest {
   schemaId: number
@@ -25,11 +26,7 @@ export default function deactivateSchema(fastify: FastifyInstance) {
     })
 
     if (!schema) {
-      res.code(400)
-      return {
-        success: false,
-        error: `Could not find schema with id "${req.body.schemaId}"`,
-      }
+      throw SchemaNotFoundError(req.body.schemaId)
     }
 
     await fastify.prisma.schema.update({

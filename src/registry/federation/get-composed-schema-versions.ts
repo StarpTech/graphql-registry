@@ -2,6 +2,7 @@ import { FastifyInstance, FastifySchema } from 'fastify'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaResponseModel, SuccessResponse } from '../../core/types'
 import { SchemaService } from '../../core/services/Schema'
+import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 
 interface ServiceVersionMatch {
   name: string
@@ -50,11 +51,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
       },
     })
     if (!graph) {
-      res.code(400)
-      return {
-        success: false,
-        error: `Graph with name "${req.body.graph_name}" does not exist`,
-      }
+      throw InvalidGraphNameError(req.body.graph_name)
     }
 
     const allServiceVersions: ServiceVersionMatch[] = req.body.services.map((s) => ({
@@ -69,11 +66,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
     )
 
     if (findError) {
-      res.code(400)
-      return {
-        success: false,
-        error: findError.message,
-      }
+      throw SchemaVersionLookupError(findError.message)
     }
 
     const serviceSchemas = schemas.map((s) => ({
@@ -84,11 +77,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
     const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
 
     if (schemaError) {
-      res.code(400)
-      return {
-        success: false,
-        error: schemaError,
-      }
+      throw SchemaCompositionError(schemaError)
     }
 
     const responseBody: SuccessResponse<SchemaResponseModel[]> = {

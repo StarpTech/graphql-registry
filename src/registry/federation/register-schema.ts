@@ -1,7 +1,9 @@
 import { SchemaService } from '../../core/services/Schema'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaResponseModel, SuccessResponse } from '../../core/types'
-import { FastifyInstance, FastifySchema } from 'fastify'
+
+import { FastifyInstance, FastifyRequest, FastifySchema, preValidationHookHandler } from 'fastify'
+import { InvalidServiceScopeError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 export interface RegisterRequest {
   service_name: string
   version: string
@@ -53,13 +55,8 @@ export default function registerSchema(fastify: FastifyInstance) {
     /**
      * Validate if user is able to register a schema in the name of the service
      */
-
     if (req.user && !req.user.services.find((service) => service === req.body.service_name)) {
-      res.code(401)
-      return {
-        success: false,
-        error: `You are not authorized to access service "${req.body.service_name}"`,
-      }
+      throw InvalidServiceScopeError(req.body.service_name)
     }
     /**
      * Validate new schema with existing schemas of all services
@@ -91,11 +88,7 @@ export default function registerSchema(fastify: FastifyInstance) {
     )
 
     if (findError) {
-      res.code(400)
-      return {
-        success: false,
-        error: findError.message,
-      }
+      throw SchemaVersionLookupError(findError.message)
     }
 
     const serviceSchemas = schemas.map((s) => ({
@@ -111,11 +104,7 @@ export default function registerSchema(fastify: FastifyInstance) {
     const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
 
     if (schemaError) {
-      res.code(400)
-      return {
-        success: false,
-        error: schemaError,
-      }
+      throw SchemaCompositionError(schemaError)
     }
 
     /**

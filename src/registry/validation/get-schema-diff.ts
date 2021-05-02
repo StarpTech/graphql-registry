@@ -2,6 +2,7 @@ import { FastifyInstance, FastifySchema } from 'fastify'
 import { diff } from '@graphql-inspector/core'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaService } from '../../core/services/Schema'
+import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 
 interface GetSchemaDiffRequest {
   service_name: string
@@ -34,11 +35,7 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
       },
     })
     if (!graph) {
-      res.code(400)
-      return {
-        success: false,
-        error: `Graph with name "${req.body.graph_name}" does not exist`,
-      }
+      throw InvalidGraphNameError(req.body.graph_name)
     }
 
     const serviceModels = await fastify.prisma.service.findMany({
@@ -66,11 +63,7 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
     )
 
     if (findError) {
-      res.code(400)
-      return {
-        success: false,
-        error: findError.message,
-      }
+      throw SchemaVersionLookupError(findError.message)
     }
 
     let serviceSchemas = schemas.map((s) => ({
@@ -80,19 +73,11 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
 
     let original = composeAndValidateSchema(serviceSchemas)
     if (!original.schema) {
-      res.code(400)
-      return {
-        success: false,
-        error: original.error,
-      }
+      throw SchemaCompositionError(original.error)
     }
 
     if (original.error) {
-      res.code(400)
-      return {
-        success: false,
-        error: original.error,
-      }
+      throw SchemaCompositionError(original.error)
     }
 
     serviceSchemas = serviceSchemas
@@ -104,18 +89,10 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
 
     const updated = composeAndValidateSchema(serviceSchemas)
     if (!updated.schema) {
-      res.code(400)
-      return {
-        success: false,
-        error: updated.error,
-      }
+      throw SchemaCompositionError(updated.error)
     }
     if (updated.error) {
-      res.code(400)
-      return {
-        success: false,
-        error: updated.error,
-      }
+      throw SchemaCompositionError(updated.error)
     }
 
     const result = diff(original.schema, updated.schema)
