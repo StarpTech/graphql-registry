@@ -4,10 +4,12 @@ import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaService } from '../../core/services/Schema'
 
-interface GetSchemaValidationRequest {
-  service_name: string
-  type_defs: string
-  graph_name: string
+export interface RequestContext {
+  Body: {
+    service_name: string
+    type_defs: string
+    graph_name: string
+  }
 }
 
 export const schema: FastifySchema = {
@@ -20,7 +22,7 @@ export const schema: FastifySchema = {
 }
 
 export default function getSchemaValidation(fastify: FastifyInstance) {
-  fastify.post<{ Body: GetSchemaValidationRequest }>('/schema/validate', { schema }, async (req, res) => {
+  fastify.post<RequestContext>('/schema/validate', { schema }, async (req, res) => {
     const graph = await fastify.prisma.graph.findFirst({
       where: {
         name: req.body.graph_name,

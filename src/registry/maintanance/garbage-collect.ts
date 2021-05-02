@@ -1,8 +1,10 @@
 import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 
-interface GarbageCollectRequest {
-  num_schemas_keep: number
+export interface RequestContext {
+  Body: {
+    num_schemas_keep: number
+  }
 }
 
 export const schema: FastifySchema = {
@@ -13,7 +15,7 @@ export const schema: FastifySchema = {
 }
 
 export default function garbageCollect(fastify: FastifyInstance) {
-  fastify.post<{ Body: GarbageCollectRequest }>('/schema/garbage_collect', { schema }, async (req, res) => {
+  fastify.post<RequestContext>('/schema/garbage_collect', { schema }, async (req, res) => {
     const schemasToKeep = await fastify.prisma.schema.findMany({
       orderBy: {
         updatedAt: 'desc',

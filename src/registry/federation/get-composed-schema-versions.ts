@@ -10,9 +10,11 @@ interface ServiceVersionMatch {
   version: string
 }
 
-interface GetSchemaByVersionsRequest {
-  graph_name: string
-  services: ServiceVersionMatch[]
+export interface RequestContext {
+  Body: {
+    graph_name: string
+    services: ServiceVersionMatch[]
+  }
 }
 
 export const schema: FastifySchema = {
@@ -51,7 +53,7 @@ export const schema: FastifySchema = {
 }
 
 export default function getComposedSchemaVersions(fastify: FastifyInstance) {
-  fastify.post<{ Body: GetSchemaByVersionsRequest }>('/schema/compose', { schema }, async (req, res) => {
+  fastify.post<RequestContext>('/schema/compose', { schema }, async (req, res) => {
     const graph = await fastify.prisma.graph.findFirst({
       where: {
         name: req.body.graph_name,

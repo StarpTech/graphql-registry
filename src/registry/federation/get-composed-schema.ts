@@ -4,6 +4,12 @@ import { SchemaService } from '../../core/services/Schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 
+export interface RequestContext {
+  Querystring: {
+    graph_name: string
+  }
+}
+
 export const schema: FastifySchema = {
   response: {
     '2xx': S.object()
@@ -28,7 +34,7 @@ export const schema: FastifySchema = {
 }
 
 export default function getComposedSchema(fastify: FastifyInstance) {
-  fastify.get<{ Querystring: { graph_name: string } }>('/schema/latest', { schema }, async (req, res) => {
+  fastify.get<RequestContext>('/schema/latest', { schema }, async (req, res) => {
     const graph = await fastify.prisma.graph.findMany({
       where: {
         name: req.query.graph_name,

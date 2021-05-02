@@ -4,11 +4,12 @@ import { diff } from '@graphql-inspector/core'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaService } from '../../core/services/Schema'
 import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
-
-interface GetSchemaDiffRequest {
-  service_name: string
-  type_defs: string
-  graph_name: string
+export interface RequestContext {
+  Body: {
+    service_name: string
+    type_defs: string
+    graph_name: string
+  }
 }
 
 export const schema: FastifySchema = {
@@ -21,7 +22,7 @@ export const schema: FastifySchema = {
 }
 
 export default function getSchemaDiff(fastify: FastifyInstance) {
-  fastify.post<{ Body: GetSchemaDiffRequest }>('/schema/diff', { schema }, async (req, res) => {
+  fastify.post<RequestContext>('/schema/diff', { schema }, async (req, res) => {
     const graph = await fastify.prisma.graph.findFirst({
       where: {
         name: req.body.graph_name,

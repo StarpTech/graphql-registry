@@ -6,11 +6,13 @@ import { SchemaResponseModel, SuccessResponse } from '../../core/types'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 import { checkUserServiceScope } from '../../core/hook-handler/user-scope.prevalidation'
-export interface RegisterRequest {
-  service_name: string
-  version: string
-  type_defs: string
-  graph_name: string
+export interface RequestContext {
+  Body: {
+    service_name: string
+    version: string
+    type_defs: string
+    graph_name: string
+  }
 }
 
 export const schema: FastifySchema = {
@@ -39,9 +41,9 @@ export const schema: FastifySchema = {
 }
 
 export default function registerSchema(fastify: FastifyInstance) {
-  fastify.post<{ Body: RegisterRequest }>(
+  fastify.post<RequestContext>(
     '/schema/push',
-    { schema, preValidation: [checkUserServiceScope] },
+    { schema, preValidation: checkUserServiceScope },
     async (req, res) => {
       /**
        * Validate new schema with existing schemas of all services
