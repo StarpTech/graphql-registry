@@ -27,6 +27,7 @@ State: Experimental
 - Stores versioned schemas for all GraphQL-federated services
 - Serves schema for GraphQL gateway based on provided services & their versions
 - Validates new schema to be compatible with other running services
+- Lightweight authorization concept based on JWT.
 
 [**Read more**](https://principledgraphql.com/integrity#3-track-the-schema-in-a-registry)
 
