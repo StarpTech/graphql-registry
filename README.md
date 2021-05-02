@@ -23,11 +23,12 @@
 
 State: Experimental
 
-- Create multiple versions of the graph (for example, staging and production, or different development branches)
+- Create multiple graph (for example, staging and production, or different development branches)
 - Stores versioned schemas for all GraphQL-federated services
 - Serves schema for GraphQL gateway based on provided services & their versions
 - Validates new schema to be compatible with other running services
-- Lightweight authorization concept based on JWT.
+- Produce a diff between your proposed schema and the current registry state
+- Lightweight authorization concept with JWT.
 
 [**Read more**](https://principledgraphql.com/integrity#3-track-the-schema-in-a-registry)
 
