@@ -2,3 +2,9 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npm test
+
+echo "exit code test: $?"
+
+npx --yes pretty-quick
+
+echo "exit code prettier: $?"
