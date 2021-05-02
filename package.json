@@ -23,6 +23,13 @@
     "build",
     "prisma"
   ],
+  "release-it": {
+    "git": {
+      "commitArgs": [
+        "--no-verify"
+      ]
+    }
+  },
   "ava": {
     "files": [
       "src/**/*.test.ts"
