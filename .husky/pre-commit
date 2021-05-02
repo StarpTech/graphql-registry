@@ -1,6 +1,6 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm test -- --fail-fast --verbose
+npm test -- --fail-fast --tap
 
 npx --yes pretty-quick
