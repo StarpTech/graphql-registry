@@ -1,3 +1,4 @@
+import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { SchemaNotFoundError } from '../../core/errrors'
 
@@ -8,20 +9,9 @@ interface DeactivateSchemaRequest {
 
 export const schema: FastifySchema = {
   response: {
-    '2xx': {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-      },
-    },
+    '2xx': S.object().additionalProperties(false).required(['success']).prop('success', S.boolean()),
   },
-  body: {
-    type: 'object',
-    required: ['schemaId', 'graph_name'],
-    properties: {
-      schemaId: { type: 'integer', minimum: 1 },
-    },
-  },
+  body: S.object().additionalProperties(false).required(['schemaId']).prop('schemaId', S.number().minimum(1)),
 }
 
 export default function deactivateSchema(fastify: FastifyInstance) {

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "graphql-registry",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "build/index.js",
   "description": "GraphQL registry",
   "license": "MIT",
@@ -64,6 +64,7 @@
     "fastify-error": "^0.3.1",
     "fastify-jwt": "^2.4.0",
     "fastify-plugin": "^2.3.4",
+    "fluent-json-schema": "^2.0.4",
     "graphql": "15.5.0",
     "unique-string": "^2.0.0"
   },

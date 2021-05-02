@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifySchema } from 'fastify'
+import S from 'fluent-json-schema'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaResponseModel, SuccessResponse } from '../../core/types'
 import { SchemaService } from '../../core/services/Schema'
@@ -16,56 +17,37 @@ interface GetSchemaByVersionsRequest {
 
 export const schema: FastifySchema = {
   response: {
-    '2xx': {
-      type: 'object',
-      required: ['success', 'data'],
-      properties: {
-        success: { type: 'boolean' },
-        data: {
-          type: 'array',
-          items: {
-            type: 'object',
-            required: ['version', 'typeDefs', 'serviceName', 'schemaId'],
-            properties: {
-              version: { type: 'string', minLength: 1, maxLength: 100 },
-              typeDefs: { type: 'string', minLength: 1, maxLength: 10000 },
-              serviceName: {
-                type: 'string',
-                minLength: 1,
-                pattern: '[a-zA-Z_\\-0-9]+',
-              },
-              schemaId: { type: 'number', minimum: 1 },
-            },
-          },
-        },
-      },
-    },
+    '2xx': S.object()
+      .additionalProperties(false)
+      .required(['success', 'data'])
+      .prop('success', S.boolean())
+      .prop(
+        'data',
+        S.array().items(
+          S.object()
+            .required(['version', 'typeDefs', 'serviceName', 'schemaId'])
+            .prop('schemaId', S.number().minimum(1))
+            .prop('version', S.string().minLength(1).maxLength(100))
+            .prop('typeDefs', S.string().minLength(1).maxLength(10000))
+            .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+        ),
+      ),
   },
-  body: {
-    type: 'object',
-    required: ['services', 'graph_name'],
-    properties: {
-      services: {
-        type: 'array',
-        items: [
-          {
-            type: 'object',
-            required: ['name'],
-            properties: {
-              name: {
-                minLength: 1,
-                pattern: '[a-zA-Z_\\-0-9]+',
-              },
-              version: {
-                minLength: 1,
-              },
-            },
-          },
-        ],
-      },
-      graph_name: { type: 'string', minLength: 1, pattern: '[a-zA-Z_\\-0-9]+' },
-    },
-  },
+  body: S.object()
+    .additionalProperties(false)
+    .required(['graph_name', 'services'])
+    .prop('graph_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
+    .prop(
+      'services',
+      S.array()
+        .minItems(1)
+        .items(
+          S.object()
+            .required(['name'])
+            .prop('version', S.string().minLength(1).maxLength(100))
+            .prop('name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+        ),
+    ),
 }
 
 export default function getComposedSchemaVersions(fastify: FastifyInstance) {

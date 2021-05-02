@@ -1,3 +1,4 @@
+import S from 'fluent-json-schema'
 import { SchemaService } from '../../core/services/Schema'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaResponseModel, SuccessResponse } from '../../core/types'
@@ -14,42 +15,27 @@ export interface RegisterRequest {
 
 export const schema: FastifySchema = {
   response: {
-    '2xx': {
-      type: 'object',
-      required: ['success', 'data'],
-      properties: {
-        success: { type: 'boolean' },
-        data: {
-          type: 'object',
-          required: ['version', 'typeDefs', 'serviceName', 'schemaId'],
-          properties: {
-            version: { type: 'string', minLength: 1, maxLength: 100 },
-            typeDefs: { type: 'string', minLength: 1, maxLength: 10000 },
-            serviceName: {
-              type: 'string',
-              minLength: 1,
-              pattern: '[a-zA-Z_\\-0-9]+',
-            },
-            schemaId: { type: 'number', minimum: 1 },
-          },
-        },
-      },
-    },
+    '2xx': S.object()
+      .additionalProperties(false)
+      .required(['success', 'data'])
+      .prop('success', S.boolean())
+      .prop(
+        'data',
+        S.object()
+          .required(['version', 'typeDefs', 'serviceName', 'schemaId'])
+          .prop('schemaId', S.number().minimum(1))
+          .prop('version', S.string().minLength(1).maxLength(100))
+          .prop('typeDefs', S.string().minLength(1).maxLength(10000))
+          .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+      ),
   },
-  body: {
-    type: 'object',
-    required: ['version', 'type_defs', 'service_name', 'graph_name'],
-    properties: {
-      version: { type: 'string', minLength: 1, maxLength: 100 },
-      type_defs: { type: 'string', minLength: 1, maxLength: 10000 },
-      service_name: {
-        type: 'string',
-        minLength: 1,
-        pattern: '[a-zA-Z_\\-0-9]+',
-      },
-      graph_name: { type: 'string', minLength: 1, pattern: '[a-zA-Z_\\-0-9]+' },
-    },
-  },
+  body: S.object()
+    .additionalProperties(false)
+    .required(['version', 'type_defs', 'service_name', 'graph_name'])
+    .prop('graph_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
+    .prop('version', S.string().minLength(1).maxLength(100))
+    .prop('type_defs', S.string().minLength(1).maxLength(10000))
+    .prop('service_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
 }
 
 export default function registerSchema(fastify: FastifyInstance) {

@@ -1,3 +1,4 @@
+import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 
 interface GarbageCollectRequest {
@@ -5,13 +6,10 @@ interface GarbageCollectRequest {
 }
 
 export const schema: FastifySchema = {
-  body: {
-    type: 'object',
-    required: ['num_schemas_keep'],
-    properties: {
-      num_schemas_keep: { type: 'integer', minimum: 10, maximum: 100 },
-    },
-  },
+  body: S.object()
+    .additionalProperties(false)
+    .required(['num_schemas_keep'])
+    .prop('num_schemas_keep', S.number().minimum(10).maximum(100)),
 }
 
 export default function garbageCollect(fastify: FastifyInstance) {

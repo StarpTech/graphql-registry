@@ -1,3 +1,4 @@
+import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { diff } from '@graphql-inspector/core'
 import { composeAndValidateSchema } from '../../core/federation'
@@ -11,19 +12,12 @@ interface GetSchemaDiffRequest {
 }
 
 export const schema: FastifySchema = {
-  body: {
-    type: 'object',
-    required: ['type_defs', 'service_name', 'graph_name'],
-    properties: {
-      type_defs: { type: 'string', minLength: 1, maxLength: 10000 },
-      service_name: {
-        type: 'string',
-        minLength: 1,
-        pattern: '[a-zA-Z_\\-0-9]+',
-      },
-      graph_name: { type: 'string', minLength: 1, pattern: '[a-zA-Z_\\-0-9]+' },
-    },
-  },
+  body: S.object()
+    .additionalProperties(false)
+    .required(['type_defs', 'service_name', 'graph_name'])
+    .prop('graph_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
+    .prop('type_defs', S.string().minLength(1).maxLength(10000))
+    .prop('service_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
 }
 
 export default function getSchemaDiff(fastify: FastifyInstance) {
