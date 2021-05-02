@@ -15,9 +15,12 @@ test('Should return 200 because credentials are valid', async (t) => {
   t.teardown(() => app.prisma.$disconnect())
 
   let res = await app.inject({
-    method: 'GET',
-    url: '/schema/latest',
-    query: {
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      type_defs: `type Query { world: String }`,
+      version: '2',
+      service_name: `${t.context.testPrefix}_bar`,
       graph_name: `${t.context.graphName}`,
     },
     headers: {
@@ -36,9 +39,12 @@ test('Should support multiple secrets comma separated', async (t) => {
   t.teardown(() => app.prisma.$disconnect())
 
   let res = await app.inject({
-    method: 'GET',
-    url: '/schema/latest',
-    query: {
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      type_defs: `type Query { world: String }`,
+      version: '3',
+      service_name: `${t.context.testPrefix}_bar`,
       graph_name: `${t.context.graphName}`,
     },
     headers: {

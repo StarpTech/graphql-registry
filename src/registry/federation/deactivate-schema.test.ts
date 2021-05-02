@@ -57,7 +57,7 @@ test('Should deactivate schema', async (t) => {
   t.deepEqual(
     res.json(),
     {
-      error: `Service "${t.context.testPrefix}_foo" has no schema in version "1" registered`,
+      error: `In graph "${t.context.graphName}", service "${t.context.testPrefix}_foo" has no schema in version "1" registered`,
       success: false,
     },
     'response payload match',

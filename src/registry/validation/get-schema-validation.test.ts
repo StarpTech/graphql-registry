@@ -71,7 +71,7 @@ test('Should validate schema as invalid', async (t) => {
     url: '/schema/validate',
     payload: {
       type_defs: `type Query { hello: String22 }`,
-      service_name: `${t.context.testPrefix}_bar`,
+      service_name: `${t.context.testPrefix}_foo`,
       graph_name: `${t.context.graphName}`,
     },
   })

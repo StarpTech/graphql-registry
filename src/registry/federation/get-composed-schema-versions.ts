@@ -64,7 +64,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
       throw InvalidGraphNameError(req.body.graph_name)
     }
 
-    const allServiceVersions: ServiceVersionMatch[] = req.body.services.map((s) => ({
+    const allServicesWithVersion: ServiceVersionMatch[] = req.body.services.map((s) => ({
       name: s.name,
       version: s.version,
     }))
@@ -72,7 +72,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
     const schmemaService = new SchemaService(fastify.prisma)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.body.graph_name,
-      allServiceVersions,
+      allServicesWithVersion,
     )
 
     if (findError) {

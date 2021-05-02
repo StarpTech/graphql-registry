@@ -134,3 +134,44 @@ test('Should return 400 because type_def is missing', async (t) => {
     'message',
   )
 })
+
+test('Should return an empty diff when no other services exists', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.prisma.$disconnect())
+
+  let res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      type_defs: `type Query { hello: String }`,
+      version: '3',
+      service_name: `${t.context.testPrefix}_foo`,
+      graph_name: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/diff',
+    payload: {
+      type_defs: `type Query { hello: String }`,
+      service_name: `${t.context.testPrefix}_foo`,
+      graph_name: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+  t.deepEqual(
+    res.json(),
+    {
+      success: true,
+      data: [],
+    },
+    'message',
+  )
+})
+

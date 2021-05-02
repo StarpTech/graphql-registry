@@ -34,27 +34,35 @@ export default function getSchemaValidation(fastify: FastifyInstance) {
     }
 
     const serviceModels = await fastify.prisma.service.findMany({
+      where: {
+        isActive: true,
+        graph: {
+          name: req.body.graph_name,
+        },
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
       select: {
         name: true,
       },
     })
-    const allServiceNames = serviceModels.map((s) => s.name)
 
-    if (!allServiceNames.length) {
+    if (serviceModels.length === 0) {
       return res.send({
         success: true,
         data: [],
       })
     }
 
-    const allServiceVersions = allServiceNames.map((s) => ({
-      name: s,
+    const allLatestServices = serviceModels.map((s) => ({
+      name: s.name,
     }))
 
     const schmemaService = new SchemaService(fastify.prisma)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.body.graph_name,
-      allServiceVersions,
+      allLatestServices,
     )
 
     if (findError) {

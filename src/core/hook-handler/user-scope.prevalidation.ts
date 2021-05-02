@@ -7,7 +7,6 @@ export interface RequestContext {
 
 /**
  * Validate if the client is able to register a schema in the name of the service
- * TODO: Should not be necessary to pass type to FastifyRequest
  */
 export const checkUserServiceScope = function (
   req: FastifyRequest<RequestContext>,
@@ -15,8 +14,8 @@ export const checkUserServiceScope = function (
   next: HookHandlerDoneFunction,
 ) {
   // JWT context ?
-  if (req.user) {
-    if (req.body.service_name && !req.user.services.find((service) => service === req.body.service_name)) {
+  if (req.user && req.body.service_name) {
+    if (!req.user.services.find((service) => service === req.body.service_name)) {
       return next(InvalidServiceScopeError(req.body.service_name))
     }
   }

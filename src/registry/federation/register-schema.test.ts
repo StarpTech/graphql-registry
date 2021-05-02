@@ -150,6 +150,8 @@ test('Should be able to register schemas from multiple clients', async (t) => {
     typeDefs: `type Query { hello: String }`,
     version: '1',
   })
+
+
 })
 
 test('Should not be able to push invalid schema', async (t) => {
@@ -379,7 +381,7 @@ test('Should return 400 because an service has no active schema registered', asy
   })
 
   t.is(res.statusCode, 400)
-  t.deepEqual(res.json().error, `Service "${t.context.testPrefix}_foo" has no schema registered`)
+  t.deepEqual(res.json().error, `In graph "${t.context.graphName}", service "${t.context.testPrefix}_foo" has no schema registered`)
 })
 
 test('Should be able to register a schema with a valid JWT', async (t) => {

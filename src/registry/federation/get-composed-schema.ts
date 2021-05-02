@@ -35,7 +35,7 @@ export const schema: FastifySchema = {
 
 export default function getComposedSchema(fastify: FastifyInstance) {
   fastify.get<RequestContext>('/schema/latest', { schema }, async (req, res) => {
-    const graph = await fastify.prisma.graph.findMany({
+    const graph = await fastify.prisma.graph.findFirst({
       where: {
         name: req.query.graph_name,
         isActive: true,
@@ -46,26 +46,34 @@ export default function getComposedSchema(fastify: FastifyInstance) {
     }
 
     const serviceModels = await fastify.prisma.service.findMany({
+      where: {
+        isActive: true,
+        graph: {
+          name: req.query.graph_name,
+        },
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
       select: {
         name: true,
       },
     })
-    const allServiceNames = serviceModels.map((s) => s.name)
-    const allServiceVersions = allServiceNames.map((s) => ({
-      name: s,
-    }))
-
-    if (!allServiceNames.length) {
+    if (serviceModels.length === 0) {
       return res.send({
         success: true,
         data: [],
       })
     }
 
+    const allLatestServices = serviceModels.map((s) => ({
+      name: s.name,
+    }))
+
     const schmemaService = new SchemaService(fastify.prisma)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.query.graph_name,
-      allServiceVersions,
+      allLatestServices,
     )
 
     if (findError) {

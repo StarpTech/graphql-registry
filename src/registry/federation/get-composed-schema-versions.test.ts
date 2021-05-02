@@ -143,15 +143,15 @@ test('Should return latest schema when no version was specified', async (t) => {
   t.is(response.data.length, 2)
 
   t.like(response.data[0], {
-    serviceName: `${t.context.testPrefix}_bar`,
-    typeDefs: 'type Query { world: String }',
-    version: '3',
-  })
-
-  t.like(response.data[1], {
     serviceName: `${t.context.testPrefix}_foo`,
     typeDefs: 'type Query { hello: String }',
     version: '1',
+  })
+
+  t.like(response.data[1], {
+    serviceName: `${t.context.testPrefix}_bar`,
+    typeDefs: 'type Query { world: String }',
+    version: '3',
   })
 })
 
@@ -192,7 +192,7 @@ test('Should return 404 when schema in version could not be found', async (t) =>
   t.deepEqual(
     res.json(),
     {
-      error: `Service "${t.context.testPrefix}_foo" has no schema in version "2" registered`,
+      error: `In graph "${t.context.graphName}", service "${t.context.testPrefix}_foo" has no schema in version "2" registered`,
       success: false,
     },
     'response payload match',
@@ -249,7 +249,7 @@ test('Should return 400 when schema in specified version was deactivated', async
   t.deepEqual(
     res.json(),
     {
-      error: `Service "${t.context.testPrefix}_foo" has no schema in version "1" registered`,
+      error: `In graph "${t.context.graphName}", service "${t.context.testPrefix}_foo" has no schema in version "1" registered`,
       success: false,
     },
     'response payload match',

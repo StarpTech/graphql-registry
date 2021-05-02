@@ -12,14 +12,14 @@ export class SchemaService {
     this.dbClient = client
   }
 
-  async findByServiceVersions(graphName: string, services: ServiceSchemaVersionMatch[]) {
+  async findByServiceVersions(graphName: string, serviceMatches: ServiceSchemaVersionMatch[]) {
     const schemas = []
     let error: Error | null = null
 
     const serviceItems = await this.dbClient.service.findMany({
       where: {
         name: {
-          in: services.map((s) => s.name),
+          in: serviceMatches.map((s) => s.name),
         },
         graph: {
           name: graphName,
@@ -28,18 +28,22 @@ export class SchemaService {
         isActive: true,
       },
       orderBy: {
-        name: 'asc',
+        updatedAt: 'desc',
+      },
+      select: {
+        name: true,
       },
     })
 
-    for await (const service of serviceItems) {
-      const match = services.find((s) => s.name === service.name)
-      const version = match?.version
+    for await (const serviceMatch of serviceMatches) {
+      const service = serviceItems.find((s) => s.name === serviceMatch.name)
 
-      if (!match) {
-        error = new Error(`Service "${service.name}" does not exists`)
+      if (!service) {
+        error = new Error(`In graph "${graphName}" service "${serviceMatch.name}" could not be found`)
         break
       }
+
+      const version = serviceMatch.version
 
       if (version) {
         const schema = await this.dbClient.schema.findFirst({
@@ -66,7 +70,7 @@ export class SchemaService {
         })
 
         if (!schema) {
-          error = new Error(`Service "${service.name}" has no schema in version "${version}" registered`)
+          error = new Error(`In graph "${graphName}", service "${service.name}" has no schema in version "${version}" registered`)
           break
         }
 
@@ -102,7 +106,7 @@ export class SchemaService {
         })
 
         if (!schemaTag) {
-          error = new Error(`Service "${service.name}" has no schema registered`)
+          error = new Error(`In graph "${graphName}", service "${service.name}" has no schema registered`)
           break
         }
 
