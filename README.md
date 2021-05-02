@@ -6,10 +6,10 @@
 
 <div align="center">
   <a href="https://github.com/StarpTech/graphql-registry/actions?query=workflow%3ACI">
-    <img src="https://github.com/StarpTech/graphql-registry/workflows/CI/badge.svg?event=push" alt="CI" />
+    <img src="https://github.com/StarpTech/graphql-registry/actions/workflows/ci.yml/badge.svg" alt="CI" />
   </a>
   <a href="https://github.com/StarpTech/graphql-registry/actions?query=workflow%3ABENCH">
-    <img src="https://github.com/StarpTech/graphql-registry/workflows/BENCH/badge.svg?event=push" alt="BENCH" />
+    <img src="https://github.com/StarpTech/graphql-registry/actions/workflows/bench.yml/badge.svg" alt="BENCH" />
   </a>
 </div>
 

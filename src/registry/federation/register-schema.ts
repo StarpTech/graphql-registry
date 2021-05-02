@@ -94,7 +94,7 @@ export default function registerSchema(fastify: FastifyInstance) {
         name: s.serviceName,
         typeDefs: s.typeDefs,
       }))
-
+      // Add the new schema to validate it against the current registry state before creating.
       serviceSchemas.push({
         name: req.body.service_name,
         typeDefs: req.body.type_defs,
