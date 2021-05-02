@@ -1,5 +1,5 @@
-import { preValidationHookHandler } from "fastify"
-import { InvalidServiceScopeError } from "../errrors"
+import { preValidationHookHandler } from 'fastify'
+import { InvalidServiceScopeError } from '../errrors'
 
 /**
  * Validate if the client is able to register a schema in the name of the service
