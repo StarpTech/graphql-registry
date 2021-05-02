@@ -23,7 +23,7 @@ export default function garbageCollect(fastify: FastifyInstance) {
       take: 10,
     })
 
-    const deletedVersions = await fastify.prisma.schemaVersion.deleteMany({
+    const deletedVersions = await fastify.prisma.schemaTag.deleteMany({
       where: {
         schema: {
           NOT: {

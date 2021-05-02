@@ -52,7 +52,7 @@ export class SchemaService {
               name: service.name,
               isActive: true,
             },
-            SchemaVersion: {
+            SchemaTag: {
               some: {
                 isActive: true,
                 version: version,
@@ -61,7 +61,7 @@ export class SchemaService {
             isActive: true,
           },
           include: {
-            SchemaVersion: true,
+            SchemaTag: true,
           },
         })
 
@@ -74,10 +74,10 @@ export class SchemaService {
           schemaId: schema.id,
           serviceName: service.name,
           typeDefs: schema.typeDefs,
-          version: schema.SchemaVersion[0].version,
+          version: schema.SchemaTag[0].version,
         })
       } else {
-        const schemaVersion = await this.dbClient.schemaVersion.findFirst({
+        const schemaTag = await this.dbClient.schemaTag.findFirst({
           where: {
             isActive: true,
             schema: {
@@ -101,16 +101,16 @@ export class SchemaService {
           },
         })
 
-        if (!schemaVersion) {
-          error = new Error(`Service "${service.name}" has no schema version registered`)
+        if (!schemaTag) {
+          error = new Error(`Service "${service.name}" has no schema registered`)
           break
         }
 
         schemas.push({
-          schemaId: schemaVersion.id,
+          schemaId: schemaTag.id,
           serviceName: service.name,
-          typeDefs: schemaVersion.schema.typeDefs,
-          version: schemaVersion.version,
+          typeDefs: schemaTag.schema.typeDefs,
+          version: schemaTag.version,
         })
       }
     }

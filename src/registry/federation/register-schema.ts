@@ -180,7 +180,7 @@ export default function registerSchema(fastify: FastifyInstance) {
           serviceId: service.id,
           typeDefs: req.body.type_defs,
           // Create new version
-          SchemaVersion: {
+          SchemaTag: {
             create: {
               version: req.body.version,
               serviceId: service.id,
@@ -202,15 +202,24 @@ export default function registerSchema(fastify: FastifyInstance) {
       })
 
       /**
-       * Create new schema version
+       * Create new schema tag
        */
-      await fastify.prisma.schemaVersion.create({
-        data: {
+      const schemaTag = await fastify.prisma.schemaTag.findFirst({
+        where: {
           version: req.body.version,
           schemaId: schema.id,
           serviceId: service.id,
         },
       })
+      if (!schemaTag) {
+        await fastify.prisma.schemaTag.create({
+          data: {
+            version: req.body.version,
+            schemaId: schema.id,
+            serviceId: service.id,
+          },
+        })
+      }
     }
 
     const responseBody: SuccessResponse<SchemaResponseModel> = {

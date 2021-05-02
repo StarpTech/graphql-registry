@@ -1,11 +1,11 @@
-import { SchemaVersion } from '@prisma/client'
+import { SchemaTag } from '@prisma/client'
 
 export type SchemaResponseModel = {
   schemaId: number
   serviceName: string
   typeDefs: string
   version: string
-} & Pick<SchemaVersion, 'version'>
+} & Pick<SchemaTag, 'version'>
 
 export type ResponseModel = {
   success: boolean
