@@ -7,6 +7,14 @@ interface DeactivateSchemaRequest {
 }
 
 export const schema: FastifySchema = {
+  response: {
+    '2xx': {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+      },
+    },
+  },
   body: {
     type: 'object',
     required: ['schemaId', 'graph_name'],

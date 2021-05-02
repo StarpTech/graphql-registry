@@ -15,6 +15,32 @@ interface GetSchemaByVersionsRequest {
 }
 
 export const schema: FastifySchema = {
+  response: {
+    '2xx': {
+      type: 'object',
+      required: ['success', 'data'],
+      properties: {
+        success: { type: 'boolean' },
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['version', 'typeDefs', 'serviceName', 'schemaId'],
+            properties: {
+              version: { type: 'string', minLength: 1, maxLength: 100 },
+              typeDefs: { type: 'string', minLength: 1, maxLength: 10000 },
+              serviceName: {
+                type: 'string',
+                minLength: 1,
+                pattern: '[a-zA-Z_\\-0-9]+',
+              },
+              schemaId: { type: 'number', minimum: 1 },
+            },
+          },
+        },
+      },
+    },
+  },
   body: {
     type: 'object',
     required: ['services', 'graph_name'],
