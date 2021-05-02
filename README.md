@@ -141,7 +141,7 @@ POST - `/schema/validate` Validate schema between provided and latest schemas.
 
 ### Remove all schemas except the most (N) recent
 
-POST - `/schema/garbage_collect` Removes all schemas except the most recent N of every service. Returns the removed schemas. This could be called by a [trigger](https://developers.cloudflare.com/workers/platform/cron-triggers).
+POST - `/schema/garbage_collect` Removes all schemas except the most recent N of every service. Returns the count removed schemas and versions. This could be called by a [trigger](https://developers.cloudflare.com/workers/platform/cron-triggers).
 
 <details>
 <summary>Example Request</summary>
