@@ -11,6 +11,7 @@
   <a href="https://github.com/StarpTech/graphql-registry/actions?query=workflow%3ABENCH">
     <img src="https://github.com/StarpTech/graphql-registry/actions/workflows/bench.yml/badge.svg" alt="BENCH" />
   </a>
+  <a href='https://coveralls.io/github/StarpTech/graphql-registry?branch=main'><img src='https://coveralls.io/repos/github/StarpTech/graphql-registry/badge.svg?branch=main' alt='Coverage Status' /></a>
 </div>
 
 <div align="center">GraphQL registry</div>

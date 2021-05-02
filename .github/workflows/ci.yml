@@ -43,7 +43,12 @@ jobs:
         run: npm ci --prefer-offline --no-audit
 
       - name: Run Tests
-        run: npm test
+        run: npm run cov
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Compiles
         run: npm run build
