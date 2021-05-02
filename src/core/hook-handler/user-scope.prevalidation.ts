@@ -1,11 +1,14 @@
-import { preValidationHookHandler } from 'fastify'
+import { FastifyRequest, FastifyReply, HookHandlerDoneFunction, preValidationHookHandler } from 'fastify'
 import { InvalidServiceScopeError } from '../errrors'
 
 /**
  * Validate if the client is able to register a schema in the name of the service
- * TODO: check of we can type the body, https://github.com/fastify/help/issues/427
  */
-export const checkUserServiceScope: preValidationHookHandler = function (req, res, next) {
+export const checkUserServiceScope = function (
+  req: FastifyRequest,
+  res: FastifyReply,
+  next: HookHandlerDoneFunction,
+) {
   // JWT context ?
   if (req.user) {
     const body = req.body as { service_name: string }

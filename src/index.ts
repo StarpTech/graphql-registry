@@ -1,15 +1,16 @@
 import build from './build-server'
 import envSchema from 'env-schema'
-import appSchema from './core/env.schema'
+import appSchema, { AppSchema } from './core/env.schema'
 
-const config = envSchema({
+const config = (envSchema({
   schema: appSchema,
-})
+}) as any) as AppSchema
 
 const app = build({
-  databaseConnectionUrl: config.DATABASE_URL as string,
-  basicAuth: config.BASIC_AUTH as string,
-  jwtSecret: config.JWT_SECRET as string,
+  databaseConnectionUrl: config.DATABASE_URL,
+  basicAuth: config.BASIC_AUTH,
+  jwtSecret: config.JWT_SECRET,
+  logger: config.LOGGER,
 })
 
 app.listen(3000, '0.0.0.0', (err, address) => {

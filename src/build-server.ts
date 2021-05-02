@@ -4,13 +4,16 @@ import prismaPlugin from './core/prisma-plugin'
 import health from './core/health'
 
 export interface buildOptions {
+  logger?: boolean
   databaseConnectionUrl: string
   basicAuth?: string
   jwtSecret?: string
 }
 
 export default function build(opts: buildOptions) {
-  const fastify = Fastify()
+  const fastify = Fastify({
+    logger: opts.logger
+  })
 
   // Database client
   fastify.register(prismaPlugin, {
