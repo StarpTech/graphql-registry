@@ -1,4 +1,4 @@
-name: CI
+name: BENCH
 
 on:
   push:
@@ -27,11 +27,6 @@ jobs:
         with:
           node-version: ${{ matrix.nodejs }}
 
-      - name: Start services
-        run: | 
-          docker-compose up -d
-          ./scripts/wait-for-healthy-container.sh postgres 30
-
       - name: (env) cache
         uses: actions/cache@v2
         with:
@@ -43,14 +38,23 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      - name: Start services
+        run: |
+          docker-compose up -d
+          ./scripts/wait-for-healthy-container.sh postgres 30
+
       - name: Install
         run: npm ci --prefer-offline --no-audit
 
-      - name: Run Tests
-        run: npm test
+      - name: Create db schema
+        run: DATABASE_URL="postgresql://postgres:changeme@localhost:5440/graphql-registry?schema=public" npx prisma db push --preview-feature
 
-      - name: Compiles
-        run: npm run build
+      - name: Build app image
+        run: docker-compose up -d app
+
+      - name: Bench
+        run: |
+          docker-compose run k6 run /benchmark/composed-schema.js
 
       - name: Clean services
         if: always()

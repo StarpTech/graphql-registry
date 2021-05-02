@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A graph consists of multiple clients and every client can handle an unlimited amount of schemas.
+// Multiple graphs represent different enviroments.
+model Graph {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  isActive  Boolean   @default(true)
+  schemas   Schema[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Service   Service[]
+}
+
+// A service belongs to one specific graph. There may be service with the same name in different graphs.
+model Service {
+  id        Int         @id @default(autoincrement())
+  name      String
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  graph     Graph       @relation(fields: [graphId], references: [id])
+  Schema    Schema[]
+  SchemaTag SchemaTag[]
+  graphId   Int
+  @@index(fields: [name, isActive, graphId], name: "find_service_index")
+}
+
+// A schema is owned by one service and belongs to a specific graph.
+model Schema {
+  id        Int         @id @default(autoincrement())
+  isActive  Boolean     @default(true)
+  typeDefs  String
+  graph     Graph       @relation(fields: [graphId], references: [id])
+  graphId   Int
+  service   Service     @relation(fields: [serviceId], references: [id])
+  serviceId Int
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  SchemaTag SchemaTag[]
+  @@index(fields: [typeDefs, graphId, serviceId, isActive], name: "find_schema_index")
+}
+
+// Every schema has at least one schema tag. A schema can be tagged with multiple versions e.g "latest", "v1".
+// The "latest" tag is determined by "createdAt".
+model SchemaTag {
+  id        Int      @id @default(autoincrement())
+  isActive  Boolean  @default(true)
+  schema    Schema   @relation(fields: [schemaId], references: [id])
+  schemaId  Int
+  version   String
+  createdAt DateTime @default(now())
+  service   Service  @relation(fields: [serviceId], references: [id])
+  serviceId Int
+  @@index(fields: [schemaId, serviceId, isActive, version], name: "find_tag_index")
+}

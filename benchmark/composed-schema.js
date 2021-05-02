@@ -1,6 +1,5 @@
-import encoding from 'k6/encoding'
 import http from 'k6/http'
-import { check } from 'k6'
+import { check, fail } from 'k6'
 
 export let options = {
   vus: 2,
@@ -10,15 +9,10 @@ export let options = {
   },
 }
 const BASE_URL = `${__ENV.URL}`
-const username = `${__ENV.SECRET}`
-const password = `${__ENV.SECRET}`
 
-const credentials = `${username}:${password}`
-const encodedCredentials = encoding.b64encode(credentials)
 const requestOptions = {
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Basic ${encodedCredentials}`,
   },
 }
 
@@ -29,11 +23,7 @@ export function setup() {
     graph_name: 'my_graph',
     service_name: 'foo',
   }
-  let res = http.post(
-    `${BASE_URL}/schema/push`,
-    JSON.stringify(data),
-    requestOptions,
-  )
+  let res = http.post(`${BASE_URL}/schema/push`, JSON.stringify(data), requestOptions)
 
   if (
     !check(res, {
@@ -49,11 +39,7 @@ export function setup() {
     graph_name: 'my_graph',
     service_name: 'bar',
   }
-  res = http.post(
-    `${BASE_URL}/schema/push`,
-    JSON.stringify(data),
-    requestOptions,
-  )
+  res = http.post(`${BASE_URL}/schema/push`, JSON.stringify(data), requestOptions)
 
   if (
     !check(res, {
@@ -72,11 +58,7 @@ export default () => {
       { name: 'bar', version: '1' },
     ],
   }
-  const res = http.post(
-    `${BASE_URL}/schema/compose`,
-    JSON.stringify(data),
-    requestOptions,
-  )
+  const res = http.post(`${BASE_URL}/schema/compose`, JSON.stringify(data), requestOptions)
 
   check(res, {
     'returns success': (resp) => resp.json('success'),

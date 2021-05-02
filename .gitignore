@@ -1,13 +1,5 @@
-/target
-/dist
-**/*.rs.bk
-Cargo.lock
-pkg/
 /build
-wasm-pack.log
-worker/
 node_modules/
-.cargo-ok
 /.nyc_output
 coverage
-wrangler.toml
+.env

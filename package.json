@@ -1,28 +1,32 @@
 {
   "private": true,
+  "name": "graphql-registry",
   "version": "0.0.0",
-  "main": "dist/worker.production.js",
-  "description": "Serverless GraphQL registry",
+  "main": "build/index.js",
+  "description": "GraphQL registry",
   "license": "MIT",
   "scripts": {
-    "dev": "wrangler dev",
-    "build": "webpack",
-    "deploy": "NODE_ENV=production wrangler publish",
-    "test": "npm run unit",
-    "unit": "ava src/**/*.test.ts",
-    "watch": "npm run unit -- --watch",
-    "cov": "nyc --reporter=lcov --reporter=text-summary -- npm run unit",
+    "start": "node -r dotenv/config build/index.js",
+    "build": "tsc",
+    "dev": "cross-env TS_NODE_TRANSPILE_ONLY=true nodemon -L --nolazy --watch 'src/**/*.ts' --exec node --inspect=0.0.0.0:9229 -r ts-node/register -r dotenv/config src/index.ts",
+    "test": "ava",
+    "test:watch": "npm run test -- --watch",
+    "cov": "nyc --reporter=lcov --reporter=text-summary -- npm run test",
     "format": "prettier --write '**/*.{js,ts,json,md}'",
-    "types": "tsc --noEmit",
-    "release": "release-it --no-npm --github.release"
+    "release": "release-it --no-npm --github.release",
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">=14"
   },
   "files": [
-    "dist/worker.production.js"
+    "build",
+    "prisma"
   ],
   "ava": {
+    "files": [
+      "src/**/*.test.ts"
+    ],
     "extensions": [
       "ts"
     ],
@@ -32,11 +36,16 @@
     "nodeArguments": []
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^2.2.1",
-    "@cloudflare/wrangler": "^1.16.0",
+    "@types/node": "^14.14.41",
     "ava": "^3.15.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
+    "husky": "^6.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.7",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
+    "prisma": "^2.21.2",
     "release-it": "^14.6.1",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.1.1",
@@ -48,19 +57,21 @@
   "dependencies": {
     "@apollo/federation": "0.23.0",
     "@graphql-inspector/core": "2.5.0",
-    "@sindresorhus/fnv1a": "2.0.1",
-    "fast-sort": "3.0.2",
+    "@prisma/client": "^2.21.2",
+    "env-schema": "^2.1.0",
+    "fastify": "^3.15.0",
+    "fastify-basic-auth": "^1.0.1",
+    "fastify-error": "^0.3.1",
+    "fastify-jwt": "^2.4.0",
+    "fastify-plugin": "^2.3.4",
     "graphql": "15.5.0",
-    "superstruct": "0.15.1",
-    "worktop": "0.5.1"
+    "unique-string": "^2.0.0"
   },
   "keywords": [
-    "serviceworker",
-    "cloudflare",
     "graphql",
     "registry",
-    "cache",
     "schema",
+    "apollo",
     "federation"
   ]
 }
