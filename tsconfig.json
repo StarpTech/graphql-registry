@@ -6,6 +6,8 @@
     "lib": ["esnext"],
     "alwaysStrict": true,
     "strict": true,
+    "allowJs": true,
+    "noImplicitAny": true,
     "preserveConstEnums": true,
     "moduleResolution": "node",
     "sourceMap": true,

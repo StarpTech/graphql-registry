@@ -11,7 +11,7 @@ test('Should keep the most recent 10 schemas of every service in the graph', asy
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   for (let i = 0; i < 15; i++) {
     let res = await app.inject({
@@ -66,7 +66,7 @@ test('Should not be possible to delete all schemas', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',

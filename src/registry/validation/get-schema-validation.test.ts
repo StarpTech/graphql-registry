@@ -11,7 +11,7 @@ test('Should validate schema as valid', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -51,7 +51,7 @@ test('Should validate schema as invalid', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -92,7 +92,7 @@ test('Should return 400 because type_def is missing', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -119,7 +119,7 @@ test('Should 400 when graph could not be found', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',

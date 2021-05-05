@@ -2,8 +2,11 @@ import { FastifyInstance, FastifySchema } from 'fastify'
 import S from 'fluent-json-schema'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaResponseModel, SuccessResponse } from '../../core/types'
-import { SchemaService } from '../../core/services/Schema'
+import { SchemaService } from '../../core/services/SchemaService'
 import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
+import SchemaRepository from '../../core/repositories/SchemaRepository'
+import ServiceRepository from '../../core/repositories/ServiceRepository'
+import GraphRepository from '../../core/repositories/GraphRepository'
 
 interface ServiceVersionMatch {
   name: string
@@ -54,22 +57,25 @@ export const schema: FastifySchema = {
 
 export default function getComposedSchemaVersions(fastify: FastifyInstance) {
   fastify.post<RequestContext>('/schema/compose', { schema }, async (req, res) => {
-    const graph = await fastify.prisma.graph.findFirst({
-      where: {
-        name: req.body.graph_name,
-        isActive: true,
-      },
+    const graphRepository = new GraphRepository(fastify.knex)
+
+    const graph = await graphRepository.findFirst({
+      name: req.body.graph_name,
     })
+
     if (!graph) {
       throw InvalidGraphNameError(req.body.graph_name)
     }
+
+    const serviceRepository = new ServiceRepository(fastify.knex)
+    const schemaRepository = new SchemaRepository(fastify.knex)
 
     const allServicesWithVersion: ServiceVersionMatch[] = req.body.services.map((s) => ({
       name: s.name,
       version: s.version,
     }))
 
-    const schmemaService = new SchemaService(fastify.prisma)
+    const schmemaService = new SchemaService(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.body.graph_name,
       allServicesWithVersion,

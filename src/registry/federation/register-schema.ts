@@ -1,10 +1,14 @@
 import S from 'fluent-json-schema'
-import { SchemaService } from '../../core/services/Schema'
+import { SchemaService } from '../../core/services/SchemaService'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaResponseModel, SuccessResponse } from '../../core/types'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 import { checkUserServiceScope } from '../../core/hook-handler/user-scope.prevalidation'
+import ServiceRepository from '../../core/repositories/ServiceRepository'
+import GraphRepository from '../../core/repositories/GraphRepository'
+import SchemaRepository from '../../core/repositories/SchemaRepository'
+import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
 
 export interface RequestContext {
   Body: {
@@ -46,27 +50,20 @@ export default function registerSchema(fastify: FastifyInstance) {
      * Validate new schema with existing schemas of all active services
      */
 
-    const serviceModels = await fastify.prisma.service.findMany({
-      where: {
-        isActive: true,
-        graph: {
-          name: req.body.graph_name,
-          isActive: true,
-        },
-        NOT: {
-          name: req.body.service_name,
-        },
+    const serviceRepository = new ServiceRepository(fastify.knex)
+    const schemaRepository = new SchemaRepository(fastify.knex)
+    const graphRepository = new GraphRepository(fastify.knex)
+    const schemaTagRepository = new SchemaTagRepository(fastify.knex)
+
+    const serviceModels = await serviceRepository.findManyExceptWithName(
+      {
+        graphName: req.body.graph_name,
       },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      select: {
-        name: true,
-      },
-    })
+      req.body.service_name,
+    )
 
     const allLatestServices = serviceModels.map((s) => ({ name: s.name }))
-    const schmemaService = new SchemaService(fastify.prisma)
+    const schmemaService = new SchemaService(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.body.graph_name,
       allLatestServices,
@@ -96,35 +93,27 @@ export default function registerSchema(fastify: FastifyInstance) {
      * Create new graph
      */
 
-    let graph = await fastify.prisma.graph.upsert({
-      create: {
-        name: req.body.graph_name,
-      },
-      update: {},
-      where: {
-        name: req.body.graph_name,
-      },
+    let graph = await graphRepository.findFirst({
+      name: req.body.graph_name,
     })
+
+    if (!graph) {
+      graph = await graphRepository.create({ name: req.body.graph_name })
+    }
 
     /**
      * Create new service
      */
 
-    let service = await fastify.prisma.service.findFirst({
-      where: {
-        name: req.body.service_name,
-        graph: {
-          name: req.body.graph_name,
-        },
-      },
+    let service = await serviceRepository.findFirst({
+      graphName: req.body.graph_name,
+      name: req.body.service_name,
     })
 
     if (!service) {
-      service = await fastify.prisma.service.create({
-        data: {
-          name: req.body.service_name,
-          graphId: graph.id,
-        },
+      service = await serviceRepository.create({
+        name: req.body.service_name,
+        graphId: graph.id,
       })
     }
 
@@ -132,66 +121,40 @@ export default function registerSchema(fastify: FastifyInstance) {
      * Create new schema
      */
 
-    let schema = await fastify.prisma.schema.findFirst({
-      where: {
-        typeDefs: req.body.type_defs,
-        service: {
-          name: req.body.service_name,
-        },
-        graph: {
-          name: req.body.graph_name,
-        },
-      },
-      include: {
-        service: true,
-      },
+    let schema = await schemaRepository.findFirst({
+      graphName: req.body.graph_name,
+      serviceName: req.body.service_name,
+      typeDefs: req.body.type_defs,
     })
 
     if (!schema) {
-      schema = await fastify.prisma.schema.create({
-        data: {
-          graphId: graph.id,
-          serviceId: service.id,
-          typeDefs: req.body.type_defs,
-          // Create new version
-          SchemaTag: {
-            create: {
-              version: req.body.version,
-              serviceId: service.id,
-            },
-          },
-        },
-        include: {
-          service: true,
-        },
+      schema = await schemaRepository.create({
+        graphId: graph.id,
+        serviceId: service.id,
+        typeDefs: req.body.type_defs,
+      })
+      await schemaTagRepository.create({
+        version: req.body.version,
+        schemaId: schema.id,
       })
     } else {
-      await fastify.prisma.schema.update({
-        where: {
-          id: schema.id,
-        },
-        data: {
-          updatedAt: new Date(),
-        },
+      await schemaRepository.updateById(schema.id, {
+        updatedAt: new Date()
       })
 
       /**
        * Create new schema tag
        */
-      const schemaTag = await fastify.prisma.schemaTag.findFirst({
-        where: {
+      const schemaTag = await schemaTagRepository.findByVersion({
+        version: req.body.version,
+        schemaId: schema.id,
+        serviceId: service.id,
+      })
+
+      if (!schemaTag) {
+        await schemaTagRepository.create({
           version: req.body.version,
           schemaId: schema.id,
-          serviceId: service.id,
-        },
-      })
-      if (!schemaTag) {
-        await fastify.prisma.schemaTag.create({
-          data: {
-            version: req.body.version,
-            schemaId: schema.id,
-            serviceId: service.id,
-          },
         })
       }
     }
@@ -200,7 +163,7 @@ export default function registerSchema(fastify: FastifyInstance) {
       success: true,
       data: {
         schemaId: schema.id,
-        serviceName: schema.service.name,
+        serviceName: req.body.service_name,
         typeDefs: schema.typeDefs,
         version: req.body.version,
       },

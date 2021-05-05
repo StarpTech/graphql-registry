@@ -11,7 +11,7 @@ test('Should return schema of two services', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',

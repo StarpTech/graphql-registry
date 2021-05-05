@@ -11,7 +11,7 @@ test('Should calculate schema diff', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -61,7 +61,7 @@ test('Should detect a breaking change', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -113,7 +113,7 @@ test('Should return 400 because type_def is missing', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -139,7 +139,7 @@ test('Should return an empty diff when no other services exists', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -174,4 +174,3 @@ test('Should return an empty diff when no other services exists', async (t) => {
     'message',
   )
 })
-

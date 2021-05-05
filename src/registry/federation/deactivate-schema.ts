@@ -1,6 +1,7 @@
 import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { SchemaNotFoundError } from '../../core/errrors'
+import SchemaRepository from '../../core/repositories/SchemaRepository'
 
 export interface RequestContext {
   Body: {
@@ -18,29 +19,22 @@ export const schema: FastifySchema = {
 
 export default function deactivateSchema(fastify: FastifyInstance) {
   fastify.post<RequestContext>('/schema/deactivate', async (req, res) => {
-    const schema = await fastify.prisma.schema.findFirst({
-      where: {
-        isActive: true,
-        id: req.body.schemaId,
-      },
-    })
+    return fastify.knex.transaction(async function (trx) {
+      const schemaRepository = new SchemaRepository(trx)
+      const schema = await schemaRepository.findById(req.body.schemaId)
 
-    if (!schema) {
-      throw SchemaNotFoundError(req.body.schemaId)
-    }
+      if (!schema) {
+        throw SchemaNotFoundError(req.body.schemaId)
+      }
 
-    await fastify.prisma.schema.update({
-      data: {
+      await schemaRepository.updateById(schema.id, {
         ...schema,
         isActive: false,
-      },
-      where: {
-        id: schema.id,
-      },
-    })
+      })
 
-    return {
-      success: true,
-    }
+      return {
+        success: true,
+      }
+    })
   })
 }

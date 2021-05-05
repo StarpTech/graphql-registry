@@ -1,5 +1,5 @@
 import { ExecutionContext } from 'ava'
-import { execSync } from 'child_process'
+import execa from 'execa'
 import { join } from 'path'
 import us from 'unique-string'
 import jwt from 'jsonwebtoken'
@@ -8,6 +8,7 @@ export interface TestContext {
   dbName: string
   testPrefix: string
   graphName: string
+  bootstrapped: boolean
   connectionUrl: string
 }
 
@@ -20,10 +21,11 @@ export function getJwtHeader(issuerServices: string[]) {
 }
 
 export function createTestContext() {
-  const prismaBinary = join(process.cwd(), 'node_modules', '.bin', 'prisma')
+  const knexBinary = join(process.cwd(), 'node_modules', '.bin', 'knex')
 
   return async (t: ExecutionContext<TestContext>) => {
     t.context = {
+      bootstrapped: false,
       connectionUrl: '',
       graphName: '',
       testPrefix: '',
@@ -32,7 +34,18 @@ export function createTestContext() {
 
     t.context.connectionUrl = `postgresql://postgres:changeme@localhost:5440/${t.context.dbName}?schema=public`
 
-    execSync(`DATABASE_URL=${t.context.connectionUrl} ${prismaBinary} db push --preview-feature --skip-generate`)
+    await execa.command(`docker exec -t postgres createdb -U postgres ${t.context.dbName}`, {
+      shell: true,
+    })
+
+    await execa.command(`${knexBinary} migrate:up 20210504193054_initial_schema.js`, {
+      shell: true,
+      env: {
+        DATABASE_URL: t.context.connectionUrl,
+      },
+    })
+
+    t.context.bootstrapped = true
   }
 }
 
@@ -44,7 +57,11 @@ export function createTestPrefix() {
 }
 
 export function cleanTest() {
-  return (t: ExecutionContext<TestContext>) => {
-    execSync(`docker exec -t postgres psql -U postgres -c 'drop database ${t.context.dbName};'`)
+  return async (t: ExecutionContext<TestContext>) => {
+    if (t.context.bootstrapped) {
+      await execa.command(`docker exec -t postgres psql -U postgres -c 'drop database ${t.context.dbName};'`, {
+        shell: true,
+      })
+    }
   }
 }

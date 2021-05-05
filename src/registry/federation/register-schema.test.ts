@@ -11,7 +11,7 @@ test('Should register new schema', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   const res = await app.inject({
     method: 'POST',
@@ -43,7 +43,7 @@ test('Should not create multiple schemas when client and type_defs does not chan
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -97,7 +97,7 @@ test('Should be able to register schemas from multiple clients', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -150,15 +150,13 @@ test('Should be able to register schemas from multiple clients', async (t) => {
     typeDefs: `type Query { hello: String }`,
     version: '1',
   })
-
-
 })
 
 test('Should not be able to push invalid schema', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -178,7 +176,7 @@ test('Should be able to store multiple versions with the same schema and client 
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -232,7 +230,7 @@ test('Should reject schema because it is not compatible with registry state', as
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -266,7 +264,7 @@ test('Should return correct latest service schema with multiple graphs', async (
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -341,7 +339,7 @@ test('Should return 400 because an service has no active schema registered', asy
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -381,7 +379,10 @@ test('Should return 400 because an service has no active schema registered', asy
   })
 
   t.is(res.statusCode, 400)
-  t.deepEqual(res.json().error, `In graph "${t.context.graphName}", service "${t.context.testPrefix}_foo" has no schema registered`)
+  t.deepEqual(
+    res.json().error,
+    `In graph "${t.context.graphName}", service "${t.context.testPrefix}_foo" has no schema registered`,
+  )
 })
 
 test('Should be able to register a schema with a valid JWT', async (t) => {
@@ -389,7 +390,7 @@ test('Should be able to register a schema with a valid JWT', async (t) => {
     databaseConnectionUrl: t.context.connectionUrl,
     jwtSecret: 'secret',
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   const res = await app.inject({
     method: 'POST',
@@ -425,7 +426,7 @@ test('Should not be able to register a schema with a jwt token that is not autho
     databaseConnectionUrl: t.context.connectionUrl,
     jwtSecret: 'secret',
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   const res = await app.inject({
     method: 'POST',
@@ -457,7 +458,7 @@ test('Should not be able to register a schema with a jwt token with empty servic
     databaseConnectionUrl: t.context.connectionUrl,
     jwtSecret: 'secret',
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   const res = await app.inject({
     method: 'POST',

@@ -1,4 +1,5 @@
 import { SchemaTag } from '@prisma/client'
+import { SchemaDBModel } from './models/schemaModel'
 
 export type SchemaResponseModel = {
   schemaId: number
@@ -19,3 +20,5 @@ export type ErrorResponse = {
   success: true
   error: string
 }
+
+export type LastUpdatedSchema = Pick<SchemaTag, 'version'> & Pick<SchemaDBModel, 'id' | 'typeDefs'>
