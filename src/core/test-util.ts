@@ -24,7 +24,7 @@ export function createTestContext() {
   const knexBinary = join(process.cwd(), 'node_modules', '.bin', 'knex')
 
   return async (t: ExecutionContext<TestContext>) => {
-    t.timeout(20000, 'make sure database has bootstrapped');
+    t.timeout(20000, 'make sure database has bootstrapped')
 
     t.context = {
       bootstrapped: false,
@@ -60,7 +60,7 @@ export function createTestPrefix() {
 
 export function cleanTest() {
   return async (t: ExecutionContext<TestContext>) => {
-    t.timeout(20000, 'make sure database has deleted');
+    t.timeout(20000, 'make sure database has deleted')
 
     if (t.context.bootstrapped) {
       await execa.command(`docker exec -t postgres psql -U postgres -c 'drop database ${t.context.dbName};'`, {

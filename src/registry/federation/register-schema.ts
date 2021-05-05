@@ -139,7 +139,7 @@ export default function registerSchema(fastify: FastifyInstance) {
       })
     } else {
       await schemaRepository.updateById(schema.id, {
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
 
       /**

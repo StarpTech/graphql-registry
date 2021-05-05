@@ -10,10 +10,7 @@ export class SchemaManager {
   #serviceRepository: ServiceRepository
   #schemaRepository: SchemaRepository
 
-  constructor(
-    serviceRepository: ServiceRepository,
-    schemaRepository: SchemaRepository
-  ) {
+  constructor(serviceRepository: ServiceRepository, schemaRepository: SchemaRepository) {
     this.#serviceRepository = serviceRepository
     this.#schemaRepository = schemaRepository
   }
