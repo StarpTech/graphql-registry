@@ -1,5 +1,5 @@
 import S from 'fluent-json-schema'
-import { SchemaService } from '../../core/services/SchemaService'
+import { SchemaManager } from '../../core/manager/SchemaManager'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaResponseModel, SuccessResponse } from '../../core/types'
 import { FastifyInstance, FastifySchema } from 'fastify'
@@ -63,7 +63,7 @@ export default function registerSchema(fastify: FastifyInstance) {
     )
 
     const allLatestServices = serviceModels.map((s) => ({ name: s.name }))
-    const schmemaService = new SchemaService(serviceRepository, schemaRepository)
+    const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.body.graph_name,
       allLatestServices,

@@ -6,7 +6,7 @@ export interface ServiceSchemaVersionMatch {
   version?: string
 }
 
-export class SchemaService {
+export class SchemaManager {
   #serviceRepository: ServiceRepository
   #schemaRepository: SchemaRepository
 

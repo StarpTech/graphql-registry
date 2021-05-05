@@ -1,6 +1,6 @@
 import S from 'fluent-json-schema'
 import { composeAndValidateSchema } from '../../core/federation'
-import { SchemaService } from '../../core/services/SchemaService'
+import { SchemaManager } from '../../core/manager/SchemaManager'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
@@ -42,10 +42,10 @@ export default function getComposedSchema(fastify: FastifyInstance) {
   fastify.get<RequestContext>('/schema/latest', { schema }, async (req, res) => {
     const graphRepository = new GraphRepository(fastify.knex)
 
-    const graph = await graphRepository.findFirst({
+    const graphExists = await graphRepository.exists({
       name: req.query.graph_name,
     })
-    if (!graph) {
+    if (!graphExists) {
       throw InvalidGraphNameError(req.query.graph_name)
     }
 
@@ -66,7 +66,7 @@ export default function getComposedSchema(fastify: FastifyInstance) {
       name: s.name,
     }))
 
-    const schmemaService = new SchemaService(serviceRepository, schemaRepository)
+    const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
 
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.query.graph_name,

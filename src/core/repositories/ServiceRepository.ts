@@ -47,6 +47,7 @@ export default class ServiceRepository {
           .andOn('graph.isActive', '=', knex.raw('?', true))
           .andOn('graph.name', '=', knex.raw('?', graphName))
       })
+      .where(`${table}.isActive`, knex.raw('?', true))
       .whereNot(`${table}.name`, exceptService)
       .orderBy(`${table}.updatedAt`, 'desc')
   }

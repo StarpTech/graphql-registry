@@ -7,11 +7,20 @@ export default class GraphRepository {
   constructor(knex: Knex) {
     this.#knex = knex
   }
+  async exists({ name }: { name: string }) {
+    const knex = this.#knex
+    const result = await knex
+      .from(this.#table)
+      .count('id')
+      .where('name', knex.raw('?', name))
+      .first<{ count: number }>()
+
+    return result.count > 0
+  }
   findFirst({ name }: { name: string }) {
     const knex = this.#knex
     return knex
       .from(this.#table)
-      .where('isActive', knex.raw('?', true))
       .where('name', knex.raw('?', name))
       .first<GraphDBModel>()
   }
