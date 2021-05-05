@@ -184,7 +184,7 @@ This activates authorization in the `/schema/push` endpoint. Only the client wit
 ```
 docker-compose up postgres
 # Create db schema
-npx prisma db push --preview-feature
+npm run migrate
 npm run dev
 npm run test
 ```

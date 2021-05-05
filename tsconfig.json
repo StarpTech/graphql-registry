@@ -6,10 +6,13 @@
     "lib": ["esnext"],
     "alwaysStrict": true,
     "strict": true,
+    "allowJs": true,
+    "noImplicitAny": true,
     "preserveConstEnums": true,
     "moduleResolution": "node",
     "sourceMap": true,
     "esModuleInterop": true
   },
-  "exclude": ["node_modules/", "dist/"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/"]
 }

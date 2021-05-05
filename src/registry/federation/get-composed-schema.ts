@@ -1,8 +1,12 @@
 import S from 'fluent-json-schema'
 import { composeAndValidateSchema } from '../../core/federation'
-import { SchemaService } from '../../core/services/Schema'
+import { SchemaService } from '../../core/services/SchemaService'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
+import SchemaRepository from '../../core/repositories/SchemaRepository'
+import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
+import ServiceRepository from '../../core/repositories/ServiceRepository'
+import GraphRepository from '../../core/repositories/GraphRepository'
 
 export interface RequestContext {
   Querystring: {
@@ -29,35 +33,27 @@ export const schema: FastifySchema = {
       ),
   },
   querystring: S.object()
+    .required(['graph_name'])
     .additionalProperties(false)
     .prop('graph_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
 }
 
 export default function getComposedSchema(fastify: FastifyInstance) {
   fastify.get<RequestContext>('/schema/latest', { schema }, async (req, res) => {
-    const graph = await fastify.prisma.graph.findFirst({
-      where: {
-        name: req.query.graph_name,
-        isActive: true,
-      },
+    const graphRepository = new GraphRepository(fastify.knex)
+
+    const graph = await graphRepository.findFirst({
+      name: req.query.graph_name,
     })
     if (!graph) {
       throw InvalidGraphNameError(req.query.graph_name)
     }
 
-    const serviceModels = await fastify.prisma.service.findMany({
-      where: {
-        isActive: true,
-        graph: {
-          name: req.query.graph_name,
-        },
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      select: {
-        name: true,
-      },
+    const serviceRepository = new ServiceRepository(fastify.knex)
+    const schemaRepository = new SchemaRepository(fastify.knex)
+
+    const serviceModels = await serviceRepository.findMany({
+      graphName: req.query.graph_name,
     })
     if (serviceModels.length === 0) {
       return res.send({
@@ -70,7 +66,8 @@ export default function getComposedSchema(fastify: FastifyInstance) {
       name: s.name,
     }))
 
-    const schmemaService = new SchemaService(fastify.prisma)
+    const schmemaService = new SchemaService(serviceRepository, schemaRepository)
+
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.query.graph_name,
       allLatestServices,

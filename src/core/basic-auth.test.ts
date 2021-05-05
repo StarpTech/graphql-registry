@@ -12,7 +12,7 @@ test('Should return 200 because credentials are valid', async (t) => {
     databaseConnectionUrl: t.context.connectionUrl,
     basicAuth: '123',
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -36,7 +36,7 @@ test('Should support multiple secrets comma separated', async (t) => {
     databaseConnectionUrl: t.context.connectionUrl,
     basicAuth: '123,456',
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'POST',
@@ -60,7 +60,7 @@ test('Should return 401 because credentials are invalid', async (t) => {
     databaseConnectionUrl: t.context.connectionUrl,
     basicAuth: '123',
   })
-  t.teardown(() => app.prisma.$disconnect())
+  t.teardown(() => app.close())
 
   let res = await app.inject({
     method: 'GET',

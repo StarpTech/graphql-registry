@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifySchema } from 'fastify'
 import S from 'fluent-json-schema'
+import { GraphDBModel } from '../../core/models/graphModel'
 
 export const schema: FastifySchema = {
   response: {
@@ -8,12 +9,12 @@ export const schema: FastifySchema = {
       .required(['success'])
       .prop('success', S.boolean())
       .prop('data', S.array().items(S.string().pattern('[a-zA-Z_\\-0-9]+'))),
-  }
+  },
 }
 
 export default function listGraphs(fastify: FastifyInstance) {
   fastify.get('/graphs', async (req, res) => {
-    const allGraphs = await fastify.prisma.graph.findMany()
+    const allGraphs = await fastify.knex.select('name').from<GraphDBModel>('graph')
 
     res.send({
       success: true,

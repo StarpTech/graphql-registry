@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 import registryPlugin from './registry'
-import prismaPlugin from './core/prisma-plugin'
 import health from './core/health'
+import knexPlugin from './core/knex-plugin'
 
 export interface buildOptions {
   logger?: boolean
@@ -12,11 +12,11 @@ export interface buildOptions {
 
 export default function build(opts: buildOptions) {
   const fastify = Fastify({
-    logger: opts.logger
+    logger: opts.logger,
   })
 
   // Database client
-  fastify.register(prismaPlugin, {
+  fastify.register(knexPlugin, {
     databaseConnectionUrl: opts.databaseConnectionUrl,
   })
 
@@ -30,6 +30,7 @@ export default function build(opts: buildOptions) {
   fastify.register(health)
 
   fastify.setErrorHandler(function (err, request, reply) {
+    this.log.error(err)
     if (err.validation) {
       reply.code(400)
       reply.send({

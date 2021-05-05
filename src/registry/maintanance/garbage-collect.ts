@@ -16,41 +16,32 @@ export const schema: FastifySchema = {
 
 export default function garbageCollect(fastify: FastifyInstance) {
   fastify.post<RequestContext>('/schema/garbage_collect', { schema }, async (req, res) => {
-    const schemasToKeep = await fastify.prisma.schema.findMany({
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      take: 10,
-    })
+    return fastify.knex.transaction(async function (trx) {
+      const schemasToKeep = await trx.from('schema').orderBy('updatedAt', 'desc').limit(req.body.num_schemas_keep)
 
-    const deletedVersions = await fastify.prisma.schemaTag.deleteMany({
-      where: {
-        schema: {
-          NOT: {
-            id: {
-              in: schemasToKeep.map((s) => s.id),
-            },
-          },
+      const deletedSchemaTags = await trx
+        .from('schema_tag')
+        .whereNotIn(
+          `schema_tag.schemaId`,
+          schemasToKeep.map((s) => s.id),
+        )
+        .delete()
+
+      const deletedSchemas = await trx
+        .from('schema')
+        .whereNotIn(
+          `schema.id`,
+          schemasToKeep.map((s) => s.id),
+        )
+        .delete()
+
+      return {
+        success: true,
+        data: {
+          deletedSchemas: deletedSchemas,
+          deletedVersions: deletedSchemaTags,
         },
-      },
+      }
     })
-
-    const deletedSchemas = await fastify.prisma.schema.deleteMany({
-      where: {
-        NOT: {
-          id: {
-            in: schemasToKeep.map((s) => s.id),
-          },
-        },
-      },
-    })
-
-    return {
-      success: true,
-      data: {
-        deletedSchemas: deletedSchemas.count,
-        deletedVersions: deletedVersions.count,
-      },
-    }
   })
 }

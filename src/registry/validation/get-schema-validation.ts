@@ -2,7 +2,10 @@ import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
 import { composeAndValidateSchema } from '../../core/federation'
-import { SchemaService } from '../../core/services/Schema'
+import { SchemaService } from '../../core/services/SchemaService'
+import SchemaRepository from '../../core/repositories/SchemaRepository'
+import ServiceRepository from '../../core/repositories/ServiceRepository'
+import GraphRepository from '../../core/repositories/GraphRepository'
 
 export interface RequestContext {
   Body: {
@@ -23,29 +26,20 @@ export const schema: FastifySchema = {
 
 export default function getSchemaValidation(fastify: FastifyInstance) {
   fastify.post<RequestContext>('/schema/validate', { schema }, async (req, res) => {
-    const graph = await fastify.prisma.graph.findFirst({
-      where: {
-        name: req.body.graph_name,
-        isActive: true,
-      },
+    const graphRepository = new GraphRepository(fastify.knex)
+
+    const graph = await graphRepository.findFirst({
+      name: req.body.graph_name,
     })
     if (!graph) {
       throw InvalidGraphNameError(req.body.graph_name)
     }
 
-    const serviceModels = await fastify.prisma.service.findMany({
-      where: {
-        isActive: true,
-        graph: {
-          name: req.body.graph_name,
-        },
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      select: {
-        name: true,
-      },
+    const serviceRepository = new ServiceRepository(fastify.knex)
+    const schemaRepository = new SchemaRepository(fastify.knex)
+
+    const serviceModels = await serviceRepository.findMany({
+      graphName: req.body.graph_name,
     })
 
     if (serviceModels.length === 0) {
@@ -59,7 +53,7 @@ export default function getSchemaValidation(fastify: FastifyInstance) {
       name: s.name,
     }))
 
-    const schmemaService = new SchemaService(fastify.prisma)
+    const schmemaService = new SchemaService(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.body.graph_name,
       allLatestServices,

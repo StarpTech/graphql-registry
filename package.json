@@ -14,14 +14,16 @@
     "cov": "nyc --reporter=lcov --reporter=text-summary -- npm run test",
     "format": "prettier --write '**/*.{js,ts,json,md}'",
     "release": "release-it --no-npm --github.release",
-    "prepare": "husky install"
+    "prepare": "husky install && npm run build",
+    "migrate": "knex migrate:up",
+    "rollback:last": "knex migrate:rollback",
+    "rollback": "knex migrate:rollback --all"
   },
   "engines": {
     "node": ">=14"
   },
   "files": [
-    "build",
-    "prisma"
+    "build"
   ],
   "release-it": {
     "git": {
@@ -34,25 +36,25 @@
     "files": [
       "src/**/*.test.ts"
     ],
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
+    "typescript": {
+      "rewritePaths": {
+        "./src/": "build/"
+      }
+    },
     "nodeArguments": []
   },
   "devDependencies": {
+    "@ava/typescript": "^1.1.1",
     "@types/node": "^14.14.41",
     "ava": "^3.15.0",
     "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
+    "execa": "^5.0.0",
     "husky": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.7",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
-    "prisma": "^2.21.2",
     "release-it": "^14.6.1",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.1.1",
@@ -64,7 +66,6 @@
   "dependencies": {
     "@apollo/federation": "0.23.0",
     "@graphql-inspector/core": "2.5.0",
-    "@prisma/client": "^2.21.2",
     "env-schema": "^2.1.0",
     "fastify": "^3.15.0",
     "fastify-basic-auth": "^1.0.1",
@@ -73,6 +74,8 @@
     "fastify-plugin": "^2.3.4",
     "fluent-json-schema": "^2.0.4",
     "graphql": "15.5.0",
+    "knex": "^0.95.4",
+    "pg": "^8.6.0",
     "unique-string": "^2.0.0"
   },
   "keywords": [
