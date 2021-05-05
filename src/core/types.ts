@@ -1,12 +1,12 @@
-import { SchemaTag } from '@prisma/client'
 import { SchemaDBModel } from './models/schemaModel'
+import { SchemaTagDBModel } from './models/schemaTagModel'
 
 export type SchemaResponseModel = {
   schemaId: number
   serviceName: string
   typeDefs: string
   version: string
-} & Pick<SchemaTag, 'version'>
+} & Pick<SchemaTagDBModel, 'version'>
 
 export type ResponseModel = {
   success: boolean
@@ -21,4 +21,4 @@ export type ErrorResponse = {
   error: string
 }
 
-export type LastUpdatedSchema = Pick<SchemaTag, 'version'> & Pick<SchemaDBModel, 'id' | 'typeDefs'>
+export type LastUpdatedSchema = Pick<SchemaTagDBModel, 'version'> & Pick<SchemaDBModel, 'id' | 'typeDefs'>
