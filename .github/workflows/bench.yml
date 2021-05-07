@@ -3,7 +3,7 @@ name: BENCH
 on:
   push:
     branches:
-      - master
+      - main
     paths-ignore:
       - 'docs/**'
       - '*.md'
