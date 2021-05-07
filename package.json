@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node -r dotenv/config build/index.js",
-    "build": "tsc",
+    "build": "del-cli build && tsc",
     "dev": "cross-env TS_NODE_TRANSPILE_ONLY=true nodemon -L --nolazy --watch 'src/**/*.ts' --exec node --inspect=0.0.0.0:9229 -r ts-node/register -r dotenv/config src/index.ts",
     "test": "ava",
     "test:watch": "npm run test -- --watch",
@@ -48,6 +48,7 @@
     "@types/node": "^14.14.41",
     "ava": "^3.15.0",
     "cross-env": "^7.0.3",
+    "del-cli": "^3.0.1",
     "dotenv": "^8.2.0",
     "execa": "^5.0.0",
     "husky": "^6.0.0",
