@@ -17,10 +17,10 @@ test('Should calculate schema diff', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -30,9 +30,9 @@ test('Should calculate schema diff', async (t) => {
     method: 'POST',
     url: '/schema/diff',
     payload: {
-      type_defs: `type Query { hello: String world: String }`,
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      typeDefs: `type Query { hello: String world: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -67,10 +67,10 @@ test('Should detect a breaking change', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String world: String }`,
+      typeDefs: `type Query { hello: String world: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -80,9 +80,9 @@ test('Should detect a breaking change', async (t) => {
     method: 'POST',
     url: '/schema/diff',
     payload: {
-      type_defs: `type Query { hello: String }`,
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      typeDefs: `type Query { hello: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -119,8 +119,8 @@ test('Should return 400 because type_def is missing', async (t) => {
     method: 'POST',
     url: '/schema/diff',
     payload: {
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -129,7 +129,7 @@ test('Should return 400 because type_def is missing', async (t) => {
     res.json(),
     {
       success: false,
-      error: "body should have required property 'type_defs'",
+      error: "body should have required property 'typeDefs'",
     },
     'message',
   )
@@ -145,10 +145,10 @@ test('Should return an empty diff when no other services exists', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '3',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -158,9 +158,9 @@ test('Should return an empty diff when no other services exists', async (t) => {
     method: 'POST',
     url: '/schema/diff',
     payload: {
-      type_defs: `type Query { hello: String }`,
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      typeDefs: `type Query { hello: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 

@@ -17,10 +17,10 @@ test('Should validate schema as valid', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -30,9 +30,9 @@ test('Should validate schema as valid', async (t) => {
     method: 'POST',
     url: '/schema/validate',
     payload: {
-      type_defs: `type Query { world: String }`,
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      typeDefs: `type Query { world: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -57,10 +57,10 @@ test('Should validate schema as invalid', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -70,9 +70,9 @@ test('Should validate schema as invalid', async (t) => {
     method: 'POST',
     url: '/schema/validate',
     payload: {
-      type_defs: `type Query { hello: String22 }`,
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      typeDefs: `type Query { hello: String22 }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -99,8 +99,8 @@ test('Should return 400 because type_def is missing', async (t) => {
     url: '/schema/validate',
     payload: {
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -109,7 +109,7 @@ test('Should return 400 because type_def is missing', async (t) => {
     res.json(),
     {
       success: false,
-      error: "body should have required property 'type_defs'",
+      error: "body should have required property 'typeDefs'",
     },
     'message',
   )
@@ -125,9 +125,9 @@ test('Should 400 when graph could not be found', async (t) => {
     method: 'POST',
     url: '/schema/validate',
     payload: {
-      type_defs: `type Query { world: String }`,
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      typeDefs: `type Query { world: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
 

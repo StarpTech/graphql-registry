@@ -18,10 +18,10 @@ const requestOptions = {
 
 export function setup() {
   let data = {
-    type_defs: 'type Query { hello: String }',
+    typeDefs: 'type Query { hello: String }',
     version: '1',
-    graph_name: 'my_graph',
-    service_name: 'foo',
+    graphName: 'my_graph',
+    serviceName: 'foo',
   }
   let res = http.post(`${BASE_URL}/schema/push`, JSON.stringify(data), requestOptions)
 
@@ -34,10 +34,10 @@ export function setup() {
   }
 
   data = {
-    type_defs: 'type Query { world: String }',
+    typeDefs: 'type Query { world: String }',
     version: '1',
-    graph_name: 'my_graph',
-    service_name: 'bar',
+    graphName: 'my_graph',
+    serviceName: 'bar',
   }
   res = http.post(`${BASE_URL}/schema/push`, JSON.stringify(data), requestOptions)
 
@@ -52,7 +52,7 @@ export function setup() {
 
 export default () => {
   const data = {
-    graph_name: 'my_graph',
+    graphName: 'my_graph',
     services: [
       { name: 'foo', version: '1' },
       { name: 'bar', version: '1' },

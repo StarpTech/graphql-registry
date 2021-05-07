@@ -8,7 +8,7 @@ GET - `/graphs` Returns all registered graphs.
 
 ### Get latest schemas
 
-GET - `/schema/latest?graph_name=my_graph` Returns the last registered schema definition of all services.
+GET - `/schema/latest?graphName=my_graph` Returns the last registered schema definition of all services.
 
 ### Register a schema
 
@@ -20,10 +20,10 @@ POST - `/schema/push` Creates a new graph and schema for a service.
 
 ```jsonc
 {
-  "type_defs": "type Query { hello: String }",
+  "typeDefs": "type Query { hello: String }",
   "version": "1",
-  "graph_name": "my_graph",
-  "service_name": "foo"
+  "graphName": "my_graph",
+  "serviceName": "foo"
 }
 ```
 
@@ -40,7 +40,7 @@ POST - `/schema/compose` Returns the last registered schema definition of all se
 
 ```jsonc
 {
-  "graph_name": "my_graph",
+  "graphName": "my_graph",
   "services": [{ "name": "foo", "version": "1" }] // if versions can't be found it fails
 }
 ```
@@ -77,9 +77,9 @@ POST - `/schema/diff` Returns the schema report of all services and the provided
 
 ```json
 {
-  "graph_name": "my_graph",
-  "type_defs": "type Query { hello: String }",
-  "service_name": "foo"
+  "graphName": "my_graph",
+  "typeDefs": "type Query { hello: String }",
+  "serviceName": "foo"
 }
 ```
 
@@ -96,9 +96,9 @@ POST - `/schema/validate` Validate schema between provided and latest schemas.
 
 ```json
 {
-  "graph_name": "my_graph",
-  "type_defs": "type Query { hello: String }",
-  "service_name": "foo"
+  "graphName": "my_graph",
+  "typeDefs": "type Query { hello: String }",
+  "serviceName": "foo"
 }
 ```
 

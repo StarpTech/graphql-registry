@@ -17,10 +17,10 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -29,10 +29,10 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { world: String }`,
+      typeDefs: `type Query { world: String }`,
       version: '2',
-      service_name: `${t.context.testPrefix}_bar`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_bar`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -41,10 +41,10 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { world: String }`,
+      typeDefs: `type Query { world: String }`,
       version: '3',
-      service_name: `${t.context.testPrefix}_bar`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_bar`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -53,7 +53,7 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/compose',
     payload: {
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
       services: [
         {
           name: `${t.context.testPrefix}_bar`,
@@ -87,10 +87,10 @@ test('Should return latest schema when no version was specified', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -99,10 +99,10 @@ test('Should return latest schema when no version was specified', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { world: String }`,
+      typeDefs: `type Query { world: String }`,
       version: '2',
-      service_name: `${t.context.testPrefix}_bar`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_bar`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -111,10 +111,10 @@ test('Should return latest schema when no version was specified', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { world: String }`,
+      typeDefs: `type Query { world: String }`,
       version: '3',
-      service_name: `${t.context.testPrefix}_bar`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_bar`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -123,7 +123,7 @@ test('Should return latest schema when no version was specified', async (t) => {
     method: 'POST',
     url: '/schema/compose',
     payload: {
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
       services: [
         {
           name: `${t.context.testPrefix}_foo`,
@@ -165,10 +165,10 @@ test('Should return 404 when schema in version could not be found', async (t) =>
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -177,7 +177,7 @@ test('Should return 404 when schema in version could not be found', async (t) =>
     method: 'POST',
     url: '/schema/compose',
     payload: {
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
       services: [
         {
           name: `${t.context.testPrefix}_foo`,
@@ -209,10 +209,10 @@ test('Should return 400 when schema in specified version was deactivated', async
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -224,7 +224,7 @@ test('Should return 400 when schema in specified version was deactivated', async
     url: '/schema/deactivate',
     payload: {
       schemaId,
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -234,7 +234,7 @@ test('Should return 400 when schema in specified version was deactivated', async
     method: 'POST',
     url: '/schema/compose',
     payload: {
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
       services: [
         {
           name: `${t.context.testPrefix}_foo`,

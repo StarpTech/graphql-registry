@@ -18,10 +18,10 @@ test('Should keep the most recent 10 schemas of every service in the graph', asy
       method: 'POST',
       url: '/schema/push',
       payload: {
-        type_defs: `type Query { hello${i}: String }`,
+        typeDefs: `type Query { hello${i}: String }`,
         version: '1',
-        service_name: `${t.context.testPrefix}_foo`,
-        graph_name: `${t.context.graphName}`,
+        serviceName: `${t.context.testPrefix}_foo`,
+        graphName: `${t.context.graphName}`,
       },
     })
 
@@ -30,10 +30,10 @@ test('Should keep the most recent 10 schemas of every service in the graph', asy
       method: 'POST',
       url: '/schema/push',
       payload: {
-        type_defs: `type Query { world${i}: String }`,
+        typeDefs: `type Query { world${i}: String }`,
         version: '1',
-        service_name: `${t.context.testPrefix}_bar`,
-        graph_name: `${t.context.graphName}`,
+        serviceName: `${t.context.testPrefix}_bar`,
+        graphName: `${t.context.graphName}`,
       },
     })
     t.is(res.statusCode, 200)

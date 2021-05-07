@@ -6,7 +6,7 @@ import SchemaRepository from '../../core/repositories/SchemaRepository'
 export interface RequestContext {
   Body: {
     schemaId: number
-    graph_name: string
+    graphName: string
   }
 }
 

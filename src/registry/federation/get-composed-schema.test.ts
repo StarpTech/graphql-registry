@@ -17,10 +17,10 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -28,10 +28,10 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { world: String }`,
+      typeDefs: `type Query { world: String }`,
       version: '2',
-      service_name: `${t.context.testPrefix}_bar`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_bar`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -40,7 +40,7 @@ test('Should return schema of two services', async (t) => {
     method: 'GET',
     url: '/schema/latest',
     query: {
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
     },
   })
 

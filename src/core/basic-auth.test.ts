@@ -18,10 +18,10 @@ test('Should return 200 because credentials are valid', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { world: String }`,
+      typeDefs: `type Query { world: String }`,
       version: '2',
-      service_name: `${t.context.testPrefix}_bar`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_bar`,
+      graphName: `${t.context.graphName}`,
     },
     headers: {
       authorization: 'Basic MTIzOjEyMw==', // 123
@@ -42,10 +42,10 @@ test('Should support multiple secrets comma separated', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { world: String }`,
+      typeDefs: `type Query { world: String }`,
       version: '3',
-      service_name: `${t.context.testPrefix}_bar`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_bar`,
+      graphName: `${t.context.graphName}`,
     },
     headers: {
       authorization: 'Basic NDU2OjQ1Ng==', // 456

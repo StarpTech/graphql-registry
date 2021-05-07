@@ -17,10 +17,10 @@ test('Should deactivate schema', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      type_defs: `type Query { hello: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '1',
-      service_name: `${t.context.testPrefix}_foo`,
-      graph_name: `${t.context.graphName}`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
@@ -32,7 +32,7 @@ test('Should deactivate schema', async (t) => {
     url: '/schema/deactivate',
     payload: {
       schemaId,
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
     },
   })
 
@@ -42,7 +42,7 @@ test('Should deactivate schema', async (t) => {
     method: 'POST',
     url: '/schema/compose',
     payload: {
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
       services: [
         {
           name: `${t.context.testPrefix}_foo`,
@@ -75,7 +75,7 @@ test('Should return 400 when schema does not exist', async (t) => {
     url: '/schema/deactivate',
     payload: {
       schemaId: 123,
-      graph_name: `${t.context.graphName}`,
+      graphName: `${t.context.graphName}`,
     },
   })
 

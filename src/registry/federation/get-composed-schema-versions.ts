@@ -15,7 +15,7 @@ interface ServiceVersionMatch {
 
 export interface RequestContext {
   Body: {
-    graph_name: string
+    graphName: string
     services: ServiceVersionMatch[]
   }
 }
@@ -40,8 +40,8 @@ export const schema: FastifySchema = {
   },
   body: S.object()
     .additionalProperties(false)
-    .required(['graph_name', 'services'])
-    .prop('graph_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
+    .required(['graphName', 'services'])
+    .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
     .prop(
       'services',
       S.array()
@@ -60,11 +60,11 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
     const graphRepository = new GraphRepository(fastify.knex)
 
     const graphExists = await graphRepository.exists({
-      name: req.body.graph_name,
+      name: req.body.graphName,
     })
 
     if (!graphExists) {
-      throw InvalidGraphNameError(req.body.graph_name)
+      throw InvalidGraphNameError(req.body.graphName)
     }
 
     const serviceRepository = new ServiceRepository(fastify.knex)
@@ -77,7 +77,7 @@ export default function getComposedSchemaVersions(fastify: FastifyInstance) {
 
     const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
-      req.body.graph_name,
+      req.body.graphName,
       allServicesWithVersion,
     )
 

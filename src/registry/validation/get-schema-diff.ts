@@ -9,19 +9,19 @@ import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
 export interface RequestContext {
   Body: {
-    service_name: string
-    type_defs: string
-    graph_name: string
+    serviceName: string
+    typeDefs: string
+    graphName: string
   }
 }
 
 export const schema: FastifySchema = {
   body: S.object()
     .additionalProperties(false)
-    .required(['type_defs', 'service_name', 'graph_name'])
-    .prop('graph_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
-    .prop('type_defs', S.string().minLength(1).maxLength(10000))
-    .prop('service_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+    .required(['typeDefs', 'serviceName', 'graphName'])
+    .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
+    .prop('typeDefs', S.string().minLength(1).maxLength(10000))
+    .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
 }
 
 export default function getSchemaDiff(fastify: FastifyInstance) {
@@ -29,17 +29,17 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
     const graphRepository = new GraphRepository(fastify.knex)
 
     const graphExists = await graphRepository.exists({
-      name: req.body.graph_name,
+      name: req.body.graphName,
     })
     if (!graphExists) {
-      throw InvalidGraphNameError(req.body.graph_name)
+      throw InvalidGraphNameError(req.body.graphName)
     }
 
     const serviceRepository = new ServiceRepository(fastify.knex)
     const schemaRepository = new SchemaRepository(fastify.knex)
 
     const serviceModels = await serviceRepository.findMany({
-      graphName: req.body.graph_name,
+      graphName: req.body.graphName,
     })
 
     if (serviceModels.length === 0) {
@@ -52,7 +52,7 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
     const allLatestServices = serviceModels.map((s) => ({ name: s.name }))
     const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
-      req.body.graph_name,
+      req.body.graphName,
       allLatestServices,
     )
 
@@ -74,10 +74,10 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
     }
 
     serviceSchemas = serviceSchemas
-      .filter((schema) => schema.name !== req.body.service_name)
+      .filter((schema) => schema.name !== req.body.serviceName)
       .concat({
-        name: req.body.service_name,
-        typeDefs: req.body.type_defs,
+        name: req.body.serviceName,
+        typeDefs: req.body.typeDefs,
       })
 
     const updated = composeAndValidateSchema(serviceSchemas)

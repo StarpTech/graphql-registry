@@ -10,8 +10,8 @@ export interface RequestContext {
 export const schema: FastifySchema = {
   body: S.object()
     .additionalProperties(false)
-    .required(['num_schemas_keep'])
-    .prop('num_schemas_keep', S.number().minimum(10).maximum(100)),
+    .required(['numSchemasKeep'])
+    .prop('numSchemasKeep', S.number().minimum(10).maximum(100)),
 }
 
 export default function garbageCollect(fastify: FastifyInstance) {

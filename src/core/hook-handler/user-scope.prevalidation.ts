@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify'
 import { InvalidServiceScopeError } from '../errrors'
 
 export interface RequestContext {
-  Body: { service_name: string }
+  Body: { serviceName: string }
 }
 
 /**
@@ -14,9 +14,9 @@ export const checkUserServiceScope = function (
   next: HookHandlerDoneFunction,
 ) {
   // JWT context ?
-  if (req.user && req.body.service_name) {
-    if (!req.user.services.find((service) => service === req.body.service_name)) {
-      return next(InvalidServiceScopeError(req.body.service_name))
+  if (req.user && req.body.serviceName) {
+    if (!req.user.services.find((service) => service === req.body.serviceName)) {
+      return next(InvalidServiceScopeError(req.body.serviceName))
     }
   }
   next()

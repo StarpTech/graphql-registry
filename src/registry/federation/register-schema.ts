@@ -12,10 +12,10 @@ import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
 
 export interface RequestContext {
   Body: {
-    service_name: string
+    serviceName: string
     version: string
-    type_defs: string
-    graph_name: string
+    typeDefs: string
+    graphName: string
   }
 }
 
@@ -37,11 +37,11 @@ export const schema: FastifySchema = {
   },
   body: S.object()
     .additionalProperties(false)
-    .required(['version', 'type_defs', 'service_name', 'graph_name'])
-    .prop('graph_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
+    .required(['version', 'typeDefs', 'serviceName', 'graphName'])
+    .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
     .prop('version', S.string().minLength(1).maxLength(100))
-    .prop('type_defs', S.string().minLength(1).maxLength(10000))
-    .prop('service_name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+    .prop('typeDefs', S.string().minLength(1).maxLength(10000))
+    .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
 }
 
 export default function registerSchema(fastify: FastifyInstance) {
@@ -57,15 +57,15 @@ export default function registerSchema(fastify: FastifyInstance) {
 
     const serviceModels = await serviceRepository.findManyExceptWithName(
       {
-        graphName: req.body.graph_name,
+        graphName: req.body.graphName,
       },
-      req.body.service_name,
+      req.body.serviceName,
     )
 
     const allLatestServices = serviceModels.map((s) => ({ name: s.name }))
     const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
-      req.body.graph_name,
+      req.body.graphName,
       allLatestServices,
     )
 
@@ -79,8 +79,8 @@ export default function registerSchema(fastify: FastifyInstance) {
     }))
     // Add the new schema to validate it against the current registry state before creating.
     serviceSchemas.push({
-      name: req.body.service_name,
-      typeDefs: req.body.type_defs,
+      name: req.body.serviceName,
+      typeDefs: req.body.typeDefs,
     })
 
     const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
@@ -94,11 +94,11 @@ export default function registerSchema(fastify: FastifyInstance) {
      */
 
     let graph = await graphRepository.findFirst({
-      name: req.body.graph_name,
+      name: req.body.graphName,
     })
 
     if (!graph) {
-      graph = await graphRepository.create({ name: req.body.graph_name })
+      graph = await graphRepository.create({ name: req.body.graphName })
     }
 
     /**
@@ -106,13 +106,13 @@ export default function registerSchema(fastify: FastifyInstance) {
      */
 
     let service = await serviceRepository.findFirst({
-      graphName: req.body.graph_name,
-      name: req.body.service_name,
+      graphName: req.body.graphName,
+      name: req.body.serviceName,
     })
 
     if (!service) {
       service = await serviceRepository.create({
-        name: req.body.service_name,
+        name: req.body.serviceName,
         graphId: graph.id,
       })
     }
@@ -122,16 +122,16 @@ export default function registerSchema(fastify: FastifyInstance) {
      */
 
     let schema = await schemaRepository.findFirst({
-      graphName: req.body.graph_name,
-      serviceName: req.body.service_name,
-      typeDefs: req.body.type_defs,
+      graphName: req.body.graphName,
+      serviceName: req.body.serviceName,
+      typeDefs: req.body.typeDefs,
     })
 
     if (!schema) {
       schema = await schemaRepository.create({
         graphId: graph.id,
         serviceId: service.id,
-        typeDefs: req.body.type_defs,
+        typeDefs: req.body.typeDefs,
       })
       await schemaTagRepository.create({
         version: req.body.version,
@@ -163,7 +163,7 @@ export default function registerSchema(fastify: FastifyInstance) {
       success: true,
       data: {
         schemaId: schema.id,
-        serviceName: req.body.service_name,
+        serviceName: req.body.serviceName,
         typeDefs: schema.typeDefs,
         version: req.body.version,
       },
