@@ -28,7 +28,7 @@ test('Should deactivate schema', async (t) => {
   const schemaId = res.json().data.schemaId
 
   res = await app.inject({
-    method: 'POST',
+    method: 'PUT',
     url: '/schema/deactivate',
     payload: {
       schemaId,
@@ -71,7 +71,7 @@ test('Should return 400 when schema does not exist', async (t) => {
   t.teardown(() => app.close())
 
   let res = await app.inject({
-    method: 'POST',
+    method: 'PUT',
     url: '/schema/deactivate',
     payload: {
       schemaId: 123,

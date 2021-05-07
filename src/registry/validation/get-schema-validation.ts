@@ -16,6 +16,9 @@ export interface RequestContext {
 }
 
 export const schema: FastifySchema = {
+  response: {
+    '2xx': S.object().additionalProperties(false).required(['success']).prop('success', S.boolean()),
+  },
   body: S.object()
     .additionalProperties(false)
     .required(['typeDefs', 'serviceName', 'graphName'])

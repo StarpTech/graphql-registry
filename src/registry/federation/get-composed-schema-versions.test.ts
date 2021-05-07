@@ -220,7 +220,7 @@ test('Should return 400 when schema in specified version was deactivated', async
   const schemaId = res.json().data.schemaId
 
   res = await app.inject({
-    method: 'POST',
+    method: 'PUT',
     url: '/schema/deactivate',
     payload: {
       schemaId,

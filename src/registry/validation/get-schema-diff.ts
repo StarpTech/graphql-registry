@@ -16,6 +16,23 @@ export interface RequestContext {
 }
 
 export const schema: FastifySchema = {
+  response: {
+    '2xx': S.object()
+      .additionalProperties(false)
+      .required(['success', 'data'])
+      .prop('success', S.boolean())
+      .prop(
+        'data',
+        S.array().items(
+          S.object()
+            .required(['criticality', 'type', 'message', 'path'])
+            .prop('criticality', S.object().prop('level', S.string()).prop('reason', S.string()))
+            .prop('type', S.string())
+            .prop('message', S.string())
+            .prop('path', S.string()),
+        ),
+      ),
+  },
   body: S.object()
     .additionalProperties(false)
     .required(['typeDefs', 'serviceName', 'graphName'])

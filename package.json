@@ -39,12 +39,12 @@
     "typescript": {
       "rewritePaths": {
         "./src/": "build/"
-      }
-    },
-    "nodeArguments": []
+      },
+      "compile": "tsc"
+    }
   },
   "devDependencies": {
-    "@ava/typescript": "^1.1.1",
+    "@ava/typescript": "^2.0.0",
     "@types/node": "^14.14.41",
     "ava": "^3.15.0",
     "cross-env": "^7.0.3",

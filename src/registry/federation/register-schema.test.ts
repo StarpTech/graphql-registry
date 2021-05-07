@@ -357,7 +357,7 @@ test('Should return 400 because an service has no active schema registered', asy
   const schemaId = res.json().data.schemaId
 
   res = await app.inject({
-    method: 'POST',
+    method: 'PUT',
     url: '/schema/deactivate',
     payload: {
       schemaId,
