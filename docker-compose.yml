@@ -1,5 +1,6 @@
 version: '3.8'
 
+# trigger
 services:
   app:
     container_name: graphql-registry
