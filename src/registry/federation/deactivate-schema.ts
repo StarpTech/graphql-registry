@@ -18,7 +18,7 @@ export const schema: FastifySchema = {
 }
 
 export default function deactivateSchema(fastify: FastifyInstance) {
-  fastify.post<RequestContext>('/schema/deactivate', async (req, res) => {
+  fastify.put<RequestContext>('/schema/deactivate', async (req, res) => {
     return fastify.knex.transaction(async function (trx) {
       const schemaRepository = new SchemaRepository(trx)
       const schema = await schemaRepository.findById(req.body.schemaId)

@@ -14,8 +14,6 @@
   <a href='https://coveralls.io/github/StarpTech/graphql-registry?branch=main'><img src='https://coveralls.io/repos/github/StarpTech/graphql-registry/badge.svg?branch=main' alt='Coverage Status' /></a>
 </div>
 
-<div align="center">GraphQL registry</div>
-
 <br/>
 
 > There should be a **single source of truth** for registering and tracking the graph.
@@ -112,7 +110,7 @@ POST - `/schema/diff` Returns the schema report of all services and the provided
 {
   "graph_name": "my_graph",
   "type_defs": "type Query { hello: String }",
-  "name": "foo"
+  "service_name": "foo"
 }
 ```
 
@@ -131,7 +129,7 @@ POST - `/schema/validate` Validate schema between provided and latest schemas.
 {
   "graph_name": "my_graph",
   "type_defs": "type Query { hello: String }",
-  "name": "foo"
+  "service_name": "foo"
 }
 ```
 
@@ -188,6 +186,11 @@ npm run migrate
 npm run dev
 npm run test
 ```
+
+### Insomnia collection
+
+[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=GraphQL%20Registry&uri=https%3A%2F%2Fraw.githubusercontent.com%2FStarpTech%2Fgraphql-registry%2Fmain%2Finsomnia.json)
+
 
 ### Benchmark
 
