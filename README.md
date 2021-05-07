@@ -33,7 +33,7 @@ State: Experimental
 
 ## Endpoints
 
-Try all endpoints in [insomnia](https://insomnia.rest/run/?label=GraphQL%20Registry&uri=https%3A%2F%2Fraw.githubusercontent.com%2FStarpTech%2Fgraphql-registry%2Fmain%2Finsomnia.json) or read the api [documentation](./docs/api).
+Try all endpoints in [insomnia](https://insomnia.rest/run/?label=GraphQL%20Registry&uri=https%3A%2F%2Fraw.githubusercontent.com%2FStarpTech%2Fgraphql-registry%2Fmain%2Finsomnia.json) or read the api [documentation](./docs/api.md).
 
 ## Development
 
