@@ -30,7 +30,9 @@ export class SchemaManager {
       const service = serviceItems.find((s) => s.name === serviceMatch.name)
 
       if (!service) {
-        error = new Error(`In graph "${graphName}" service "${serviceMatch.name}" could not be found`)
+        error = new Error(
+          `In graph "${graphName}" service "${serviceMatch.name}" could not be found`,
+        )
         break
       }
 
@@ -63,7 +65,9 @@ export class SchemaManager {
         })
 
         if (!schema) {
-          error = new Error(`In graph "${graphName}", service "${service.name}" has no schema registered`)
+          error = new Error(
+            `In graph "${graphName}", service "${service.name}" has no schema registered`,
+          )
           break
         }
 

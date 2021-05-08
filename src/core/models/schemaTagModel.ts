@@ -1,7 +1,10 @@
-export type SchemaTagDBModel = {
-  id: number
-  version: string
+export class SchemaTagDBModel {
+  id!: number
+  version!: string
   isActive?: boolean
-  createdAt: Date
-  schemaId: number
+  createdAt!: Date
+  schemaId!: number
+
+  static table = 'schema_tag'
+  static field = (name: keyof SchemaTagDBModel) => SchemaTagDBModel.table + '.' + name
 }

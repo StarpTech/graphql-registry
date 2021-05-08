@@ -19,7 +19,11 @@
       },
       "parameters": [],
       "headers": [
-        { "name": "Content-Type", "value": "application/json", "id": "pair_cae5a5a7c1df4fbbb5f95747ac6de78d" }
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_cae5a5a7c1df4fbbb5f95747ac6de78d"
+        }
       ],
       "authentication": {},
       "metaSortKey": 400,
@@ -69,7 +73,11 @@
       },
       "parameters": [],
       "headers": [
-        { "name": "Content-Type", "value": "application/json", "id": "pair_aa776b984d75400d8e53ab6412dc8ae5" }
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_aa776b984d75400d8e53ab6412dc8ae5"
+        }
       ],
       "authentication": {},
       "metaSortKey": 300,
@@ -91,10 +99,17 @@
       "name": "Deactivate a schema",
       "description": "",
       "method": "PUT",
-      "body": { "mimeType": "application/json", "text": "{\n  \"schemaId\": \"916348424\"\n}" },
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"schemaId\": \"916348424\"\n}"
+      },
       "parameters": [],
       "headers": [
-        { "name": "Content-Type", "value": "application/json", "id": "pair_54598bee89b9433ea71b152980c68562" }
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_54598bee89b9433ea71b152980c68562"
+        }
       ],
       "authentication": {},
       "metaSortKey": 0,
@@ -168,7 +183,11 @@
       },
       "parameters": [],
       "headers": [
-        { "name": "Content-Type", "value": "application/json", "id": "pair_83fe9b94608343838cd283d0c2784105" }
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_83fe9b94608343838cd283d0c2784105"
+        }
       ],
       "authentication": {},
       "metaSortKey": 0,
@@ -208,7 +227,11 @@
       },
       "parameters": [],
       "headers": [
-        { "name": "Content-Type", "value": "application/json", "id": "pair_b58858e1c31c4765ac9d9226bcbc8592" }
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_b58858e1c31c4765ac9d9226bcbc8592"
+        }
       ],
       "authentication": {},
       "metaSortKey": 100,
@@ -230,10 +253,17 @@
       "name": "Remove all schemas except the most (N) recent",
       "description": "",
       "method": "POST",
-      "body": { "mimeType": "application/json", "text": "{\n  \"num_schemas_keep\": 10\n}" },
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"num_schemas_keep\": 10\n}"
+      },
       "parameters": [],
       "headers": [
-        { "name": "Content-Type", "value": "application/json", "id": "pair_4b3a277d831748888d0d4aeb8178cc7f" }
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_4b3a277d831748888d0d4aeb8178cc7f"
+        }
       ],
       "authentication": {},
       "metaSortKey": 100,

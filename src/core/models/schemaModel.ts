@@ -1,9 +1,12 @@
-export type SchemaDBModel = {
-  id: number
-  typeDefs: string
+export class SchemaDBModel {
+  id!: number
+  typeDefs!: string
   isActive?: boolean
-  createdAt: Date
+  createdAt!: Date
   updatedAt?: Date
-  graphId: number
-  serviceId: number
+  graphId!: number
+  serviceId!: number
+
+  static table = 'schema'
+  static field = (name: keyof SchemaDBModel) => SchemaDBModel.table + '.' + name
 }

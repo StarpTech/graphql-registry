@@ -3,7 +3,11 @@ import { FastifyInstance, FastifySchema } from 'fastify'
 import { diff } from '@graphql-inspector/core'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaManager } from '../../core/manager/SchemaManager'
-import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
+import {
+  InvalidGraphNameError,
+  SchemaCompositionError,
+  SchemaVersionLookupError,
+} from '../../core/errrors'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'

@@ -91,7 +91,7 @@ test('Should return valdiation error when no version was specified', async (t) =
       services: [
         {
           name: `${t.context.testPrefix}_foo`,
-        }
+        },
       ],
     },
   })

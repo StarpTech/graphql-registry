@@ -21,4 +21,5 @@ export type ErrorResponse = {
   error: string
 }
 
-export type LastUpdatedSchema = Pick<SchemaTagDBModel, 'version'> & Pick<SchemaDBModel, 'id' | 'typeDefs'>
+export type LastUpdatedSchema = Pick<SchemaTagDBModel, 'version'> &
+  Pick<SchemaDBModel, 'id' | 'typeDefs'>

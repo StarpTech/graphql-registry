@@ -2,7 +2,11 @@ import S from 'fluent-json-schema'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaManager } from '../../core/manager/SchemaManager'
 import { FastifyInstance, FastifySchema } from 'fastify'
-import { InvalidGraphNameError, SchemaCompositionError, SchemaVersionLookupError } from '../../core/errrors'
+import {
+  InvalidGraphNameError,
+  SchemaCompositionError,
+  SchemaVersionLookupError,
+} from '../../core/errrors'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'

@@ -45,128 +45,132 @@ export const schema: FastifySchema = {
 }
 
 export default function registerSchema(fastify: FastifyInstance) {
-  fastify.post<RequestContext>('/schema/push', { schema, preValidation: checkUserServiceScope }, async (req, res) => {
-    return fastify.knex.transaction(async function (trx) {
-      const serviceRepository = new ServiceRepository(trx)
-      const schemaRepository = new SchemaRepository(trx)
-      const graphRepository = new GraphRepository(trx)
-      const schemaTagRepository = new SchemaTagRepository(trx)
+  fastify.post<RequestContext>(
+    '/schema/push',
+    { schema, preValidation: checkUserServiceScope },
+    async (req, res) => {
+      return fastify.knex.transaction(async function (trx) {
+        const serviceRepository = new ServiceRepository(trx)
+        const schemaRepository = new SchemaRepository(trx)
+        const graphRepository = new GraphRepository(trx)
+        const schemaTagRepository = new SchemaTagRepository(trx)
 
-      const serviceModels = await serviceRepository.findManyExceptWithName(
-        {
-          graphName: req.body.graphName,
-        },
-        req.body.serviceName,
-      )
+        const serviceModels = await serviceRepository.findManyExceptWithName(
+          {
+            graphName: req.body.graphName,
+          },
+          req.body.serviceName,
+        )
 
-      const allLatestServices = serviceModels.map((s) => ({ name: s.name }))
-      const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
-      const { schemas, error: findError } = await schmemaService.findByServiceVersions(
-        req.body.graphName,
-        allLatestServices,
-      )
+        const allLatestServices = serviceModels.map((s) => ({ name: s.name }))
+        const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
+        const { schemas, error: findError } = await schmemaService.findByServiceVersions(
+          req.body.graphName,
+          allLatestServices,
+        )
 
-      if (findError) {
-        throw SchemaVersionLookupError(findError.message)
-      }
+        if (findError) {
+          throw SchemaVersionLookupError(findError.message)
+        }
 
-      const serviceSchemas = schemas.map((s) => ({
-        name: s.serviceName,
-        typeDefs: s.typeDefs,
-      }))
-      // Add the new schema to validate it against the current registry state before creating.
-      serviceSchemas.push({
-        name: req.body.serviceName,
-        typeDefs: req.body.typeDefs,
-      })
-
-      const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
-
-      if (schemaError) {
-        throw SchemaCompositionError(schemaError)
-      }
-
-      /**
-       * Create new graph
-       */
-
-      let graph = await graphRepository.findFirst({
-        name: req.body.graphName,
-      })
-
-      if (!graph) {
-        graph = await graphRepository.create({ name: req.body.graphName })
-      }
-
-      /**
-       * Create new service
-       */
-
-      let service = await serviceRepository.findFirst({
-        graphName: req.body.graphName,
-        name: req.body.serviceName,
-      })
-
-      if (!service) {
-        service = await serviceRepository.create({
+        const serviceSchemas = schemas.map((s) => ({
+          name: s.serviceName,
+          typeDefs: s.typeDefs,
+        }))
+        // Add the new schema to validate it against the current registry state before creating.
+        serviceSchemas.push({
           name: req.body.serviceName,
-          graphId: graph.id,
-        })
-      }
-
-      /**
-       * Create new schema
-       */
-
-      let schema = await schemaRepository.findFirst({
-        graphName: req.body.graphName,
-        serviceName: req.body.serviceName,
-        typeDefs: req.body.typeDefs,
-      })
-
-      if (!schema) {
-        schema = await schemaRepository.create({
-          graphId: graph.id,
-          serviceId: service.id,
           typeDefs: req.body.typeDefs,
         })
-        await schemaTagRepository.create({
-          version: req.body.version,
-          schemaId: schema.id,
-        })
-      } else {
-        await schemaRepository.updateById(schema.id, {
-          updatedAt: new Date(),
-        })
+
+        const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
+
+        if (schemaError) {
+          throw SchemaCompositionError(schemaError)
+        }
 
         /**
-         * Create new schema tag
+         * Create new graph
          */
-        const schemaTag = await schemaTagRepository.findByVersion({
-          version: req.body.version,
-          schemaId: schema.id,
-          serviceId: service.id,
+
+        let graph = await graphRepository.findFirst({
+          name: req.body.graphName,
         })
 
-        if (!schemaTag) {
+        if (!graph) {
+          graph = await graphRepository.create({ name: req.body.graphName })
+        }
+
+        /**
+         * Create new service
+         */
+
+        let service = await serviceRepository.findFirst({
+          graphName: req.body.graphName,
+          name: req.body.serviceName,
+        })
+
+        if (!service) {
+          service = await serviceRepository.create({
+            name: req.body.serviceName,
+            graphId: graph.id,
+          })
+        }
+
+        /**
+         * Create new schema
+         */
+
+        let schema = await schemaRepository.findFirst({
+          graphName: req.body.graphName,
+          serviceName: req.body.serviceName,
+          typeDefs: req.body.typeDefs,
+        })
+
+        if (!schema) {
+          schema = await schemaRepository.create({
+            graphId: graph.id,
+            serviceId: service.id,
+            typeDefs: req.body.typeDefs,
+          })
           await schemaTagRepository.create({
             version: req.body.version,
             schemaId: schema.id,
           })
+        } else {
+          await schemaRepository.updateById(schema.id, {
+            updatedAt: new Date(),
+          })
+
+          /**
+           * Create new schema tag
+           */
+          const schemaTag = await schemaTagRepository.findByVersion({
+            version: req.body.version,
+            schemaId: schema.id,
+            serviceId: service.id,
+          })
+
+          if (!schemaTag) {
+            await schemaTagRepository.create({
+              version: req.body.version,
+              schemaId: schema.id,
+            })
+          }
         }
-      }
 
-      const responseBody: SuccessResponse<SchemaResponseModel> = {
-        success: true,
-        data: {
-          schemaId: schema.id,
-          serviceName: req.body.serviceName,
-          typeDefs: schema.typeDefs,
-          version: req.body.version,
-        },
-      }
+        const responseBody: SuccessResponse<SchemaResponseModel> = {
+          success: true,
+          data: {
+            schemaId: schema.id,
+            serviceName: req.body.serviceName,
+            typeDefs: schema.typeDefs,
+            version: req.body.version,
+          },
+        }
 
-      return responseBody
-    })
-  })
+        return responseBody
+      })
+    },
+  )
 }

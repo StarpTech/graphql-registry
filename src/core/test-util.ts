@@ -63,9 +63,12 @@ export function cleanTest() {
     t.timeout(20000, 'make sure database has deleted')
 
     if (t.context.bootstrapped) {
-      await execa.command(`docker exec -t postgres psql -U postgres -c 'drop database ${t.context.dbName};'`, {
-        shell: true,
-      })
+      await execa.command(
+        `docker exec -t postgres psql -U postgres -c 'drop database ${t.context.dbName};'`,
+        {
+          shell: true,
+        },
+      )
     }
   }
 }

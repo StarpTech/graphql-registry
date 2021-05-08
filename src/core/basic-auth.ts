@@ -8,7 +8,12 @@ export interface basicAuthOptions {
 }
 
 export default fp<basicAuthOptions>(async function BasicAuth(fastify, opts) {
-  async function validate(username: string, password: string, req: FastifyRequest, reply: FastifyReply) {
+  async function validate(
+    username: string,
+    password: string,
+    req: FastifyRequest,
+    reply: FastifyReply,
+  ) {
     if (
       !opts.basicAuthSecrets ||
       !opts.basicAuthSecrets

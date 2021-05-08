@@ -1,8 +1,11 @@
-export type ServiceDBModel = {
-  id: number
-  name: string
+export class ServiceDBModel {
+  id!: number
+  name!: string
   isActive?: boolean
-  createdAt: Date
+  createdAt!: Date
   updatedAt?: Date
-  graphId: number
+  graphId!: number
+
+  static table = 'service'
+  static field = (name: keyof ServiceDBModel) => ServiceDBModel.table + '.' + name
 }

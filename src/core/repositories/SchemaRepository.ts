@@ -1,106 +1,120 @@
 import { Knex } from 'knex'
+import { GraphDBModel } from '../models/graphModel'
 import { SchemaDBModel } from '../models/schemaModel'
+import { SchemaTagDBModel } from '../models/schemaTagModel'
+import { ServiceDBModel } from '../models/serviceModel'
 import { LastUpdatedSchema } from '../types'
-import GraphRepository from './GraphRepository'
-import SchemaTagRepository from './SchemaTagRepository'
-import ServiceRepository from './ServiceRepository'
 
 export default class SchemaRepository {
-  static table = 'schema'
-  static field = (name: keyof SchemaDBModel) => SchemaRepository.table + '.' + name
   #knex: Knex
   constructor(knex: Knex) {
     this.#knex = knex
   }
   findById(id: number) {
     const knex = this.#knex
-    const table = SchemaRepository.table
+    const table = SchemaDBModel.table
     return knex
       .from(table)
-      .where(`${SchemaRepository.field('isActive')}`, knex.raw('?', true))
-      .where(`${SchemaRepository.field('id')}`, knex.raw('?', id))
+      .where(`${SchemaDBModel.field('isActive')}`, knex.raw('?', true))
+      .where(`${SchemaDBModel.field('id')}`, knex.raw('?', id))
       .first<SchemaDBModel>()
   }
-  findFirst({ graphName, typeDefs, serviceName }: { graphName: string; typeDefs: string; serviceName: string }) {
+  findFirst({
+    graphName,
+    typeDefs,
+    serviceName,
+  }: {
+    graphName: string
+    typeDefs: string
+    serviceName: string
+  }) {
     const knex = this.#knex
-    const table = SchemaRepository.table
+    const table = SchemaDBModel.table
     return knex
       .from(table)
-      .join(`${GraphRepository.table}`, function () {
-        this.on(`${SchemaRepository.field('graphId')}`, '=', `${GraphRepository.field('id')}`)
-          .andOn(`${GraphRepository.field('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphRepository.field('name')}`, '=', knex.raw('?', graphName))
+      .join(`${GraphDBModel.table}`, function () {
+        this.on(`${SchemaDBModel.field('graphId')}`, '=', `${GraphDBModel.field('id')}`)
+          .andOn(`${GraphDBModel.field('isActive')}`, '=', knex.raw('?', true))
+          .andOn(`${GraphDBModel.field('name')}`, '=', knex.raw('?', graphName))
       })
-      .join(`${ServiceRepository.table}`, function () {
-        this.on(`${SchemaRepository.field('serviceId')}`, '=', `${ServiceRepository.field('id')}`)
-          .andOn(`${ServiceRepository.field('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${ServiceRepository.field('name')}`, '=', knex.raw('?', serviceName))
+      .join(`${ServiceDBModel.table}`, function () {
+        this.on(`${SchemaDBModel.field('serviceId')}`, '=', `${ServiceDBModel.field('id')}`)
+          .andOn(`${ServiceDBModel.field('isActive')}`, '=', knex.raw('?', true))
+          .andOn(`${ServiceDBModel.field('name')}`, '=', knex.raw('?', serviceName))
       })
-      .where(`${SchemaRepository.field('typeDefs')}`, knex.raw('?', typeDefs))
+      .where(`${SchemaDBModel.field('typeDefs')}`, knex.raw('?', typeDefs))
       .select(`${table}.*`)
       .first<SchemaDBModel>()
   }
   findLastUpdated({ serviceName, graphName }: { graphName: string; serviceName: string }) {
     const knex = this.#knex
-    const table = SchemaRepository.table
+    const table = SchemaDBModel.table
     return knex
       .from(table)
       .select([
-        `${SchemaRepository.field('id')}`,
-        `${SchemaRepository.field('typeDefs')}`,
-        `${SchemaTagRepository.field('version')}`,
+        `${SchemaDBModel.field('id')}`,
+        `${SchemaDBModel.field('typeDefs')}`,
+        `${SchemaTagDBModel.field('version')}`,
       ])
-      .join(`${GraphRepository.table}`, function () {
-        this.on(`${SchemaRepository.field('graphId')}`, '=', `${GraphRepository.field('id')}`)
-          .andOn(`${GraphRepository.field('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphRepository.field('name')}`, '=', knex.raw('?', graphName))
+      .join(`${GraphDBModel.table}`, function () {
+        this.on(`${SchemaDBModel.field('graphId')}`, '=', `${GraphDBModel.field('id')}`)
+          .andOn(`${GraphDBModel.field('isActive')}`, '=', knex.raw('?', true))
+          .andOn(`${GraphDBModel.field('name')}`, '=', knex.raw('?', graphName))
       })
-      .join(`${ServiceRepository.table}`, function () {
-        this.on(`${SchemaRepository.field('serviceId')}`, '=', `${ServiceRepository.field('id')}`)
-          .andOn(`${ServiceRepository.field('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${ServiceRepository.field('name')}`, '=', knex.raw('?', serviceName))
+      .join(`${ServiceDBModel.table}`, function () {
+        this.on(`${SchemaDBModel.field('serviceId')}`, '=', `${ServiceDBModel.field('id')}`)
+          .andOn(`${ServiceDBModel.field('isActive')}`, '=', knex.raw('?', true))
+          .andOn(`${ServiceDBModel.field('name')}`, '=', knex.raw('?', serviceName))
       })
-      .join(`${SchemaTagRepository.table}`, function () {
-        this.on(`${SchemaRepository.field('id')}`, '=', `${SchemaTagRepository.field('schemaId')}`).andOn(
-          `${SchemaTagRepository.field('isActive')}`,
+      .join(`${SchemaTagDBModel.table}`, function () {
+        this.on(`${SchemaDBModel.field('id')}`, '=', `${SchemaTagDBModel.field('schemaId')}`).andOn(
+          `${SchemaTagDBModel.field('isActive')}`,
           '=',
           knex.raw('?', true),
         )
       })
-      .where(`${SchemaRepository.field('isActive')}`, knex.raw('?', true))
+      .where(`${SchemaDBModel.field('isActive')}`, knex.raw('?', true))
       .orderBy([
-        { column: `${SchemaRepository.field('updatedAt')}`, order: 'desc' },
-        { column: `${SchemaTagRepository.field('createdAt')}`, order: 'desc' },
+        { column: `${SchemaDBModel.field('updatedAt')}`, order: 'desc' },
+        { column: `${SchemaTagDBModel.field('createdAt')}`, order: 'desc' },
       ])
       .first<LastUpdatedSchema>()
   }
-  findBySchemaTag({ graphName, version, serviceName }: { graphName: string; version: string; serviceName: string }) {
+  findBySchemaTag({
+    graphName,
+    version,
+    serviceName,
+  }: {
+    graphName: string
+    version: string
+    serviceName: string
+  }) {
     const knex = this.#knex
-    const table = SchemaRepository.table
+    const table = SchemaDBModel.table
     return knex
       .from(table)
-      .join(`${GraphRepository.table}`, function () {
-        this.on(`${SchemaRepository.field('graphId')}`, '=', `${GraphRepository.field('id')}`)
-          .andOn(`${GraphRepository.field('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphRepository.field('name')}`, '=', knex.raw('?', graphName))
+      .join(`${GraphDBModel.table}`, function () {
+        this.on(`${SchemaDBModel.field('graphId')}`, '=', `${GraphDBModel.field('id')}`)
+          .andOn(`${GraphDBModel.field('isActive')}`, '=', knex.raw('?', true))
+          .andOn(`${GraphDBModel.field('name')}`, '=', knex.raw('?', graphName))
       })
-      .join(`${ServiceRepository.table}`, function () {
-        this.on(`${SchemaRepository.field('serviceId')}`, '=', `${ServiceRepository.field('id')}`)
-          .andOn(`${ServiceRepository.field('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${ServiceRepository.field('name')}`, '=', knex.raw('?', serviceName))
+      .join(`${ServiceDBModel.table}`, function () {
+        this.on(`${SchemaDBModel.field('serviceId')}`, '=', `${ServiceDBModel.field('id')}`)
+          .andOn(`${ServiceDBModel.field('isActive')}`, '=', knex.raw('?', true))
+          .andOn(`${ServiceDBModel.field('name')}`, '=', knex.raw('?', serviceName))
       })
-      .join(`${SchemaTagRepository.table}`, function () {
-        this.on(`${SchemaRepository.field('id')}`, '=', `${SchemaTagRepository.field('id')}`)
-          .andOn(`${SchemaTagRepository.table}.isActive`, '=', knex.raw('?', true))
-          .andOn(`${SchemaTagRepository.table}.version`, '=', knex.raw('?', version))
+      .join(`${SchemaTagDBModel.table}`, function () {
+        this.on(`${SchemaDBModel.field('id')}`, '=', `${SchemaTagDBModel.field('id')}`)
+          .andOn(`${SchemaTagDBModel.table}.isActive`, '=', knex.raw('?', true))
+          .andOn(`${SchemaTagDBModel.table}.version`, '=', knex.raw('?', version))
       })
-      .where(`${SchemaRepository.field('isActive')}`, knex.raw('?', true))
+      .where(`${SchemaDBModel.field('isActive')}`, knex.raw('?', true))
       .select(`${table}.*`)
       .first<SchemaDBModel>()
   }
   async create(entity: Omit<SchemaDBModel, 'id' | 'createdAt'>) {
     const knex = this.#knex
-    const table = SchemaRepository.table
+    const table = SchemaDBModel.table
     const [first] = await knex<SchemaDBModel>(table)
       .insert({
         ...entity,
@@ -113,10 +127,10 @@ export default class SchemaRepository {
   }
   async updateById(schemaId: number, entity: Partial<SchemaDBModel>) {
     const knex = this.#knex
-    const table = SchemaRepository.table
+    const table = SchemaDBModel.table
     return knex(table)
       .update(entity)
-      .where(`${SchemaRepository.field('id')}`, '=', schemaId)
+      .where(`${SchemaDBModel.field('id')}`, '=', schemaId)
       .returning<SchemaDBModel[]>('*')
   }
 }
