@@ -5,7 +5,7 @@ import { cleanTest, createTestContext, createTestPrefix, TestContext } from '../
 const test = anyTest as TestInterface<TestContext>
 test.before(createTestContext())
 test.beforeEach(createTestPrefix())
-// test.after.always('cleanup', cleanTest())
+test.after.always('cleanup', cleanTest())
 
 test('Should keep the most recent 10 schemas of every service in the graph', async (t) => {
   const app = build({
