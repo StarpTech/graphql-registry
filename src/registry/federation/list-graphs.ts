@@ -15,7 +15,7 @@ export const schema: FastifySchema = {
 export default function listGraphs(fastify: FastifyInstance) {
   fastify.get('/graphs', async (req, res) => {
     const allGraphs = await fastify.knex
-      .select(GraphDBModel.field('name'))
+      .select(GraphDBModel.fullName('name'))
       .from<GraphDBModel>(GraphDBModel.table)
 
     res.send({

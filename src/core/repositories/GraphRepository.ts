@@ -11,8 +11,8 @@ export default class GraphRepository {
     const table = GraphDBModel.table
     const result = await knex
       .from(table)
-      .count(GraphDBModel.field('id'))
-      .where(GraphDBModel.field('name'), knex.raw('?', name))
+      .count(GraphDBModel.fullName('id'))
+      .where(GraphDBModel.fullName('name'), knex.raw('?', name))
       .first<{ count: number }>()
 
     return result.count > 0
@@ -22,7 +22,7 @@ export default class GraphRepository {
     const table = GraphDBModel.table
     return knex
       .from(table)
-      .where(GraphDBModel.field('name'), knex.raw('?', name))
+      .where(GraphDBModel.fullName('name'), knex.raw('?', name))
       .first<GraphDBModel>()
   }
   async create(entity: Omit<GraphDBModel, 'id' | 'createdAt'>) {

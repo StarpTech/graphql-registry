@@ -8,5 +8,6 @@ export class SchemaDBModel {
   serviceId!: number
 
   static table = 'schema'
-  static field = (name: keyof SchemaDBModel) => SchemaDBModel.table + '.' + name
+  static fullName = (name: keyof SchemaDBModel) => SchemaDBModel.table + '.' + name
+  static field = (name: keyof SchemaDBModel) => name
 }

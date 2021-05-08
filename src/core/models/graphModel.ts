@@ -6,5 +6,6 @@ export class GraphDBModel {
   updatedAt?: Date
 
   static table = 'graph'
-  static field = (name: keyof GraphDBModel) => GraphDBModel.table + '.' + name
+  static fullName = (name: keyof GraphDBModel) => GraphDBModel.table + '.' + name
+  static field = (name: keyof GraphDBModel) => name
 }

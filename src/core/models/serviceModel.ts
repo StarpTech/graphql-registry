@@ -7,5 +7,6 @@ export class ServiceDBModel {
   graphId!: number
 
   static table = 'service'
-  static field = (name: keyof ServiceDBModel) => ServiceDBModel.table + '.' + name
+  static fullName = (name: keyof ServiceDBModel) => ServiceDBModel.table + '.' + name
+  static field = (name: keyof ServiceDBModel) => name
 }

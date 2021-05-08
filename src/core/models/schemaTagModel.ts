@@ -6,5 +6,6 @@ export class SchemaTagDBModel {
   schemaId!: number
 
   static table = 'schema_tag'
-  static field = (name: keyof SchemaTagDBModel) => SchemaTagDBModel.table + '.' + name
+  static fullName = (name: keyof SchemaTagDBModel) => SchemaTagDBModel.table + '.' + name
+  static field = (name: keyof SchemaTagDBModel) => name
 }

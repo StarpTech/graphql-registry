@@ -13,13 +13,13 @@ export default class SchemaTagRepository {
     return knex
       .from(table)
       .join(`${SchemaDBModel.table}`, function () {
-        this.on(`${SchemaTagDBModel.field('schemaId')}`, '=', knex.raw('?', schemaId)).andOn(
-          `${SchemaDBModel.field('isActive')}`,
+        this.on(`${SchemaTagDBModel.fullName('schemaId')}`, '=', knex.raw('?', schemaId)).andOn(
+          `${SchemaDBModel.fullName('isActive')}`,
           '=',
           knex.raw('?', true),
         )
       })
-      .where(`${SchemaTagDBModel.field('version')}`, knex.raw('?', version))
+      .where(`${SchemaTagDBModel.fullName('version')}`, knex.raw('?', version))
       .select(`${table}.*`)
       .first<SchemaTagDBModel>()
   }
