@@ -18,7 +18,10 @@ COPY --from=builder /usr/src/app/node_modules node_modules
 COPY --from=builder /usr/src/app/build build
 COPY --from=builder /usr/src/app/package.json .
 
+ENV NODE_ENV=production
 EXPOSE 3000
+
+USER node
 
 CMD [ "node", "build/index.js" ]
 

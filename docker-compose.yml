@@ -6,18 +6,16 @@ services:
     container_name: graphql-registry
     build: .
     ports:
-      - "3001:3000"
+      - '3001:3000'
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://postgres:changeme@postgres:5432/graphql-registry?schema=public
-    profiles:
-      - test
 
   postgres:
     container_name: postgres
     image: postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,7 +24,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       PGDATA: /data/postgres
     ports:
-      - "5440:5432"
+      - '5440:5432'
     restart: unless-stopped
 
   k6:

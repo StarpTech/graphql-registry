@@ -65,6 +65,14 @@ docker-compose run k6 run /benchmark/composed-schema.js
 
 Our benchmark suite is running in the CI.
 
+## Deployment
+
+GraphQL-Registry uses by default postgres as database.
+
+```sh
+docker run -e DATABASE_URL="" starptech/graphql-registry:latest -p 3000:3000
+```
+
 ## Contributing
 
 ❤️ contributions!
