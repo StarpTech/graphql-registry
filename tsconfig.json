@@ -11,8 +11,8 @@
     "preserveConstEnums": true,
     "moduleResolution": "node",
     "sourceMap": true,
+    "incremental": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules/"]
+  "include": ["src/**/*"]
 }
