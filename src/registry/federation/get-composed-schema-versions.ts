@@ -48,7 +48,7 @@ export const schema: FastifySchema = {
         .minItems(1)
         .items(
           S.object()
-            .required(['name'])
+            .required(['name', 'version'])
             .prop('version', S.string().minLength(1).maxLength(100))
             .prop('name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
         ),

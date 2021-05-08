@@ -77,49 +77,13 @@ test('Should return schema of two services', async (t) => {
   })
 })
 
-test('Should return latest schema when no version was specified', async (t) => {
+test('Should return valdiation error when no version was specified', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
   t.teardown(() => app.close())
 
-  let res = await app.inject({
-    method: 'POST',
-    url: '/schema/push',
-    payload: {
-      typeDefs: `type Query { hello: String }`,
-      version: '1',
-      serviceName: `${t.context.testPrefix}_foo`,
-      graphName: `${t.context.graphName}`,
-    },
-  })
-  t.is(res.statusCode, 200)
-
-  res = await app.inject({
-    method: 'POST',
-    url: '/schema/push',
-    payload: {
-      typeDefs: `type Query { world: String }`,
-      version: '2',
-      serviceName: `${t.context.testPrefix}_bar`,
-      graphName: `${t.context.graphName}`,
-    },
-  })
-  t.is(res.statusCode, 200)
-
-  res = await app.inject({
-    method: 'POST',
-    url: '/schema/push',
-    payload: {
-      typeDefs: `type Query { world: String }`,
-      version: '3',
-      serviceName: `${t.context.testPrefix}_bar`,
-      graphName: `${t.context.graphName}`,
-    },
-  })
-  t.is(res.statusCode, 200)
-
-  res = await app.inject({
+  const res = await app.inject({
     method: 'POST',
     url: '/schema/compose',
     payload: {
@@ -127,32 +91,18 @@ test('Should return latest schema when no version was specified', async (t) => {
       services: [
         {
           name: `${t.context.testPrefix}_foo`,
-        },
-        {
-          name: `${t.context.testPrefix}_bar`,
-        },
+        }
       ],
     },
   })
 
-  t.is(res.statusCode, 200)
+  t.is(res.statusCode, 400)
 
   const response = res.json()
 
-  t.true(response.success)
-  t.is(response.data.length, 2)
+  t.false(response.success)
 
-  t.like(response.data[0], {
-    serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: 'type Query { hello: String }',
-    version: '1',
-  })
-
-  t.like(response.data[1], {
-    serviceName: `${t.context.testPrefix}_bar`,
-    typeDefs: 'type Query { world: String }',
-    version: '3',
-  })
+  t.is(response.error, "body.services[0] should have required property 'version'")
 })
 
 test('Should return 404 when schema in version could not be found', async (t) => {

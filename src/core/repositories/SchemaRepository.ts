@@ -60,7 +60,7 @@ export default class SchemaRepository {
           .andOn(`${ServiceRepository.field('isActive')}`, '=', knex.raw('?', true))
           .andOn(`${ServiceRepository.field('name')}`, '=', knex.raw('?', serviceName))
       })
-      .leftJoin(`${SchemaTagRepository.table}`, function () {
+      .join(`${SchemaTagRepository.table}`, function () {
         this.on(`${SchemaRepository.field('id')}`, '=', `${SchemaTagRepository.field('schemaId')}`).andOn(
           `${SchemaTagRepository.field('isActive')}`,
           '=',
