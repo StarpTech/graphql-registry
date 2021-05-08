@@ -37,6 +37,8 @@ Try all endpoints in [insomnia](https://insomnia.rest/run/?label=GraphQL%20Regis
 
 ## Development
 
+Copy `.env.example` to `.env`
+
 ```sh
 # Install project
 npm install
