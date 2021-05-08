@@ -38,7 +38,7 @@ jobs:
 
       - name: Start services
         run: |
-          docker-compose up -d
+          docker-compose up -d postgres
           ./scripts/wait-for-healthy-container.sh postgres 30
 
       - name: Install
