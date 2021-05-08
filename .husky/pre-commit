@@ -3,4 +3,4 @@
 
 npm test -- --fail-fast --tap
 
-npx --yes pretty-quick
+npx -p prettier@latest -p pretty-quick pretty-quick --staged
