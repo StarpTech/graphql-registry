@@ -47,7 +47,7 @@ jobs:
       - name: Create db schema
         run: |
           docker exec -t postgres createdb -U postgres graphql-registry
-          DATABASE_URL="postgresql://postgres:changeme@localhost:5440/graphql-registry?schema=public" npm run migrate
+          DATABASE_URL="postgresql://postgres:changeme@localhost:5440/graphql-registry?schema=public" npm run migrate:up
 
       - name: Build app image
         run: docker-compose up -d app
