@@ -37,11 +37,16 @@ Try all endpoints in [insomnia](https://insomnia.rest/run/?label=GraphQL%20Regis
 
 ## Development
 
-```
+```sh
+# Install project
+npm install
+# Start postgres
 docker-compose up postgres
 # Create db schema
-npm run migrate
+npm run migrate:up
+# Watch mode
 npm run dev
+# Run tests
 npm run test
 ```
 
@@ -49,7 +54,7 @@ npm run test
 
 Run a benchmark with:
 
-```
+```sh
 docker-compose up postgres
 docker-compose up --build app
 docker-compose run k6 run /benchmark/composed-schema.js
