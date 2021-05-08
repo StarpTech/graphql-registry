@@ -7,10 +7,12 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
+      - 'insomnia.json'
   pull_request:
     paths-ignore:
       - 'docs/**'
       - '*.md'
+      - 'insomnia.json'
 
 jobs:
   test:
@@ -26,7 +28,7 @@ jobs:
           node-version: ${{ matrix.nodejs }}
 
       - name: Start services
-        run: | 
+        run: |
           docker-compose up -d
           ./scripts/wait-for-healthy-container.sh postgres 30
 
