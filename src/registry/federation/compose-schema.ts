@@ -42,7 +42,7 @@ export const schema: FastifySchema = {
     .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
 }
 
-export default function getComposedSchema(fastify: FastifyInstance) {
+export default function composeSchema(fastify: FastifyInstance) {
   fastify.get<RequestContext>('/schema/latest', { schema }, async (req, res) => {
     const graphRepository = new GraphRepository(fastify.knex)
 

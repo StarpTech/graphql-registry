@@ -34,7 +34,7 @@ export const schema: FastifySchema = {
     .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
 }
 
-export default function getSchemaValidation(fastify: FastifyInstance) {
+export default function schemaValidation(fastify: FastifyInstance) {
   fastify.post<RequestContext>('/schema/validate', { schema }, async (req, res) => {
     const graphRepository = new GraphRepository(fastify.knex)
 

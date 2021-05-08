@@ -107,6 +107,24 @@ POST - `/schema/validate` Validate schema between provided and latest schemas.
 </p>
 </details>
 
+### Validating client operations
+
+POST - `/document/validate` Confirm that all client operations are supported by the latest schema.
+
+<details>
+<summary>Example Request</summary>
+<p>
+
+```json
+{
+  "graphName": "my_graph",
+  "document": "query { hello }"
+}
+```
+
+</p>
+</details>
+
 ## Monitoring / Maintanance
 
 ### Remove all schemas except the most (N) recent

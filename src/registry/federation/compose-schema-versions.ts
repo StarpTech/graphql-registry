@@ -59,7 +59,7 @@ export const schema: FastifySchema = {
     ),
 }
 
-export default function getComposedSchemaVersions(fastify: FastifyInstance) {
+export default function composeSchemaVersions(fastify: FastifyInstance) {
   fastify.post<RequestContext>('/schema/compose', { schema }, async (req, res) => {
     const graphRepository = new GraphRepository(fastify.knex)
 

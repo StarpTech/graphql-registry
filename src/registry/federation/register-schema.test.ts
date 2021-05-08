@@ -402,7 +402,49 @@ test('Should be able to register a schema with a valid JWT', async (t) => {
     method: 'POST',
     url: '/schema/push',
     headers: {
-      ...getJwtHeader([`${t.context.testPrefix}_foo`]),
+      ...getJwtHeader({
+        client: `${t.context.testPrefix}_foo`,
+        services: [],
+      }),
+    },
+    payload: {
+      typeDefs: `type Query { hello: String }`,
+      version: '1',
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+  t.like(
+    res.json(),
+    {
+      data: {
+        serviceName: `${t.context.testPrefix}_foo`,
+        typeDefs: `type Query { hello: String }`,
+        version: '1',
+      },
+      success: true,
+    },
+    'response payload match',
+  )
+})
+
+test('Should be able to register a schema in name of another service', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+    jwtSecret: 'secret',
+  })
+  t.teardown(() => app.close())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    headers: {
+      ...getJwtHeader({
+        client: `${t.context.testPrefix}_bar`,
+        services: [`${t.context.testPrefix}_foo`],
+      }),
     },
     payload: {
       typeDefs: `type Query { hello: String }`,
@@ -438,7 +480,10 @@ test('Should not be able to register a schema with a jwt token because client is
     method: 'POST',
     url: '/schema/push',
     headers: {
-      ...getJwtHeader([`bar_client`]), // bar is not authorized
+      ...getJwtHeader({
+        client: `bar_foo`,
+        services: [],
+      }), // bar is not authorized
     },
     payload: {
       typeDefs: `type Query { hello: String }`,
@@ -470,7 +515,10 @@ test('Should not be able to register a schema with a jwt token with empty servic
     method: 'POST',
     url: '/schema/push',
     headers: {
-      ...getJwtHeader([]), // bar is not authorized
+      ...getJwtHeader({
+        client: `bar_client`,
+        services: [],
+      }), // bar is not authorized
     },
     payload: {
       typeDefs: `type Query { hello: String }`,

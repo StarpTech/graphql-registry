@@ -1,14 +1,15 @@
 import { FastifyInstance } from 'fastify'
 import basicAuth from '../core/basic-auth'
 import garbageCollect from './maintanance/garbage-collect'
-import getComposedSchema from './federation/get-composed-schema'
-import getComposedSchemaVersions from './federation/get-composed-schema-versions'
-import getSchemaDiff from './validation/get-schema-diff'
-import getSchemaValidation from './validation/get-schema-validation'
+import composeSchema from './federation/compose-schema'
+import composeSchemaVersions from './federation/compose-schema-versions'
+import schemaDiff from './schema-validation/schema-diff'
+import schemaValidation from './schema-validation/schema-validation'
 import listGraphs from './federation/list-graphs'
 import registerSchema from './federation/register-schema'
 import deactivateSchema from './federation/deactivate-schema'
 import jwtAuth from '../core/jwt-auth'
+import documentValidation from './document-validator/document-validation'
 export interface registryOptions {
   basicAuth?: string
   jwtSecret?: string
@@ -32,12 +33,13 @@ export default async function Registry(fastify: FastifyInstance, opts: registryO
     }
   })
 
+  documentValidation(fastify)
   listGraphs(fastify)
   registerSchema(fastify)
   garbageCollect(fastify)
-  getComposedSchema(fastify)
-  getComposedSchemaVersions(fastify)
+  composeSchema(fastify)
+  composeSchemaVersions(fastify)
   deactivateSchema(fastify)
-  getSchemaDiff(fastify)
-  getSchemaValidation(fastify)
+  schemaDiff(fastify)
+  schemaValidation(fastify)
 }

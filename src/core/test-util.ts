@@ -3,6 +3,7 @@ import execa from 'execa'
 import { join } from 'path'
 import us from 'unique-string'
 import jwt from 'jsonwebtoken'
+import { JwtPayload } from './jwt-auth'
 
 export interface TestContext {
   dbName: string
@@ -12,9 +13,9 @@ export interface TestContext {
   connectionUrl: string
 }
 
-export function getJwtHeader(issuerServices: string[]) {
+export function getJwtHeader(payload: JwtPayload) {
   const jwtSecret = 'secret'
-  const jwtToken = jwt.sign({ services: issuerServices }, jwtSecret)
+  const jwtToken = jwt.sign(payload, jwtSecret)
   return {
     authorization: `Bearer ${jwtToken}`,
   }

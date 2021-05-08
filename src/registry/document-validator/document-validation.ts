@@ -1,20 +1,22 @@
 import S from 'fluent-json-schema'
+import { Source, print, parse } from 'graphql'
 import { FastifyInstance, FastifySchema } from 'fastify'
-import { diff } from '@graphql-inspector/core'
-import { composeAndValidateSchema } from '../../core/federation'
-import { SchemaManager } from '../../core/manager/SchemaManager'
+import { validate as validateDocument } from '@graphql-inspector/core'
 import {
+  InvalidDocumentError,
   InvalidGraphNameError,
   SchemaCompositionError,
   SchemaVersionLookupError,
 } from '../../core/errrors'
+import { composeAndValidateSchema } from '../../core/federation'
+import { SchemaManager } from '../../core/manager/SchemaManager'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
+
 export interface RequestContext {
   Body: {
-    serviceName: string
-    typeDefs: string
+    document: string
     graphName: string
   }
 }
@@ -23,30 +25,18 @@ export const schema: FastifySchema = {
   response: {
     '2xx': S.object()
       .additionalProperties(false)
-      .required(['success', 'data'])
-      .prop('success', S.boolean())
-      .prop(
-        'data',
-        S.array().items(
-          S.object()
-            .required(['criticality', 'type', 'message', 'path'])
-            .prop('criticality', S.object().prop('level', S.string()).prop('reason', S.string()))
-            .prop('type', S.string())
-            .prop('message', S.string())
-            .prop('path', S.string()),
-        ),
-      ),
+      .required(['success'])
+      .prop('success', S.boolean()),
   },
   body: S.object()
     .additionalProperties(false)
-    .required(['typeDefs', 'serviceName', 'graphName'])
+    .required(['document', 'graphName'])
     .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
-    .prop('typeDefs', S.string().minLength(1).maxLength(10000))
-    .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+    .prop('document', S.string().minLength(1).maxLength(10000)),
 }
 
-export default function getSchemaDiff(fastify: FastifyInstance) {
-  fastify.post<RequestContext>('/schema/diff', { schema }, async (req, res) => {
+export default function documentValidation(fastify: FastifyInstance) {
+  fastify.post<RequestContext>('/document/validate', { schema }, async (req, res) => {
     const graphRepository = new GraphRepository(fastify.knex)
 
     const graphExists = await graphRepository.exists({
@@ -64,13 +54,15 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
     })
 
     if (serviceModels.length === 0) {
-      return res.send({
+      return {
         success: true,
-        data: [],
-      })
+      }
     }
 
-    const allLatestServices = serviceModels.map((s) => ({ name: s.name }))
+    const allLatestServices = serviceModels.map((s) => ({
+      name: s.name,
+    }))
+
     const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.body.graphName,
@@ -86,21 +78,6 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
       typeDefs: s.typeDefs,
     }))
 
-    let original = composeAndValidateSchema(serviceSchemas)
-    if (!original.schema) {
-      throw SchemaCompositionError(original.error)
-    }
-    if (original.error) {
-      throw SchemaCompositionError(original.error)
-    }
-
-    serviceSchemas = serviceSchemas
-      .filter((schema) => schema.name !== req.body.serviceName)
-      .concat({
-        name: req.body.serviceName,
-        typeDefs: req.body.typeDefs,
-      })
-
     const updated = composeAndValidateSchema(serviceSchemas)
     if (!updated.schema) {
       throw SchemaCompositionError(updated.error)
@@ -109,11 +86,30 @@ export default function getSchemaDiff(fastify: FastifyInstance) {
       throw SchemaCompositionError(updated.error)
     }
 
-    const result = diff(original.schema, updated.schema)
+    let doc = null
+    try {
+      doc = parse(req.body.document)
+    } catch {
+      throw InvalidDocumentError()
+    }
+
+    const invalidDocuments = validateDocument(updated.schema, [new Source(print(doc))], {
+      apollo: true,
+      strictDeprecated: true,
+      maxDepth: 10,
+      keepClientFields: true,
+    })
+
+    if (invalidDocuments.length > 0) {
+      res.code(400)
+      return {
+        success: false,
+        error: invalidDocuments,
+      }
+    }
 
     return {
       success: true,
-      data: result,
     }
   })
 }

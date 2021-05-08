@@ -17,3 +17,8 @@ export const SchemaNotFoundError = createError(
   `Could not find schema with id "%s"`,
   400,
 )
+export const InvalidDocumentError = createError(
+  'GR_DOCUMENT_INVALID',
+  `Could not parse document`,
+  400,
+)
