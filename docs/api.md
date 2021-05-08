@@ -10,6 +10,8 @@ GET - `/graphs` Returns all registered graphs.
 
 GET - `/schema/latest?graphName=my_graph` Returns the last registered schema definition of all services.
 
+**Notice:** Work always with versions in production.
+
 ### Register a schema
 
 POST - `/schema/push` Creates a new graph and schema for a service.
