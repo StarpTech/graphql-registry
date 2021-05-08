@@ -1,5 +1,6 @@
 import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
+import SchemaRepository from '../../core/repositories/SchemaRepository'
 
 export interface RequestContext {
   Body: {
@@ -30,7 +31,10 @@ export const schema: FastifySchema = {
 export default function garbageCollect(fastify: FastifyInstance) {
   fastify.post<RequestContext>('/schema/garbage_collect', { schema }, async (req, res) => {
     return fastify.knex.transaction(async function (trx) {
-      const schemasToKeep = await trx.from('schema').orderBy('updatedAt', 'desc').limit(req.body.numSchemasKeep)
+      const schemasToKeep = await trx
+        .from(`${SchemaRepository.table}`)
+        .orderBy('updatedAt', 'desc')
+        .limit(req.body.numSchemasKeep)
 
       const deletedSchemaTags = await trx
         .from('schema_tag')

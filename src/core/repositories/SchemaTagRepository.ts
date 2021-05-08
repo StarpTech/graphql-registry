@@ -1,27 +1,33 @@
 import { Knex } from 'knex'
 import { SchemaTagDBModel } from '../models/schemaTagModel'
+import SchemaRepository from './SchemaRepository'
 
 export default class SchemaTagRepository {
-  #table = 'schema_tag'
+  static table = 'schema_tag'
+  static field = (name: keyof SchemaTagDBModel) => SchemaTagRepository.table + '.' + name
   #knex: Knex
   constructor(knex: Knex) {
     this.#knex = knex
   }
   findByVersion({ version, schemaId }: { version: string; schemaId: number; serviceId: number }) {
     const knex = this.#knex
-    const table = this.#table
+    const table = SchemaTagRepository.table
     return knex
       .from(table)
-      .join('schema', function () {
-        this.on(`${table}.schemaId`, '=', knex.raw('?', schemaId)).andOn('schema.isActive', '=', knex.raw('?', true))
+      .join(`${SchemaRepository.table}`, function () {
+        this.on(`${SchemaTagRepository.field('schemaId')}`, '=', knex.raw('?', schemaId)).andOn(
+          `${SchemaRepository.field('isActive')}`,
+          '=',
+          knex.raw('?', true),
+        )
       })
-      .where(`${table}.version`, knex.raw('?', version))
+      .where(`${SchemaTagRepository.field('version')}`, knex.raw('?', version))
       .select(`${table}.*`)
       .first<SchemaTagDBModel>()
   }
   async create(entity: Omit<SchemaTagDBModel, 'id' | 'createdAt'>) {
     const knex = this.#knex
-    const table = this.#table
+    const table = SchemaTagRepository.table
     const [first] = await knex(table)
       .insert({
         ...entity,

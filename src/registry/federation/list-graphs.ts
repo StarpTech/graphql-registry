@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifySchema } from 'fastify'
 import S from 'fluent-json-schema'
 import { GraphDBModel } from '../../core/models/graphModel'
+import GraphRepository from '../../core/repositories/GraphRepository'
 
 export const schema: FastifySchema = {
   response: {
@@ -14,7 +15,7 @@ export const schema: FastifySchema = {
 
 export default function listGraphs(fastify: FastifyInstance) {
   fastify.get('/graphs', async (req, res) => {
-    const allGraphs = await fastify.knex.select('name').from<GraphDBModel>('graph')
+    const allGraphs = await fastify.knex.select(GraphRepository.field('name')).from<GraphDBModel>(GraphRepository.table)
 
     res.send({
       success: true,

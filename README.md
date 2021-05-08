@@ -58,6 +58,7 @@ docker-compose run k6 run /benchmark/composed-schema.js
 Our benchmark suite is running in the CI.
 
 ## Contributing
+
 ❤️ contributions!
 
 I will happily accept your pull request if it:
