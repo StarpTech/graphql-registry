@@ -32,7 +32,7 @@ POST - `/schema/push` Creates a new graph and schema for a service.
 
 ### Get latest schemas by versions
 
-POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions.
+POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions. If versions can't be found it fails.
 
 <details>
 <summary>Example Request</summary>
@@ -41,7 +41,7 @@ POST - `/schema/compose` Returns the last registered schema definition of all se
 ```jsonc
 {
   "graphName": "my_graph",
-  "services": [{ "name": "foo", "version": "1" }] // if versions can't be found it fails
+  "services": [{ "name": "foo", "version": "1" }]
 }
 ```
 
