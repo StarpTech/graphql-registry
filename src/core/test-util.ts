@@ -40,12 +40,15 @@ export function createTestContext() {
       shell: true,
     })
 
-    await execa.command(`${knexBinary} migrate:up 20210504193054_initial_schema.js`, {
-      shell: true,
-      env: {
-        DATABASE_URL: t.context.connectionUrl,
+    await execa.command(
+      `${knexBinary} migrate:up --knexfile build/knexfile.js 20210504193054_initial_schema.js`,
+      {
+        shell: true,
+        env: {
+          DATABASE_URL: t.context.connectionUrl,
+        },
       },
-    })
+    )
 
     t.context.bootstrapped = true
   }
