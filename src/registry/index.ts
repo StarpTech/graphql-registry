@@ -9,7 +9,7 @@ import listGraphs from './federation/list-graphs'
 import registerSchema from './federation/register-schema'
 import deactivateSchema from './federation/deactivate-schema'
 import jwtAuth from '../core/jwt-auth'
-import documentValidation from './document-validator/document-validation'
+import documentValidation from './document-validation/document-validation'
 export interface registryOptions {
   basicAuth?: string
   jwtSecret?: string
