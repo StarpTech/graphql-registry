@@ -12,12 +12,17 @@ export default class ServiceRepository {
     const table = ServiceDBModel.table
     return knex
       .from(table)
-      .join(`${GraphDBModel.table}`, function () {
-        this.on(`${table}.graphId`, '=', `${GraphDBModel.fullName('id')}`)
-          .andOn(`${GraphDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphDBModel.fullName('name')}`, '=', knex.raw('?', graphName))
+      .join(
+        GraphDBModel.table,
+        ServiceDBModel.fullName('graphId'),
+        '=',
+        GraphDBModel.fullName('id'),
+      )
+      .where({
+        [GraphDBModel.fullName('isActive')]: true,
+        [GraphDBModel.fullName('name')]: graphName,
+        [ServiceDBModel.fullName('name')]: name,
       })
-      .where(`${ServiceDBModel.fullName('name')}`, knex.raw('?', name))
       .select(`${table}.*`)
       .first<ServiceDBModel>()
   }
@@ -30,14 +35,19 @@ export default class ServiceRepository {
     return knex
       .from(table)
       .select([`${table}.*`])
-      .join(`${GraphDBModel.table}`, function () {
-        this.on(`${ServiceDBModel.fullName('graphId')}`, '=', `${GraphDBModel.fullName('id')}`)
-          .andOn(`${GraphDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphDBModel.fullName('name')}`, '=', knex.raw('?', graphName))
+      .join(
+        GraphDBModel.table,
+        ServiceDBModel.fullName('graphId'),
+        '=',
+        GraphDBModel.fullName('id'),
+      )
+      .where({
+        [GraphDBModel.fullName('isActive')]: true,
+        [GraphDBModel.fullName('name')]: graphName,
+        [ServiceDBModel.fullName('isActive')]: true,
       })
-      .where(`${ServiceDBModel.fullName('isActive')}`, knex.raw('?', true))
-      .whereIn(`${ServiceDBModel.fullName('name')}`, serviceNames)
-      .orderBy(`${ServiceDBModel.fullName('updatedAt')}`, 'desc')
+      .whereIn(ServiceDBModel.fullName('name'), serviceNames)
+      .orderBy(ServiceDBModel.fullName('updatedAt'), 'desc')
   }
   findManyExceptWithName(
     { graphName }: { graphName: string },
@@ -48,14 +58,19 @@ export default class ServiceRepository {
     return knex
       .from<ServiceDBModel>(table)
       .select([`${table}.*`])
-      .join(`${GraphDBModel.table}`, function () {
-        this.on(`${ServiceDBModel.fullName('graphId')}`, '=', `${GraphDBModel.table}.id`)
-          .andOn(`${GraphDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphDBModel.fullName('name')}`, '=', knex.raw('?', graphName))
+      .join(
+        GraphDBModel.table,
+        ServiceDBModel.fullName('graphId'),
+        '=',
+        GraphDBModel.fullName('id'),
+      )
+      .where({
+        [GraphDBModel.fullName('isActive')]: true,
+        [GraphDBModel.fullName('name')]: graphName,
+        [ServiceDBModel.fullName('isActive')]: true,
       })
-      .where(`${ServiceDBModel.fullName('isActive')}`, knex.raw('?', true))
-      .whereNot(`${ServiceDBModel.fullName('name')}`, exceptService)
-      .orderBy(`${ServiceDBModel.fullName('updatedAt')}`, 'desc')
+      .whereNot(ServiceDBModel.fullName('name'), exceptService)
+      .orderBy(ServiceDBModel.fullName('updatedAt'), 'desc')
   }
   findMany({ graphName }: { graphName: string }): Promise<ServiceDBModel[]> {
     const knex = this.#knex
@@ -63,13 +78,18 @@ export default class ServiceRepository {
     return knex
       .from(table)
       .select([`${table}.*`])
-      .join(`${GraphDBModel.table}`, function () {
-        this.on(`${ServiceDBModel.fullName('graphId')}`, '=', `${GraphDBModel.fullName('id')}`)
-          .andOn(`${GraphDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphDBModel.fullName('name')}`, '=', knex.raw('?', graphName))
+      .join(
+        GraphDBModel.table,
+        ServiceDBModel.fullName('graphId'),
+        '=',
+        GraphDBModel.fullName('id'),
+      )
+      .where({
+        [GraphDBModel.fullName('isActive')]: true,
+        [GraphDBModel.fullName('name')]: graphName,
+        [ServiceDBModel.fullName('isActive')]: true,
       })
-      .where(`${ServiceDBModel.fullName('isActive')}`, knex.raw('?', true))
-      .orderBy(`${ServiceDBModel.fullName('updatedAt')}`, 'desc')
+      .orderBy(ServiceDBModel.fullName('updatedAt'), 'desc')
   }
   async create(entity: Omit<ServiceDBModel, 'id' | 'createdAt'>) {
     const knex = this.#knex

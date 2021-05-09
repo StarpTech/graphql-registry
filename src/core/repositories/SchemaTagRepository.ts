@@ -12,14 +12,17 @@ export default class SchemaTagRepository {
     const table = SchemaTagDBModel.table
     return knex
       .from(table)
-      .join(`${SchemaDBModel.table}`, function () {
-        this.on(`${SchemaTagDBModel.fullName('schemaId')}`, '=', knex.raw('?', schemaId)).andOn(
-          `${SchemaDBModel.fullName('isActive')}`,
-          '=',
-          knex.raw('?', true),
-        )
+      .join(
+        SchemaDBModel.table,
+        SchemaTagDBModel.fullName('schemaId'),
+        '=',
+        SchemaDBModel.fullName('id'),
+      )
+      .where({
+        [SchemaDBModel.fullName('id')]: schemaId,
+        [SchemaDBModel.fullName('isActive')]: true,
+        [SchemaTagDBModel.fullName('version')]: version,
       })
-      .where(`${SchemaTagDBModel.fullName('version')}`, knex.raw('?', version))
       .select(`${table}.*`)
       .first<SchemaTagDBModel>()
   }

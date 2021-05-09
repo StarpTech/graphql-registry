@@ -12,7 +12,7 @@ export default class GraphRepository {
     const result = await knex
       .from(table)
       .count(GraphDBModel.fullName('id'))
-      .where(GraphDBModel.fullName('name'), knex.raw('?', name))
+      .where(GraphDBModel.fullName('name'), name)
       .first<{ count: number }>()
 
     return result.count > 0
@@ -20,10 +20,7 @@ export default class GraphRepository {
   findFirst({ name }: { name: string }) {
     const knex = this.#knex
     const table = GraphDBModel.table
-    return knex
-      .from(table)
-      .where(GraphDBModel.fullName('name'), knex.raw('?', name))
-      .first<GraphDBModel>()
+    return knex.from(table).where(GraphDBModel.fullName('name'), name).first<GraphDBModel>()
   }
   async create(entity: Omit<GraphDBModel, 'id' | 'createdAt'>) {
     const knex = this.#knex

@@ -15,8 +15,10 @@ export default class SchemaRepository {
     const table = SchemaDBModel.table
     return knex
       .from(table)
-      .where(`${SchemaDBModel.fullName('isActive')}`, knex.raw('?', true))
-      .where(`${SchemaDBModel.fullName('id')}`, knex.raw('?', id))
+      .where({
+        [SchemaDBModel.fullName('isActive')]: true,
+        [SchemaDBModel.fullName('id')]: id,
+      })
       .first<SchemaDBModel>()
   }
   findFirst({
@@ -32,17 +34,20 @@ export default class SchemaRepository {
     const table = SchemaDBModel.table
     return knex
       .from(table)
-      .join(`${GraphDBModel.table}`, function () {
-        this.on(`${SchemaDBModel.fullName('graphId')}`, '=', `${GraphDBModel.fullName('id')}`)
-          .andOn(`${GraphDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphDBModel.fullName('name')}`, '=', knex.raw('?', graphName))
+      .join(GraphDBModel.table, SchemaDBModel.fullName('graphId'), '=', GraphDBModel.fullName('id'))
+      .join(
+        ServiceDBModel.table,
+        SchemaDBModel.fullName('serviceId'),
+        '=',
+        ServiceDBModel.fullName('id'),
+      )
+      .where({
+        [GraphDBModel.fullName('isActive')]: true,
+        [GraphDBModel.fullName('name')]: graphName,
+        [ServiceDBModel.fullName('isActive')]: true,
+        [ServiceDBModel.fullName('name')]: serviceName,
+        [SchemaDBModel.fullName('typeDefs')]: typeDefs,
       })
-      .join(`${ServiceDBModel.table}`, function () {
-        this.on(`${SchemaDBModel.fullName('serviceId')}`, '=', `${ServiceDBModel.fullName('id')}`)
-          .andOn(`${ServiceDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${ServiceDBModel.fullName('name')}`, '=', knex.raw('?', serviceName))
-      })
-      .where(`${SchemaDBModel.fullName('typeDefs')}`, knex.raw('?', typeDefs))
       .select(`${table}.*`)
       .first<SchemaDBModel>()
   }
@@ -52,31 +57,34 @@ export default class SchemaRepository {
     return knex
       .from(table)
       .select([
-        `${SchemaDBModel.fullName('id')}`,
-        `${SchemaDBModel.fullName('typeDefs')}`,
-        `${SchemaTagDBModel.fullName('version')}`,
+        SchemaDBModel.fullName('id'),
+        SchemaDBModel.fullName('typeDefs'),
+        SchemaTagDBModel.fullName('version'),
       ])
-      .join(`${GraphDBModel.table}`, function () {
-        this.on(`${SchemaDBModel.fullName('graphId')}`, '=', `${GraphDBModel.fullName('id')}`)
-          .andOn(`${GraphDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphDBModel.fullName('name')}`, '=', knex.raw('?', graphName))
+      .join(GraphDBModel.table, SchemaDBModel.fullName('graphId'), '=', GraphDBModel.fullName('id'))
+      .join(
+        ServiceDBModel.table,
+        SchemaDBModel.fullName('serviceId'),
+        '=',
+        ServiceDBModel.fullName('id'),
+      )
+      .join(
+        SchemaTagDBModel.table,
+        SchemaDBModel.fullName('id'),
+        '=',
+        SchemaTagDBModel.fullName('schemaId'),
+      )
+      .where({
+        [GraphDBModel.fullName('isActive')]: true,
+        [GraphDBModel.fullName('name')]: graphName,
+        [ServiceDBModel.fullName('isActive')]: true,
+        [ServiceDBModel.fullName('name')]: serviceName,
+        [SchemaTagDBModel.fullName('isActive')]: true,
+        [SchemaDBModel.fullName('isActive')]: true,
       })
-      .join(`${ServiceDBModel.table}`, function () {
-        this.on(`${SchemaDBModel.fullName('serviceId')}`, '=', `${ServiceDBModel.fullName('id')}`)
-          .andOn(`${ServiceDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${ServiceDBModel.fullName('name')}`, '=', knex.raw('?', serviceName))
-      })
-      .join(`${SchemaTagDBModel.table}`, function () {
-        this.on(
-          `${SchemaDBModel.fullName('id')}`,
-          '=',
-          `${SchemaTagDBModel.fullName('schemaId')}`,
-        ).andOn(`${SchemaTagDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-      })
-      .where(`${SchemaDBModel.fullName('isActive')}`, knex.raw('?', true))
       .orderBy([
-        { column: `${SchemaDBModel.fullName('updatedAt')}`, order: 'desc' },
-        { column: `${SchemaTagDBModel.fullName('createdAt')}`, order: 'desc' },
+        { column: SchemaDBModel.fullName('updatedAt'), order: 'desc' },
+        { column: SchemaTagDBModel.fullName('createdAt'), order: 'desc' },
       ])
       .first<LastUpdatedSchema>()
   }
@@ -93,22 +101,28 @@ export default class SchemaRepository {
     const table = SchemaDBModel.table
     return knex
       .from(table)
-      .join(`${GraphDBModel.table}`, function () {
-        this.on(`${SchemaDBModel.fullName('graphId')}`, '=', `${GraphDBModel.fullName('id')}`)
-          .andOn(`${GraphDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${GraphDBModel.fullName('name')}`, '=', knex.raw('?', graphName))
+      .join(GraphDBModel.table, SchemaDBModel.fullName('graphId'), '=', GraphDBModel.fullName('id'))
+      .join(
+        ServiceDBModel.table,
+        SchemaDBModel.fullName('serviceId'),
+        '=',
+        ServiceDBModel.fullName('id'),
+      )
+      .join(
+        SchemaTagDBModel.table,
+        SchemaDBModel.fullName('id'),
+        '=',
+        SchemaTagDBModel.fullName('schemaId'),
+      )
+      .where({
+        [GraphDBModel.fullName('isActive')]: true,
+        [GraphDBModel.fullName('name')]: graphName,
+        [ServiceDBModel.fullName('isActive')]: true,
+        [ServiceDBModel.fullName('name')]: serviceName,
+        [SchemaDBModel.fullName('isActive')]: true,
+        [SchemaTagDBModel.fullName('isActive')]: true,
+        [SchemaTagDBModel.fullName('version')]: version,
       })
-      .join(`${ServiceDBModel.table}`, function () {
-        this.on(`${SchemaDBModel.fullName('serviceId')}`, '=', `${ServiceDBModel.fullName('id')}`)
-          .andOn(`${ServiceDBModel.fullName('isActive')}`, '=', knex.raw('?', true))
-          .andOn(`${ServiceDBModel.fullName('name')}`, '=', knex.raw('?', serviceName))
-      })
-      .join(`${SchemaTagDBModel.table}`, function () {
-        this.on(`${SchemaDBModel.fullName('id')}`, '=', `${SchemaTagDBModel.fullName('schemaId')}`)
-          .andOn(`${SchemaTagDBModel.table}.isActive`, '=', knex.raw('?', true))
-          .andOn(`${SchemaTagDBModel.table}.version`, '=', knex.raw('?', version))
-      })
-      .where(`${SchemaDBModel.fullName('isActive')}`, knex.raw('?', true))
       .select(`${table}.*`)
       .first<SchemaDBModel>()
   }
@@ -130,7 +144,7 @@ export default class SchemaRepository {
     const table = SchemaDBModel.table
     return knex(table)
       .update(entity)
-      .where(`${SchemaDBModel.fullName('id')}`, '=', schemaId)
+      .where(SchemaDBModel.fullName('id'), '=', schemaId)
       .returning<SchemaDBModel[]>('*')
   }
   async deleteByGraphId(graphId: number) {
