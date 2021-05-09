@@ -19,6 +19,8 @@ export async function up(knex: Knex): Promise<void> {
         .timestamp(GraphDBModel.field('updatedAt'), { useTz: true })
         .notNullable()
         .defaultTo(knex.fn.now())
+
+      table.index([GraphDBModel.field('isActive'), GraphDBModel.field('name')])
     })
     .createTable(ServiceDBModel.table, (table) => {
       table.increments(ServiceDBModel.field('id')).primary()
@@ -39,7 +41,10 @@ export async function up(knex: Knex): Promise<void> {
         .unsigned()
         .references(GraphDBModel.field('id'))
         .inTable(GraphDBModel.table)
+        .onDelete('CASCADE')
         .index()
+
+      table.index([ServiceDBModel.field('isActive'), ServiceDBModel.field('name')])
     })
     .createTable(SchemaDBModel.table, (table) => {
       table.increments(SchemaDBModel.field('id')).primary()
@@ -67,6 +72,9 @@ export async function up(knex: Knex): Promise<void> {
         .references(ServiceDBModel.field('id'))
         .inTable(ServiceDBModel.table)
         .index()
+
+      table.index([SchemaDBModel.field('isActive')])
+      table.index([SchemaDBModel.field('typeDefs')])
     })
     .createTable(SchemaTagDBModel.table, (table) => {
       table.increments(SchemaTagDBModel.field('id')).primary()
@@ -84,6 +92,8 @@ export async function up(knex: Knex): Promise<void> {
         .references(SchemaDBModel.field('id'))
         .inTable(SchemaDBModel.table)
         .index()
+
+      table.index([SchemaTagDBModel.field('version')])
     })
 }
 

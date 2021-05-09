@@ -35,4 +35,12 @@ export default class SchemaTagRepository {
 
     return first
   }
+  async deleteBySchemaId(schemaId: number) {
+    const knex = this.#knex
+    const table = SchemaTagDBModel.table
+    return await knex(table)
+      .where(SchemaTagDBModel.field('schemaId'), schemaId)
+      .delete()
+      .returning<Pick<SchemaTagDBModel, 'id'>[]>(SchemaTagDBModel.field('id'))
+  }
 }

@@ -104,7 +104,7 @@ export default class SchemaRepository {
           .andOn(`${ServiceDBModel.fullName('name')}`, '=', knex.raw('?', serviceName))
       })
       .join(`${SchemaTagDBModel.table}`, function () {
-        this.on(`${SchemaDBModel.fullName('id')}`, '=', `${SchemaTagDBModel.fullName('id')}`)
+        this.on(`${SchemaDBModel.fullName('id')}`, '=', `${SchemaTagDBModel.fullName('schemaId')}`)
           .andOn(`${SchemaTagDBModel.table}.isActive`, '=', knex.raw('?', true))
           .andOn(`${SchemaTagDBModel.table}.version`, '=', knex.raw('?', version))
       })
@@ -132,5 +132,13 @@ export default class SchemaRepository {
       .update(entity)
       .where(`${SchemaDBModel.fullName('id')}`, '=', schemaId)
       .returning<SchemaDBModel[]>('*')
+  }
+  async deleteByGraphId(graphId: number) {
+    const knex = this.#knex
+    const table = GraphDBModel.table
+    return await knex(table)
+      .where(SchemaDBModel.field('graphId'), graphId)
+      .delete()
+      .returning<Pick<SchemaDBModel, 'id'>[]>(SchemaDBModel.field('id'))
   }
 }

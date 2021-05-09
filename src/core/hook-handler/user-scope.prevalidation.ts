@@ -15,6 +15,7 @@ export const checkUserServiceScope = function (
 ) {
   // JWT context ?
   if (req.user && req.body.serviceName) {
+    // client is always able to access its own service
     if (req.body.serviceName === req.user.client) {
       return next()
     } else if (!req.user.services.find((service) => service === req.body.serviceName)) {

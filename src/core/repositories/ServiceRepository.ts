@@ -85,4 +85,12 @@ export default class ServiceRepository {
 
     return first
   }
+  async deleteByGraphId(graphId: number) {
+    const knex = this.#knex
+    const table = ServiceDBModel.table
+    return await knex(table)
+      .where(ServiceDBModel.field('graphId'), graphId)
+      .delete()
+      .returning<Pick<ServiceDBModel, 'id'>[]>(ServiceDBModel.field('id'))
+  }
 }

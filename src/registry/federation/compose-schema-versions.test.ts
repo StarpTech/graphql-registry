@@ -29,8 +29,20 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { world: String }`,
+      typeDefs: `type Query { hello: String }`,
       version: '2',
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+  t.is(res.statusCode, 200)
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { world: String }`,
+      version: '1',
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },
@@ -42,7 +54,7 @@ test('Should return schema of two services', async (t) => {
     url: '/schema/push',
     payload: {
       typeDefs: `type Query { world: String }`,
-      version: '3',
+      version: '2',
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },
@@ -56,6 +68,10 @@ test('Should return schema of two services', async (t) => {
       graphName: `${t.context.graphName}`,
       services: [
         {
+          name: `${t.context.testPrefix}_foo`,
+          version: '2',
+        },
+        {
           name: `${t.context.testPrefix}_bar`,
           version: '2',
         },
@@ -68,9 +84,15 @@ test('Should return schema of two services', async (t) => {
   const response = res.json()
 
   t.true(response.success)
-  t.is(response.data.length, 1)
+  t.is(response.data.length, 2)
 
   t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: 'type Query { hello: String }',
+    version: '2',
+  })
+
+  t.like(response.data[1], {
     serviceName: `${t.context.testPrefix}_bar`,
     typeDefs: 'type Query { world: String }',
     version: '2',
@@ -105,7 +127,7 @@ test('Should return valdiation error when no version was specified', async (t) =
   t.is(response.error, "body.services[0] should have required property 'version'")
 })
 
-test('Should return 404 when schema in version could not be found', async (t) => {
+test.only('Should return 404 when schema in version could not be found', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })

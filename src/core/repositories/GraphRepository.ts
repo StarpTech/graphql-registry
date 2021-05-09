@@ -38,4 +38,12 @@ export default class GraphRepository {
 
     return first
   }
+  async deleteByName(name: string) {
+    const knex = this.#knex
+    const table = GraphDBModel.table
+    return knex(table)
+      .where(GraphDBModel.field('name'), name)
+      .delete()
+      .returning<Pick<GraphDBModel, 'id'>[]>(GraphDBModel.field('id'))
+  }
 }
