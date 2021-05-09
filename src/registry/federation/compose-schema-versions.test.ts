@@ -127,7 +127,36 @@ test('Should return valdiation error when no version was specified', async (t) =
   t.is(response.error, "body.services[0] should have required property 'version'")
 })
 
-test.only('Should return 404 when schema in version could not be found', async (t) => {
+test('Should return 400 error when graph does not exist', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/schema/compose',
+    payload: {
+      graphName: `${t.context.graphName}`,
+      services: [
+        {
+          name: `foo`,
+          version: '1',
+        },
+      ],
+    },
+  })
+
+  t.is(res.statusCode, 400)
+
+  const response = res.json()
+
+  t.false(response.success)
+
+  t.is(response.error, `Graph with name "${t.context.graphName}" does not exist`)
+})
+
+test('Should return 404 when schema in version could not be found', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })

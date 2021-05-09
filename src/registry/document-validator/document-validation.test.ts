@@ -113,3 +113,27 @@ test('Should validate document as invalid because field does not exist', async (
     'response payload match',
   )
 })
+
+test('Should return 400 error when graph does not exist', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/document/validate',
+    payload: {
+      document: `query { world }`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 400)
+
+  const response = res.json()
+
+  t.false(response.success)
+
+  t.is(response.error, `Graph with name "${t.context.graphName}" does not exist`)
+})

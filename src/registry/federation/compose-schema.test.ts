@@ -63,3 +63,26 @@ test('Should return schema of two services', async (t) => {
     version: '1',
   })
 })
+
+test('Should return 400 error when graph does not exist', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  const res = await app.inject({
+    method: 'GET',
+    url: '/schema/latest',
+    query: {
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 400)
+
+  const response = res.json()
+
+  t.false(response.success)
+
+  t.is(response.error, `Graph with name "${t.context.graphName}" does not exist`)
+})
