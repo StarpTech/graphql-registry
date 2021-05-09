@@ -8,7 +8,6 @@ import {
   SchemaVersionLookupError,
 } from '../../core/errrors'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
-import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
 

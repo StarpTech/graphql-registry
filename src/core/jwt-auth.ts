@@ -1,4 +1,3 @@
-import S from 'fluent-json-schema'
 import fp from 'fastify-plugin'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import jwtAuth from 'fastify-jwt'
