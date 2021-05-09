@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="logo.png" alt="graphql-registry" width="550" />
+  <img src="./docs/logo.png" alt="graphql-registry" width="550" />
 </div>
 
 <br>
@@ -35,6 +35,12 @@ State: Experimental
 ## API
 
 Try all endpoints in [insomnia](https://insomnia.rest/run/?label=GraphQL%20Registry&uri=https%3A%2F%2Fraw.githubusercontent.com%2FStarpTech%2Fgraphql-registry%2Fmain%2Finsomnia.json) or read the api [documentation](./docs/api.md).
+
+## Big Picture
+
+<div align="center">
+  <img src="./docs/usecases.png" alt="graphql-registry" width="700" />
+</div>
 
 ## Development
 
