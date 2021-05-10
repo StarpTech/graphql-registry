@@ -7,19 +7,19 @@ export interface ServiceSchemaVersionMatch {
 }
 
 export class SchemaManager {
-  #serviceRepository: ServiceRepository
-  #schemaRepository: SchemaRepository
+  private serviceRepository: ServiceRepository
+  private schemaRepository: SchemaRepository
 
   constructor(serviceRepository: ServiceRepository, schemaRepository: SchemaRepository) {
-    this.#serviceRepository = serviceRepository
-    this.#schemaRepository = schemaRepository
+    this.serviceRepository = serviceRepository
+    this.schemaRepository = schemaRepository
   }
 
   async findByServiceVersions(graphName: string, serviceMatches: ServiceSchemaVersionMatch[]) {
     const schemas = []
     let error: Error | null = null
 
-    const serviceItems = await this.#serviceRepository.findByNames(
+    const serviceItems = await this.serviceRepository.findByNames(
       {
         graphName,
       },
@@ -39,7 +39,7 @@ export class SchemaManager {
       const version = serviceMatch.version
 
       if (version) {
-        const schema = await this.#schemaRepository.findBySchemaTag({
+        const schema = await this.schemaRepository.findBySchemaTag({
           graphName,
           serviceName: service.name,
           version,
@@ -59,7 +59,7 @@ export class SchemaManager {
           version: version,
         })
       } else {
-        const schema = await this.#schemaRepository.findLastUpdated({
+        const schema = await this.schemaRepository.findLastUpdated({
           graphName,
           serviceName: service.name,
         })

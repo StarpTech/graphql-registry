@@ -6,12 +6,12 @@ import { ServiceDBModel } from '../models/serviceModel'
 import { LastUpdatedSchema } from '../types'
 
 export default class SchemaRepository {
-  #knex: Knex
+  private knex: Knex
   constructor(knex: Knex) {
-    this.#knex = knex
+    this.knex = knex
   }
   findById(id: number) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = SchemaDBModel.table
     return knex
       .from(table)
@@ -30,7 +30,7 @@ export default class SchemaRepository {
     typeDefs: string
     serviceName: string
   }) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = SchemaDBModel.table
     return knex
       .from(table)
@@ -52,7 +52,7 @@ export default class SchemaRepository {
       .first<SchemaDBModel>()
   }
   findLastUpdated({ serviceName, graphName }: { graphName: string; serviceName: string }) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = SchemaDBModel.table
     return knex
       .from(table)
@@ -97,7 +97,7 @@ export default class SchemaRepository {
     version: string
     serviceName: string
   }) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = SchemaDBModel.table
     return knex
       .from(table)
@@ -127,7 +127,7 @@ export default class SchemaRepository {
       .first<SchemaDBModel>()
   }
   async create(entity: Omit<SchemaDBModel, 'id' | 'createdAt'>) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = SchemaDBModel.table
     const [first] = await knex<SchemaDBModel>(table)
       .insert({
@@ -140,7 +140,7 @@ export default class SchemaRepository {
     return first
   }
   async updateById(schemaId: number, entity: Partial<SchemaDBModel>) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = SchemaDBModel.table
     return knex(table)
       .update(entity)
@@ -148,7 +148,7 @@ export default class SchemaRepository {
       .returning<SchemaDBModel[]>('*')
   }
   async deleteByGraphId(graphId: number) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = GraphDBModel.table
     return await knex(table)
       .where(SchemaDBModel.field('graphId'), graphId)

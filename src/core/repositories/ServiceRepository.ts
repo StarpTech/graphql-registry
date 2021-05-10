@@ -3,12 +3,12 @@ import { GraphDBModel } from '../models/graphModel'
 import { ServiceDBModel } from '../models/serviceModel'
 
 export default class ServiceRepository {
-  #knex: Knex
+  private knex: Knex
   constructor(knex: Knex) {
-    this.#knex = knex
+    this.knex = knex
   }
   findFirst({ graphName, name }: { graphName: string; name: string }) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = ServiceDBModel.table
     return knex
       .from(table)
@@ -30,7 +30,7 @@ export default class ServiceRepository {
     { graphName }: { graphName: string },
     serviceNames: string[],
   ): Promise<ServiceDBModel[]> {
-    const knex = this.#knex
+    const knex = this.knex
     const table = ServiceDBModel.table
     return knex
       .from(table)
@@ -53,7 +53,7 @@ export default class ServiceRepository {
     { graphName }: { graphName: string },
     exceptService: string,
   ): Promise<ServiceDBModel[]> {
-    const knex = this.#knex
+    const knex = this.knex
     const table = ServiceDBModel.table
     return knex
       .from<ServiceDBModel>(table)
@@ -73,7 +73,7 @@ export default class ServiceRepository {
       .orderBy(ServiceDBModel.fullName('updatedAt'), 'desc')
   }
   findMany({ graphName }: { graphName: string }): Promise<ServiceDBModel[]> {
-    const knex = this.#knex
+    const knex = this.knex
     const table = ServiceDBModel.table
     return knex
       .from(table)
@@ -92,7 +92,7 @@ export default class ServiceRepository {
       .orderBy(ServiceDBModel.fullName('updatedAt'), 'desc')
   }
   async create(entity: Omit<ServiceDBModel, 'id' | 'createdAt'>) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = ServiceDBModel.table
 
     const [first] = await knex(table)
@@ -106,7 +106,7 @@ export default class ServiceRepository {
     return first
   }
   async deleteByGraphId(graphId: number) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = ServiceDBModel.table
     return await knex(table)
       .where(ServiceDBModel.field('graphId'), graphId)

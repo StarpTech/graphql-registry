@@ -2,12 +2,12 @@ import { Knex } from 'knex'
 import { GraphDBModel } from '../models/graphModel'
 
 export default class GraphRepository {
-  #knex: Knex
+  private knex: Knex
   constructor(knex: Knex) {
-    this.#knex = knex
+    this.knex = knex
   }
   async exists({ name }: { name: string }) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = GraphDBModel.table
     const result = await knex
       .from(table)
@@ -18,12 +18,12 @@ export default class GraphRepository {
     return result.count > 0
   }
   findFirst({ name }: { name: string }) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = GraphDBModel.table
     return knex.from(table).where(GraphDBModel.fullName('name'), name).first<GraphDBModel>()
   }
   async create(entity: Omit<GraphDBModel, 'id' | 'createdAt'>) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = GraphDBModel.table
     const [first] = await knex(table)
       .insert({
@@ -36,7 +36,7 @@ export default class GraphRepository {
     return first
   }
   async deleteByName(name: string) {
-    const knex = this.#knex
+    const knex = this.knex
     const table = GraphDBModel.table
     return knex(table)
       .where(GraphDBModel.field('name'), name)
