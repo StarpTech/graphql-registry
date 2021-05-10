@@ -79,6 +79,8 @@ GraphQL-Registry uses by default postgres as database.
 docker run -e DATABASE_URL="" starptech/graphql-registry:latest -p 3000:3000
 ```
 
+[Available](/src/core/env.schema.ts) environment variables.
+
 ## Contributing
 
 ❤️ contributions!
