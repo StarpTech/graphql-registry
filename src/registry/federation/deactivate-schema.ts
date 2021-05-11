@@ -1,6 +1,6 @@
 import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
-import { SchemaNotFoundError } from '../../core/errrors'
+import { SchemaNotFoundError } from '../../core/errors'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 
 export interface RequestContext {

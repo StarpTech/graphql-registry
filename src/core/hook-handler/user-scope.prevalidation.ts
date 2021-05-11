@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify'
-import { InvalidServiceScopeError } from '../errrors'
+import { InvalidServiceScopeError } from '../errors'
 
 export interface RequestContext {
   Body: { serviceName: string }

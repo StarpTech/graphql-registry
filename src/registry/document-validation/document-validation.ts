@@ -7,7 +7,7 @@ import {
   InvalidGraphNameError,
   SchemaCompositionError,
   SchemaVersionLookupError,
-} from '../../core/errrors'
+} from '../../core/errors'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaManager } from '../../core/manager/SchemaManager'
 import SchemaRepository from '../../core/repositories/SchemaRepository'

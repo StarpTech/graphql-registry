@@ -6,7 +6,7 @@ import {
   InvalidGraphNameError,
   SchemaCompositionError,
   SchemaVersionLookupError,
-} from '../../core/errrors'
+} from '../../core/errors'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
