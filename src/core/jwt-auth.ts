@@ -1,3 +1,4 @@
+import S from 'fluent-json-schema'
 import fp from 'fastify-plugin'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import jwtAuth from 'fastify-jwt'
@@ -11,6 +12,12 @@ export interface JwtPayload {
   client: string
 }
 
+const payloadSchema = S.object()
+  .additionalProperties(false)
+  .required(['services', 'client'])
+  .prop('services', S.array().items(S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')))
+  .prop('client', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
+
 declare module 'fastify-jwt' {
   interface FastifyJWT {
     payload: JwtPayload
@@ -18,6 +25,8 @@ declare module 'fastify-jwt' {
 }
 
 export default fp<jwtAuthOptions>(async function JwtAuth(fastify, opts) {
+  const payloadSchemavalidator = fastify.ajv.compile(payloadSchema.valueOf())
+
   async function validate(req: FastifyRequest, reply: FastifyReply) {
     try {
       await req.jwtVerify()
@@ -35,10 +44,7 @@ export default fp<jwtAuthOptions>(async function JwtAuth(fastify, opts) {
   })
 
   async function validateToken(req: FastifyRequest, decodedToken: any) {
-    if (!decodedToken.client || !Array.isArray(decodedToken.services)) {
-      return false
-    }
-    return true
+    return payloadSchemavalidator(decodedToken)
   }
 
   fastify.addHook('onRequest', validate)

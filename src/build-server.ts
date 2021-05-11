@@ -2,6 +2,7 @@ import Fastify from 'fastify'
 import registryPlugin from './registry'
 import health from './core/health'
 import knexPlugin from './core/knex-plugin'
+import validatorPlugin from './core/validator-plugin'
 
 export interface buildOptions {
   logger?: boolean
@@ -14,6 +15,9 @@ export default function build(opts: buildOptions) {
   const fastify = Fastify({
     logger: opts.logger,
   })
+
+  // Custom ajv validator
+  fastify.register(validatorPlugin)
 
   // Database client
   fastify.register(knexPlugin, {

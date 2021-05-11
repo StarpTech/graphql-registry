@@ -8,7 +8,7 @@
     "strict": true,
     "allowJs": true,
     "noImplicitAny": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "preserveConstEnums": true,
     "moduleResolution": "node",
     "sourceMap": true,
