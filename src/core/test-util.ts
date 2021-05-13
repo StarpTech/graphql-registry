@@ -1,7 +1,7 @@
 import { ExecutionContext } from 'ava'
 import execa from 'execa'
 import { join } from 'path'
-import us from 'unique-string'
+import { uid } from 'uid'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from './jwt-auth'
 
@@ -32,7 +32,7 @@ export function createTestContext() {
       connectionUrl: '',
       graphName: '',
       testPrefix: '',
-      dbName: `test_${us()}`,
+      dbName: `test_${uid()}`,
     }
 
     t.context.connectionUrl = `postgresql://postgres:changeme@localhost:5440/${t.context.dbName}?schema=public`
@@ -57,7 +57,7 @@ export function createTestContext() {
 
 export function createTestPrefix() {
   return (t: ExecutionContext<TestContext>) => {
-    t.context.testPrefix = us()
+    t.context.testPrefix = uid()
     t.context.graphName = `${t.context.testPrefix}_graph`
   }
 }
