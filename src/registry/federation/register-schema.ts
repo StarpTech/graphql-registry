@@ -9,6 +9,8 @@ import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
+import { SchemaTagDBModel } from '../../core/models/schemaTagModel'
+import { CURRENT_VERSION } from '../../core/constants'
 
 export interface RequestContext {
   Body: {
@@ -39,7 +41,7 @@ export const schema: FastifySchema = {
     .additionalProperties(false)
     .required(['version', 'typeDefs', 'serviceName', 'graphName'])
     .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
-    .prop('version', S.string().minLength(1).maxLength(100))
+    .prop('version', S.string().minLength(1).maxLength(100).default(CURRENT_VERSION))
     .prop('typeDefs', S.string().minLength(1).maxLength(10000))
     .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
 }
@@ -133,30 +135,49 @@ export default function registerSchema(fastify: FastifyInstance) {
             serviceId: service.id,
             typeDefs: req.body.typeDefs,
           })
-          await schemaTagRepository.create({
-            version: req.body.version,
-            schemaId: schema.id,
-          })
         } else {
           await schemaRepository.updateById(schema.id, {
             updatedAt: new Date(),
           })
+        }
 
-          /**
-           * Create new schema tag
-           */
-          const schemaTag = await schemaTagRepository.findByVersion({
+        let schemaTag: SchemaTagDBModel | undefined
+        /**
+         * "current" always points to the latest registered schema of the service
+         */
+        if (req.body.version === CURRENT_VERSION) {
+          schemaTag = await schemaTagRepository.findFirst({
+            version: req.body.version,
+            serviceId: service.id,
+          })
+          if (schemaTag) {
+            await schemaTagRepository.update(
+              {
+                schemaId: schema.id,
+              },
+              {
+                serviceId: service.id,
+                version: req.body.version,
+              },
+            )
+          }
+        } else {
+          schemaTag = await schemaTagRepository.findFirst({
             version: req.body.version,
             schemaId: schema.id,
             serviceId: service.id,
           })
+        }
 
-          if (!schemaTag) {
-            await schemaTagRepository.create({
-              version: req.body.version,
-              schemaId: schema.id,
-            })
-          }
+        /**
+         * Create new schema tag
+         */
+        if (!schemaTag) {
+          schemaTag = await schemaTagRepository.create({
+            serviceId: service.id,
+            version: req.body.version,
+            schemaId: schema.id,
+          })
         }
 
         const responseBody: SuccessResponse<SchemaResponseModel> = {
@@ -165,7 +186,7 @@ export default function registerSchema(fastify: FastifyInstance) {
             schemaId: schema.id,
             serviceName: req.body.serviceName,
             typeDefs: schema.typeDefs,
-            version: req.body.version,
+            version: schemaTag.version,
           },
         }
 

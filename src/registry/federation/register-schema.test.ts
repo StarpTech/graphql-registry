@@ -1,5 +1,6 @@
 import anyTest, { TestInterface } from 'ava'
 import build from '../../build-server'
+import { CURRENT_VERSION } from '../../core/constants'
 import {
   cleanTest,
   createTestContext,
@@ -38,6 +39,37 @@ test('Should register new schema', async (t) => {
         serviceName: `${t.context.testPrefix}_foo`,
         typeDefs: `type Query { hello: String }`,
         version: '1',
+      },
+      success: true,
+    },
+    'response payload match',
+  )
+})
+
+test('Should use version "current" when no version was specified', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { hello: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+  t.like(
+    res.json(),
+    {
+      data: {
+        serviceName: `${t.context.testPrefix}_foo`,
+        typeDefs: `type Query { hello: String }`,
+        version: CURRENT_VERSION,
       },
       success: true,
     },

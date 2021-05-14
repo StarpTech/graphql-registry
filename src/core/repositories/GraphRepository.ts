@@ -20,7 +20,10 @@ export default class GraphRepository {
   findFirst({ name }: { name: string }) {
     const knex = this.knex
     const table = GraphDBModel.table
-    return knex.from(table).where(GraphDBModel.fullName('name'), name).first<GraphDBModel>()
+    return knex
+      .from(table)
+      .where(GraphDBModel.fullName('name'), name)
+      .first<GraphDBModel | undefined>()
   }
   async create(entity: Omit<GraphDBModel, 'id' | 'createdAt'>) {
     const knex = this.knex

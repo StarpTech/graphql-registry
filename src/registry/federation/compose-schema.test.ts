@@ -1,5 +1,6 @@
 import anyTest, { TestInterface } from 'ava'
 import build from '../../build-server'
+import { CURRENT_VERSION } from '../../core/constants'
 import { cleanTest, createTestContext, createTestPrefix, TestContext } from '../../core/test-util'
 
 const test = anyTest as TestInterface<TestContext>
@@ -85,4 +86,55 @@ test('Should return 400 error when graph does not exist', async (t) => {
   t.false(response.success)
 
   t.is(response.error, `Graph with name "${t.context.graphName}" does not exist`)
+})
+
+test('Version "current" has no precedence over the last updated', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  let res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { hello: String }`,
+      version: CURRENT_VERSION,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+  t.is(res.statusCode, 200)
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { world: String }`,
+      version: '2',
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+  t.is(res.statusCode, 200)
+
+  res = await app.inject({
+    method: 'GET',
+    url: '/schema/latest',
+    query: {
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+
+  const response = res.json()
+
+  t.true(response.success)
+  t.is(response.data.length, 1)
+
+  t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: 'type Query { world: String }',
+    version: '2',
+  })
 })

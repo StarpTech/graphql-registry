@@ -39,7 +39,7 @@
     ],
     "typescript": {
       "rewritePaths": {
-        "./src/": "build/"
+        "src/": "build/"
       },
       "compile": "tsc"
     }
@@ -49,13 +49,13 @@
     "@types/node": "^14.14.41",
     "ava": "^3.15.0",
     "cross-env": "^7.0.3",
-    "dotenv": "^9.0.1",
+    "dotenv": "^9.0.2",
     "execa": "^5.0.0",
     "husky": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.7",
     "nyc": "^15.1.0",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.0",
     "release-it": "^14.6.2",
     "rimraf": "^3.0.2",
     "ts-loader": "^9.1.2",
@@ -64,7 +64,7 @@
     "uid": "^2.0.0"
   },
   "dependencies": {
-    "ajv": "^6.12.2",
+    "ajv": "6.12.6",
     "@apollo/federation": "^0.25.0",
     "@graphql-inspector/core": "2.5.0",
     "env-schema": "^3.0.1",
@@ -75,7 +75,7 @@
     "fastify-plugin": "^3.0.0",
     "fluent-json-schema": "^3.0.0",
     "graphql": "^15.5.0",
-    "knex": "^0.95.4",
+    "knex": "^0.95.5",
     "pg": "^8.6.0"
   },
   "keywords": [

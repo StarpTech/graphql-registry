@@ -19,7 +19,7 @@ export default class SchemaRepository {
         [SchemaDBModel.fullName('isActive')]: true,
         [SchemaDBModel.fullName('id')]: id,
       })
-      .first<SchemaDBModel>()
+      .first<SchemaDBModel | undefined>()
   }
   findFirst({
     graphName,
@@ -49,7 +49,7 @@ export default class SchemaRepository {
         [SchemaDBModel.fullName('typeDefs')]: typeDefs,
       })
       .select(`${table}.*`)
-      .first<SchemaDBModel>()
+      .first<SchemaDBModel | undefined>()
   }
   findLastUpdated({ serviceName, graphName }: { graphName: string; serviceName: string }) {
     const knex = this.knex
@@ -86,9 +86,9 @@ export default class SchemaRepository {
         { column: SchemaDBModel.fullName('updatedAt'), order: 'desc' },
         { column: SchemaTagDBModel.fullName('createdAt'), order: 'desc' },
       ])
-      .first<LastUpdatedSchema>()
+      .first<LastUpdatedSchema | undefined>()
   }
-  findBySchemaTag({
+  findBySchemaTagVersion({
     graphName,
     version,
     serviceName,
@@ -124,7 +124,7 @@ export default class SchemaRepository {
         [SchemaTagDBModel.fullName('version')]: version,
       })
       .select(`${table}.*`)
-      .first<SchemaDBModel>()
+      .first<SchemaDBModel | undefined>()
   }
   async create(entity: Omit<SchemaDBModel, 'id' | 'createdAt'>) {
     const knex = this.knex

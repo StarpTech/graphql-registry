@@ -93,6 +93,13 @@ export async function up(knex: Knex): Promise<void> {
         .inTable(SchemaDBModel.table)
         .index()
 
+      table
+        .integer(SchemaTagDBModel.field('serviceId'))
+        .unsigned()
+        .references(ServiceDBModel.field('id'))
+        .inTable(ServiceDBModel.table)
+        .index()
+
       table.index([SchemaTagDBModel.field('version')])
     })
 }

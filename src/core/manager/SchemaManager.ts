@@ -1,3 +1,4 @@
+import { CURRENT_VERSION } from '../constants'
 import SchemaRepository from '../repositories/SchemaRepository'
 import ServiceRepository from '../repositories/ServiceRepository'
 
@@ -39,7 +40,7 @@ export class SchemaManager {
       const version = serviceMatch.version
 
       if (version) {
-        const schema = await this.schemaRepository.findBySchemaTag({
+        let schema = await this.schemaRepository.findBySchemaTagVersion({
           graphName,
           serviceName: service.name,
           version,

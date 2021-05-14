@@ -1,5 +1,6 @@
 import anyTest, { TestInterface } from 'ava'
 import build from '../../build-server'
+import { CURRENT_VERSION } from '../../core/constants'
 import { cleanTest, createTestContext, createTestPrefix, TestContext } from '../../core/test-util'
 
 const test = anyTest as TestInterface<TestContext>
@@ -99,7 +100,7 @@ test('Should return schema of two services', async (t) => {
   })
 })
 
-test('Should return valdiation error when no version was specified', async (t) => {
+test('Should return validation error when no version was specified', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
@@ -255,4 +256,76 @@ test('Should return 400 when schema in specified version was deactivated', async
     },
     'response payload match',
   )
+})
+
+test('Version "current" should always return the latest (not versioned) registered schema version', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  let res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { hello: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+  t.is(res.statusCode, 200)
+
+  const firstSchema = res.json()
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { world: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+  t.is(res.statusCode, 200)
+
+  const secondSchema = res.json()
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { world: String }`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      version: '1',
+      graphName: `${t.context.graphName}`,
+    },
+  })
+  t.is(res.statusCode, 200)
+
+  t.is(firstSchema.version, secondSchema.version)
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/compose',
+    payload: {
+      graphName: `${t.context.graphName}`,
+      services: [
+        {
+          name: `${t.context.testPrefix}_foo`,
+          version: CURRENT_VERSION,
+        },
+      ],
+    },
+  })
+
+  const response = res.json()
+
+  t.true(response.success)
+  t.is(response.data.length, 1)
+
+  t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: 'type Query { world: String }',
+    version: CURRENT_VERSION,
+  })
 })

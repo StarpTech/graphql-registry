@@ -8,13 +8,13 @@ GET - `/graphs` Returns all registered graphs.
 
 ### Get latest schemas
 
-GET - `/schema/latest?graphName=my_graph` Returns the last registered schema definition of all services.
+GET - `/schema/latest?graphName=my_graph` Returns the last registered (time-based) schema definition of all services.
 
 **Notice:** Work always with versions in production.
 
 ### Register a schema
 
-POST - `/schema/push` Creates a new graph and schema for a service.
+POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version.
 
 <details>
 <summary>Example Request</summary>
@@ -34,7 +34,7 @@ POST - `/schema/push` Creates a new graph and schema for a service.
 
 ### Get latest schemas by versions
 
-POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions. If versions can't be found it fails.
+POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions. If versions can't be found it fails. You can use the version `current` to fetch the latest schema that was pushed without a version. This useful for rapid development when you don't want to deal with versioning. For production use immutable versions.
 
 <details>
 <summary>Example Request</summary>

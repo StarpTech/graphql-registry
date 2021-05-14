@@ -4,6 +4,7 @@ export class SchemaTagDBModel {
   isActive?: boolean
   createdAt!: Date
   schemaId!: number
+  serviceId!: number
 
   static table = 'schema_tag'
   static fullName = (name: keyof SchemaTagDBModel) => SchemaTagDBModel.table + '.' + name

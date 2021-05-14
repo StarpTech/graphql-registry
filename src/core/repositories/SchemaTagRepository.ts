@@ -7,24 +7,10 @@ export default class SchemaTagRepository {
   constructor(knex: Knex) {
     this.knex = knex
   }
-  findByVersion({ version, schemaId }: { version: string; schemaId: number; serviceId: number }) {
+  findFirst(what: Partial<SchemaTagDBModel>) {
     const knex = this.knex
     const table = SchemaTagDBModel.table
-    return knex
-      .from(table)
-      .join(
-        SchemaDBModel.table,
-        SchemaTagDBModel.fullName('schemaId'),
-        '=',
-        SchemaDBModel.fullName('id'),
-      )
-      .where({
-        [SchemaDBModel.fullName('id')]: schemaId,
-        [SchemaDBModel.fullName('isActive')]: true,
-        [SchemaTagDBModel.fullName('version')]: version,
-      })
-      .select(`${table}.*`)
-      .first<SchemaTagDBModel>()
+    return knex.from(table).where(what).first<SchemaTagDBModel | undefined>()
   }
   async create(entity: Omit<SchemaTagDBModel, 'id' | 'createdAt'>) {
     const knex = this.knex
@@ -45,5 +31,10 @@ export default class SchemaTagRepository {
       .where(SchemaTagDBModel.field('schemaId'), schemaId)
       .delete()
       .returning<Pick<SchemaTagDBModel, 'id'>[]>(SchemaTagDBModel.field('id'))
+  }
+  async update(what: Partial<SchemaTagDBModel>, where: Partial<SchemaTagDBModel>) {
+    const knex = this.knex
+    const table = SchemaTagDBModel.table
+    return knex(table).update(what).where(where).returning<SchemaDBModel[]>('*')
   }
 }
