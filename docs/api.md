@@ -34,7 +34,7 @@ POST - `/schema/push` Creates a new graph and schema for a service. If you omit 
 
 ### Get latest schemas by versions
 
-POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions. If versions can't be found it fails. You can use the version `current` to fetch the latest schema that was pushed without a version. This useful for rapid development when you don't want to deal with versioning. For production use immutable versions.
+POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions. If versions can't be found it fails. You can use the version `current` to fetch the latest schema that was pushed without a version. This is useful for rapid development when you don't want to deal with versioning. For production use immutable versions.
 
 <details>
 <summary>Example Request</summary>
