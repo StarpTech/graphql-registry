@@ -42,7 +42,7 @@ POST - `/schema/push` Creates a new graph and schema for a service. If you omit 
   "typeDefs": "type Query { hello: String }",
   "graphName": "my_graph",
   "serviceName": "foo",
-  "version": "1" // optionally, uses "current" by default
+  "version": "1" // optional, uses "current" by default
 }
 ```
 
