@@ -4,7 +4,7 @@ Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema i
 
 # Terminology
 
-## Graph / Service / Schema
+## Graph / Schema / Service
 
 <div align="center">
   <img src="terminology.png" alt="graphql-registry" width="600" />
@@ -12,8 +12,8 @@ Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema i
 
 - **Graph:** A graph consists of multiple schemas managed by different services. You can create multiple graphs to build any variant. From consumer perspective, the composed graph state is determined and validated at runtime.
   Every schema is associated to a single service.
-- **Service:** A service represent a unique graph-server in your infrastructure for example `Products`. A service can manage multiple schemas in different versions (e.g `v1`, `v2`, `current`). The `current` version is [special](#register-a-schema). The term `service` reflects the real-world. There must be a federated service which is responsible to manage the schema.
 - **Schema:** A schema describes the shape of the data graph of a single graphql server. A schema is always associated to one service.
+- **Service:** A service represent a unique graph-server in your infrastructure for example `Products`. A service can manage multiple schemas in different versions (e.g `v1`, `v2`, `current`). The `current` version is [special](#register-a-schema). The term `service` reflects the real-world. There must be a federated service which is responsible to manage the schema.
 
 # API
 
