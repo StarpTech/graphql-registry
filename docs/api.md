@@ -1,6 +1,6 @@
 # Composition stability
 
-Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema is valid. You can't fetch an invalid schema.
+Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema is valid. You can't fetch or push an invalid schema.
 
 # Terminology
 
