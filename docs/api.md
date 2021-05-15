@@ -2,6 +2,19 @@
 
 Whenever a schema is pushed or fetched, Graph-Registry ensures that the state is valid.
 
+# Terminology
+
+## Graph / Service / Schema
+
+<div align="center">
+  <img src="terminology.png" alt="graphql-registry" width="600" />
+</div>
+
+- **Graph:** A graph consists of multiple services, a service can host multiple schemas in different versions. You can create multiple graphs to isolate any variant. From consumer perspective, the composed graph state is determined and validated at runtime.
+  Every schema is associated to a single service.
+- **Service:** A service represent a unique graph-server in your infrastructure. For example `Products`.
+- **Schema:** A schema describes the shape of the data graph of a single graphql server. A service can store multiple schemas in different versions (e.g `v1`, `v2`, `current`). The `current` version is [special](#register-a-schema).
+
 # API
 
 ## Schema federation
@@ -18,7 +31,9 @@ GET - `/schema/latest?graphName=my_graph` Returns the last registered (time-base
 
 ### Register a schema
 
-POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version.
+POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version. A schema is always associated to one service.
+
+**Notice:** A schema is normalized before it's stored in the database. Whitespaces are stipped and graphql elements are sorted lexicographically.
 
 <details>
 <summary>Example Request</summary>
@@ -27,9 +42,9 @@ POST - `/schema/push` Creates a new graph and schema for a service. If you omit 
 ```jsonc
 {
   "typeDefs": "type Query { hello: String }",
-  "version": "1",
   "graphName": "my_graph",
-  "serviceName": "foo"
+  "serviceName": "foo",
+  "version": "1" // optional, uses "current" by default
 }
 ```
 

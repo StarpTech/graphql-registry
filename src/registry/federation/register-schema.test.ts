@@ -37,13 +37,47 @@ test('Should register new schema', async (t) => {
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query { hello: String }`,
+        typeDefs: `type Query{hello:String}`,
         version: '1',
       },
       success: true,
     },
     'response payload match',
   )
+})
+
+test('Should normalize a schema: Remove whitespaces, Sorting fields, directives, mutations, subscriptions, types', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  const res1 = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { hello: String bar: String }`,
+      version: '1',
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res1.statusCode, 200)
+
+  const res2 = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query     { bar: String hello: String }`,
+      version: '1',
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res2.statusCode, 200)
+  t.is(res1.json().data.schemaId, res2.json().data.schemaId)
 })
 
 test('Should use version "current" when no version was specified', async (t) => {
@@ -68,7 +102,7 @@ test('Should use version "current" when no version was specified', async (t) => 
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query { hello: String }`,
+        typeDefs: `type Query{hello:String}`,
         version: CURRENT_VERSION,
       },
       success: true,
@@ -126,7 +160,7 @@ test('Should not create multiple schemas when client and typeDefs does not chang
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query { hello: String }`,
+    typeDefs: `type Query{hello:String}`,
     version: '2',
   })
 })
@@ -179,13 +213,13 @@ test('Should be able to register schemas from multiple clients', async (t) => {
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_bar`,
-    typeDefs: `type Query { world: String }`,
+    typeDefs: `type Query{world:String}`,
     version: '2',
   })
 
   t.like(response.data[1], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query { hello: String }`,
+    typeDefs: `type Query{hello:String}`,
     version: '1',
   })
 })
@@ -259,7 +293,7 @@ test('Should be able to store multiple versions of the same schema with the same
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query { world: String }`,
+    typeDefs: `type Query{world:String}`,
     version: '2',
   })
 })
@@ -347,7 +381,7 @@ test('Should return correct latest service schema with multiple graphs', async (
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query { hello: String }`,
+    typeDefs: `type Query{hello:String}`,
     version: '1',
   })
 
@@ -368,7 +402,7 @@ test('Should return correct latest service schema with multiple graphs', async (
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query { hello: String }`,
+    typeDefs: `type Query{hello:String}`,
     version: '2',
   })
 })
@@ -453,7 +487,7 @@ test('Should be able to register a schema with a valid JWT', async (t) => {
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query { hello: String }`,
+        typeDefs: `type Query{hello:String}`,
         version: '1',
       },
       success: true,
@@ -492,7 +526,7 @@ test('Should be able to register a schema in name of another service', async (t)
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query { hello: String }`,
+        typeDefs: `type Query{hello:String}`,
         version: '1',
       },
       success: true,
