@@ -1,6 +1,6 @@
 # Composition stability
 
-Whenever a schema is pushed or fetched, Graph-Registry ensures that the constellation of versions or latest is valid.
+Whenever a schema is pushed or fetched, Graph-Registry ensures that the state is valid.
 
 # API
 
