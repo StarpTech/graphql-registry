@@ -54,13 +54,13 @@ test('Should return schema of two services', async (t) => {
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_bar`,
-    typeDefs: 'type Query { world: String }',
+    typeDefs: 'type Query{world:String}',
     version: '2',
   })
 
   t.like(response.data[1], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: 'type Query { hello: String }',
+    typeDefs: `type Query{hello:String}`,
     version: '1',
   })
 })
@@ -134,7 +134,7 @@ test('Version "current" has no precedence over the last updated', async (t) => {
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: 'type Query { world: String }',
+    typeDefs: 'type Query{world:String}',
     version: '2',
   })
 })

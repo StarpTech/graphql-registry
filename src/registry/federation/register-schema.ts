@@ -11,6 +11,7 @@ import SchemaRepository from '../../core/repositories/SchemaRepository'
 import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
 import { SchemaTagDBModel } from '../../core/models/schemaTagModel'
 import { CURRENT_VERSION } from '../../core/constants'
+import { normalize } from '../../core/graphql-utils'
 
 export interface RequestContext {
   Body: {
@@ -119,6 +120,8 @@ export default function registerSchema(fastify: FastifyInstance) {
           })
         }
 
+        const mormalizedTypeDefs = normalize(req.body.typeDefs)
+
         /**
          * Create new schema
          */
@@ -126,14 +129,14 @@ export default function registerSchema(fastify: FastifyInstance) {
         let schema = await schemaRepository.findFirst({
           graphName: req.body.graphName,
           serviceName: req.body.serviceName,
-          typeDefs: req.body.typeDefs,
+          typeDefs: mormalizedTypeDefs,
         })
 
         if (!schema) {
           schema = await schemaRepository.create({
             graphId: graph.id,
             serviceId: service.id,
-            typeDefs: req.body.typeDefs,
+            typeDefs: mormalizedTypeDefs,
           })
         } else {
           await schemaRepository.updateById(schema.id, {

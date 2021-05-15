@@ -18,7 +18,7 @@ const requestOptions = {
 
 export function setup() {
   let data = {
-    typeDefs: 'type Query { hello: String }',
+    typeDefs: 'type Query{hello:String ',
     version: '1',
     graphName: 'my_graph',
     serviceName: 'foo',
@@ -34,7 +34,7 @@ export function setup() {
   }
 
   data = {
-    typeDefs: 'type Query { world: String }',
+    typeDefs: 'type Query{world:String}',
     version: '1',
     graphName: 'my_graph',
     serviceName: 'bar',
