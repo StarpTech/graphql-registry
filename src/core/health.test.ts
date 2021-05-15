@@ -20,3 +20,25 @@ test('Should return 200', async (t) => {
 
   t.is(res.statusCode, 200)
 })
+
+test('Should has a decorator to check the healthcheck of the connection', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+
+  t.teardown(() => app.close())
+
+  await app.ready()
+
+  t.true(app.hasDecorator('knexHealthcheck'))
+})
+
+test('Should error because connection is invalid', async (t) => {
+  const app = build({
+    databaseConnectionUrl: 'postgresql://postgres:changeme@foo:5440/bar?schema=public',
+  })
+
+  t.teardown(() => app.close())
+
+  await t.throwsAsync(() => app.ready(), { message: 'Database connection healthcheck failed' })
+})

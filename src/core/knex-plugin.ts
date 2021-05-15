@@ -4,6 +4,7 @@ import knex, { Knex } from 'knex'
 declare module 'fastify' {
   interface FastifyInstance {
     knex: Knex
+    knexHealthcheck(): Promise<void>
   }
 }
 
@@ -23,14 +24,17 @@ export default fp<KnexPluginOptions>(async function (fastify, opts) {
     connection: opts.databaseConnectionUrl,
   })
 
+  fastify.decorate('knexHealthcheck', async () => {
+    try {
+      await connection.raw('SELECT NOW()')
+    } catch (error) {
+      fastify.log.error(error)
+      throw new Error('Database connection healthcheck failed')
+    }
+  })
   fastify.addHook('onClose', () => connection.destroy())
 
-  try {
-    await connection.raw('SELECT 1')
-  } catch (err) {
-    fastify.log.error(err)
-    throw err
-  }
+  await fastify.knexHealthcheck()
 
   fastify.decorate('knex', connection)
 })
