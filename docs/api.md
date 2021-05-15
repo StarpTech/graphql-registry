@@ -33,6 +33,8 @@ GET - `/schema/latest?graphName=my_graph` Returns the last registered (time-base
 
 POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version. A schema is always associated to one service.
 
+**Notice:** A schema is normalized before it's stored in the database. Whitespaces are stipped and graphql elements are sorted lexicographically.
+
 <details>
 <summary>Example Request</summary>
 <p>
