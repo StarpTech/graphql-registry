@@ -1,3 +1,7 @@
+# Composition stability
+
+Whenever a schema is pushed or fetched, Graph-Registry ensures that the constellation of versions or latest is valid.
+
 # API
 
 ## Schema federation
@@ -67,6 +71,8 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 </p>
 </details>
 
+---
+
 ## Validation
 
 ### Produce a diff from your schema
@@ -124,6 +130,8 @@ POST - `/document/validate` Confirm that all client operations are supported by 
 
 </p>
 </details>
+
+---
 
 ## Monitoring / Maintanance
 
