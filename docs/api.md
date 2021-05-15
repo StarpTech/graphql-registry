@@ -4,7 +4,7 @@ Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema i
 
 # Terminology
 
-## Graph / Schema / Service
+## One graph, many services
 
 <div align="center">
   <img src="terminology.png" alt="graphql-registry" width="600" />
