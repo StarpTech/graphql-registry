@@ -14,5 +14,6 @@ export function normalize(typeDefs: string): string {
 export function printSorted(schema: GraphQLSchema): string {
   const sorted = lexicographicSortSchema(schema)
   // without this the default implementation of "printSchema" would remove metadata like "directives"
+  // issue: https://github.com/graphql/graphql-js/issues/869
   return printSchemaWithDirectives(sorted)
 }
