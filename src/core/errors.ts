@@ -22,3 +22,4 @@ export const InvalidDocumentError = createError(
   `Could not parse document`,
   400,
 )
+export const FatalError = createError('GR_FATAL', `%s`, 500)

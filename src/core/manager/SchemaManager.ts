@@ -1,4 +1,3 @@
-import { CURRENT_VERSION } from '../constants'
 import SchemaRepository from '../repositories/SchemaRepository'
 import ServiceRepository from '../repositories/ServiceRepository'
 
@@ -56,7 +55,9 @@ export class SchemaManager {
         schemas.push({
           schemaId: schema.id,
           serviceName: service.name,
+          routingUrl: service.routingUrl,
           typeDefs: schema.typeDefs,
+          lastUpdatedAt: schema.updatedAt,
           version: version,
         })
       } else {
@@ -75,7 +76,9 @@ export class SchemaManager {
         schemas.push({
           schemaId: schema.id,
           serviceName: service.name,
+          routingUrl: service.routingUrl,
           typeDefs: schema.typeDefs,
+          lastUpdatedAt: schema.updatedAt,
           version: schema.version,
         })
       }

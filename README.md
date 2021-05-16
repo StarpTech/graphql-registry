@@ -39,7 +39,7 @@ Try all endpoints in [insomnia](https://insomnia.rest/run/?label=GraphQL%20Regis
 ## Big Picture
 
 <div align="center">
-  <img src="./docs/usecases.png" alt="graphql-registry" width="800" />
+  <img src="./docs/usecases-01.png" alt="graphql-registry" width="800" />
 </div>
 
 ## Development

@@ -31,7 +31,7 @@ GET - `/schema/latest?graphName=my_graph` Returns the last registered (time-base
 
 ### Register a schema
 
-POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version.
+POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version. Optionally, you can pass `routingUrl` field. The URL that your gateway uses to communicate with the service in a [managed federation](https://www.apollographql.com/docs/federation/managed-federation/overview/) architecture.
 
 **Notice:** A schema is normalized before it's stored in the database. Whitespaces are stipped and graphql elements are sorted lexicographically.
 
@@ -44,7 +44,8 @@ POST - `/schema/push` Creates a new graph and schema for a service. If you omit 
   "typeDefs": "type Query { hello: String }",
   "graphName": "my_graph",
   "serviceName": "foo",
-  "version": "1" // optional, uses "current" by default
+  "version": "1", // optional, uses "current" by default
+  "routingUrl": "http://products-graphql.svc.cluster.local:4001/graphql" // optional, for managed federation
 }
 ```
 

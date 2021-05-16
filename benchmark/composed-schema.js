@@ -5,7 +5,7 @@ export let options = {
   vus: 2,
   duration: '10s',
   thresholds: {
-    http_req_duration: ['p(99)<800'], // 99% of requests must complete below 0.8s
+    http_req_duration: ['p(99)<500'], // 99% of requests must complete below 0.5s
   },
 }
 const BASE_URL = `${__ENV.URL}`

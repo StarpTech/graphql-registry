@@ -59,6 +59,7 @@ export default class SchemaRepository {
       .select([
         SchemaDBModel.fullName('id'),
         SchemaDBModel.fullName('typeDefs'),
+        SchemaDBModel.fullName('updatedAt'),
         SchemaTagDBModel.fullName('version'),
       ])
       .join(GraphDBModel.table, SchemaDBModel.fullName('graphId'), '=', GraphDBModel.fullName('id'))
@@ -139,13 +140,19 @@ export default class SchemaRepository {
 
     return first
   }
-  async updateById(schemaId: number, entity: Partial<SchemaDBModel>) {
+  async updateById(
+    schemaId: number,
+    entity: Partial<SchemaDBModel>,
+  ): Promise<SchemaDBModel | undefined> {
     const knex = this.knex
     const table = SchemaDBModel.table
-    return knex(table)
+    const [first] = await knex(table)
       .update(entity)
       .where(SchemaDBModel.fullName('id'), '=', schemaId)
+      .limit(1)
       .returning<SchemaDBModel[]>('*')
+
+    return first
   }
   async deleteByGraphId(graphId: number) {
     const knex = this.knex

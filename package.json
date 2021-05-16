@@ -64,9 +64,9 @@
     "uid": "^2.0.0"
   },
   "dependencies": {
-    "ajv": "6.12.6",
     "@apollo/federation": "^0.25.0",
     "@graphql-inspector/core": "2.5.0",
+    "ajv": "6.12.6",
     "env-schema": "^3.0.1",
     "fastify": "^3.15.1",
     "fastify-basic-auth": "^2.0.0",
@@ -76,7 +76,8 @@
     "fluent-json-schema": "^3.0.0",
     "graphql": "^15.5.0",
     "knex": "^0.95.5",
-    "pg": "^8.6.0"
+    "pg": "^8.6.0",
+    "pino-pretty": "^4.8.0"
   },
   "keywords": [
     "graphql",

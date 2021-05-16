@@ -31,9 +31,12 @@ test('Should register new schema', async (t) => {
     },
   })
 
+  const response = res.json()
+
   t.is(res.statusCode, 200)
+  t.truthy(response.data.lastUpdatedAt)
   t.like(
-    res.json(),
+    response,
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
@@ -41,6 +44,69 @@ test('Should register new schema', async (t) => {
         version: '1',
       },
       success: true,
+    },
+    'response payload match',
+  )
+})
+
+test('Should register new schema with service "routingUrl"', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { hello: String }`,
+      version: '1',
+      routingUrl: 'http://localhost:3000/api/graphql',
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+  t.like(
+    res.json(),
+    {
+      data: {
+        serviceName: `${t.context.testPrefix}_foo`,
+        typeDefs: `type Query{hello:String}`,
+        routingUrl: 'http://localhost:3000/api/graphql',
+        version: '1',
+      },
+      success: true,
+    },
+    'response payload match',
+  )
+})
+
+test('Should return 400 when routingUrl is not valid URI', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { hello: String }`,
+      version: '1',
+      routingUrl: 'foo',
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 400)
+  t.like(
+    res.json(),
+    {
+      error: 'body.routingUrl should match format "uri"',
+      success: false,
     },
     'response payload match',
   )

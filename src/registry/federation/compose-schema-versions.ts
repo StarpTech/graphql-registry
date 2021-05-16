@@ -11,7 +11,15 @@ import {
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
-import { graphName, schemaId, serviceName, typeDefs, version } from '../../core/shared-schemas'
+import {
+  dateTime,
+  graphName,
+  routingUrl,
+  schemaId,
+  serviceName,
+  typeDefs,
+  version,
+} from '../../core/shared-schemas'
 
 interface ServiceVersionMatch {
   name: string
@@ -39,7 +47,9 @@ export const schema: FastifySchema = {
             .prop('schemaId', schemaId)
             .prop('version', version)
             .prop('typeDefs', typeDefs)
-            .prop('serviceName', serviceName),
+            .prop('serviceName', serviceName)
+            .prop('routingUrl', routingUrl)
+            .prop('lastUpdatedAt', dateTime),
         ),
       ),
   },

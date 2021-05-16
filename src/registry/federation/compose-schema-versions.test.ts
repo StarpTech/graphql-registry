@@ -87,12 +87,14 @@ test('Should return schema of two services', async (t) => {
   t.true(response.success)
   t.is(response.data.length, 2)
 
+  t.truthy(response.data[0].lastUpdatedAt)
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
     typeDefs: 'type Query{hello:String}',
     version: '2',
   })
 
+  t.truthy(response.data[1].lastUpdatedAt)
   t.like(response.data[1], {
     serviceName: `${t.context.testPrefix}_bar`,
     typeDefs: 'type Query{world:String}',
@@ -327,5 +329,53 @@ test('Version "current" should always return the latest (not versioned) register
     serviceName: `${t.context.testPrefix}_foo`,
     typeDefs: `type Query{world:String}`,
     version: CURRENT_VERSION,
+  })
+})
+
+test('Should include "routingUrl" of the service', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  let res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: `type Query { hello: String }`,
+      version: '1',
+      serviceName: `${t.context.testPrefix}_foo`,
+      routingUrl: 'http://localhost:3000/api/graphql',
+      graphName: `${t.context.graphName}`,
+    },
+  })
+  t.is(res.statusCode, 200)
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/compose',
+    payload: {
+      graphName: `${t.context.graphName}`,
+      services: [
+        {
+          name: `${t.context.testPrefix}_foo`,
+          version: '1',
+        },
+      ],
+    },
+  })
+
+  t.is(res.statusCode, 200)
+
+  const response = res.json()
+
+  t.true(response.success)
+  t.is(response.data.length, 1)
+
+  t.like(response.data[0], {
+    serviceName: `${t.context.testPrefix}_foo`,
+    typeDefs: 'type Query{hello:String}',
+    routingUrl: 'http://localhost:3000/api/graphql',
+    version: '1',
   })
 })

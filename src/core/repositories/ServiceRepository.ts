@@ -113,4 +113,17 @@ export default class ServiceRepository {
       .delete()
       .returning<Pick<ServiceDBModel, 'id'>[]>(ServiceDBModel.field('id'))
   }
+  async updateOne(
+    what: Partial<ServiceDBModel>,
+    where: Partial<ServiceDBModel>,
+  ): Promise<ServiceDBModel | undefined> {
+    const knex = this.knex
+    const table = ServiceDBModel.table
+    const [first] = await knex(table)
+      .update(what)
+      .where(where)
+      .limit(1)
+      .returning<ServiceDBModel[]>('*')
+    return first
+  }
 }

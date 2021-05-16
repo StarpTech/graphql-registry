@@ -12,7 +12,15 @@ import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
 import { SchemaTagDBModel } from '../../core/models/schemaTagModel'
 import { CURRENT_VERSION } from '../../core/constants'
 import { normalize } from '../../core/graphql-utils'
-import { graphName, schemaId, serviceName, typeDefs, version } from '../../core/shared-schemas'
+import {
+  dateTime,
+  graphName,
+  routingUrl,
+  schemaId,
+  serviceName,
+  typeDefs,
+  version,
+} from '../../core/shared-schemas'
 
 export interface RequestContext {
   Body: {
@@ -20,6 +28,7 @@ export interface RequestContext {
     version: string
     typeDefs: string
     graphName: string
+    routingUrl: string
   }
 }
 
@@ -36,7 +45,9 @@ export const schema: FastifySchema = {
           .prop('schemaId', schemaId)
           .prop('version', version)
           .prop('typeDefs', typeDefs)
-          .prop('serviceName', serviceName),
+          .prop('serviceName', serviceName)
+          .prop('routingUrl', routingUrl)
+          .prop('lastUpdatedAt', dateTime),
       ),
   },
   body: S.object()
@@ -45,7 +56,8 @@ export const schema: FastifySchema = {
     .prop('graphName', graphName)
     .prop('version', version.default(CURRENT_VERSION))
     .prop('typeDefs', typeDefs)
-    .prop('serviceName', serviceName),
+    .prop('serviceName', serviceName)
+    .prop('routingUrl', routingUrl),
 }
 
 export default function registerSchema(fastify: FastifyInstance) {
@@ -118,7 +130,18 @@ export default function registerSchema(fastify: FastifyInstance) {
           service = await serviceRepository.create({
             name: req.body.serviceName,
             graphId: graph.id,
+            routingUrl: req.body.routingUrl,
           })
+        } else if (req.body.routingUrl && req.body.routingUrl !== service.routingUrl) {
+          const updatedService = await serviceRepository.updateOne(
+            {
+              routingUrl: req.body.routingUrl,
+            },
+            {
+              id: service.id,
+            },
+          )
+          service = updatedService!
         }
 
         const mormalizedTypeDefs = normalize(req.body.typeDefs)
@@ -140,9 +163,10 @@ export default function registerSchema(fastify: FastifyInstance) {
             typeDefs: mormalizedTypeDefs,
           })
         } else {
-          await schemaRepository.updateById(schema.id, {
+          const updatedSchema = await schemaRepository.updateById(schema.id, {
             updatedAt: new Date(),
           })
+          schema = updatedSchema!
         }
 
         let schemaTag: SchemaTagDBModel | undefined
@@ -191,6 +215,8 @@ export default function registerSchema(fastify: FastifyInstance) {
             serviceName: req.body.serviceName,
             typeDefs: schema.typeDefs,
             version: schemaTag.version,
+            routingUrl: service.routingUrl,
+            lastUpdatedAt: schema.updatedAt,
           },
         }
 

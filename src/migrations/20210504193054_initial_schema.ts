@@ -27,6 +27,7 @@ export async function up(knex: Knex): Promise<void> {
 
       table.string(ServiceDBModel.field('name'))
       table.boolean(ServiceDBModel.field('isActive')).notNullable().defaultTo(true)
+      table.string(ServiceDBModel.field('routingUrl')).nullable()
       table
         .timestamp(ServiceDBModel.field('createdAt'), { useTz: true })
         .notNullable()

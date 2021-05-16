@@ -4,8 +4,10 @@ import { SchemaTagDBModel } from './models/schemaTagModel'
 export type SchemaResponseModel = {
   schemaId: number
   serviceName: string
+  routingUrl?: string
   typeDefs: string
   version: string
+  lastUpdatedAt: Date | undefined
 } & Pick<SchemaTagDBModel, 'version'>
 
 export type ResponseModel = {
@@ -17,9 +19,9 @@ export type SuccessResponse<T> = {
   data: T
 }
 export type ErrorResponse = {
-  success: true
-  error: string
+  success: false
+  error?: string
 }
 
 export type LastUpdatedSchema = Pick<SchemaTagDBModel, 'version'> &
-  Pick<SchemaDBModel, 'id' | 'typeDefs'>
+  Pick<SchemaDBModel, 'id' | 'typeDefs' | 'updatedAt'>

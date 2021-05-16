@@ -4,6 +4,7 @@ export class ServiceDBModel {
   isActive?: boolean
   createdAt!: Date
   updatedAt?: Date
+  routingUrl?: string
   graphId!: number
 
   static table = 'service'

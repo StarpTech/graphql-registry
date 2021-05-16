@@ -3,17 +3,23 @@ import registryPlugin from './registry'
 import health from './core/health'
 import knexPlugin from './core/knex-plugin'
 import validatorPlugin from './core/validator-plugin'
+import { ErrorResponse } from './core/types'
 
 export interface buildOptions {
   logger?: boolean
   databaseConnectionUrl: string
   basicAuth?: string
+  prettyPrint?: boolean
   jwtSecret?: string
 }
 
 export default function build(opts: buildOptions) {
   const fastify = Fastify({
-    logger: opts.logger,
+    logger: opts.logger
+      ? {
+          prettyPrint: opts.prettyPrint,
+        }
+      : undefined,
   })
 
   // Custom ajv validator
@@ -43,11 +49,15 @@ export default function build(opts: buildOptions) {
       })
       return
     }
-    reply.code(err.statusCode || 500)
-    reply.send({
+    const result: ErrorResponse = {
       success: false,
-      error: err.message,
-    })
+    }
+    // only expose error informations when it was intented for
+    if (err.name === 'FastifyError') {
+      result.error = err.message
+    }
+
+    reply.code(err.statusCode || 500).send(result)
   })
 
   return fastify
