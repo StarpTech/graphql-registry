@@ -12,6 +12,7 @@ import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
 import { SchemaTagDBModel } from '../../core/models/schemaTagModel'
 import { CURRENT_VERSION } from '../../core/constants'
 import { normalize } from '../../core/graphql-utils'
+import { graphName, schemaId, serviceName, typeDefs, version } from '../../core/shared-schemas'
 
 export interface RequestContext {
   Body: {
@@ -32,19 +33,19 @@ export const schema: FastifySchema = {
         'data',
         S.object()
           .required(['version', 'typeDefs', 'serviceName', 'schemaId'])
-          .prop('schemaId', S.number().minimum(1))
-          .prop('version', S.string().minLength(1).maxLength(100))
-          .prop('typeDefs', S.string().minLength(1).maxLength(10000))
-          .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+          .prop('schemaId', schemaId)
+          .prop('version', version)
+          .prop('typeDefs', typeDefs)
+          .prop('serviceName', serviceName),
       ),
   },
   body: S.object()
     .additionalProperties(false)
     .required(['version', 'typeDefs', 'serviceName', 'graphName'])
-    .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
-    .prop('version', S.string().minLength(1).maxLength(100).default(CURRENT_VERSION))
-    .prop('typeDefs', S.string().minLength(1).maxLength(10000))
-    .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+    .prop('graphName', graphName)
+    .prop('version', version.default(CURRENT_VERSION))
+    .prop('typeDefs', typeDefs)
+    .prop('serviceName', serviceName),
 }
 
 export default function registerSchema(fastify: FastifyInstance) {

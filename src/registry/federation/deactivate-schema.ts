@@ -2,6 +2,7 @@ import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { SchemaNotFoundError } from '../../core/errors'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
+import { schemaId } from '../../core/shared-schemas'
 
 export interface RequestContext {
   Body: {
@@ -17,10 +18,7 @@ export const schema: FastifySchema = {
       .required(['success'])
       .prop('success', S.boolean()),
   },
-  body: S.object()
-    .additionalProperties(false)
-    .required(['schemaId'])
-    .prop('schemaId', S.number().minimum(1)),
+  body: S.object().additionalProperties(false).required(['schemaId']).prop('schemaId', schemaId),
 }
 
 export default function deactivateSchema(fastify: FastifyInstance) {

@@ -10,6 +10,7 @@ import { SchemaManager } from '../../core/manager/SchemaManager'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
+import { graphName, serviceName, typeDefs } from '../../core/shared-schemas'
 
 export interface RequestContext {
   Body: {
@@ -29,9 +30,9 @@ export const schema: FastifySchema = {
   body: S.object()
     .additionalProperties(false)
     .required(['typeDefs', 'serviceName', 'graphName'])
-    .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
-    .prop('typeDefs', S.string().minLength(1).maxLength(10000))
-    .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+    .prop('graphName', graphName)
+    .prop('typeDefs', typeDefs)
+    .prop('serviceName', serviceName),
 }
 
 export default function schemaValidation(fastify: FastifyInstance) {

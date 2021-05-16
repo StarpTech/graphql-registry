@@ -11,6 +11,7 @@ import {
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
+import { graphName, schemaId, serviceName, typeDefs, version } from '../../core/shared-schemas'
 
 interface ServiceVersionMatch {
   name: string
@@ -35,17 +36,17 @@ export const schema: FastifySchema = {
         S.array().items(
           S.object()
             .required(['version', 'typeDefs', 'serviceName', 'schemaId'])
-            .prop('schemaId', S.number().minimum(1))
-            .prop('version', S.string().minLength(1).maxLength(100))
-            .prop('typeDefs', S.string().minLength(1).maxLength(10000))
-            .prop('serviceName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+            .prop('schemaId', schemaId)
+            .prop('version', version)
+            .prop('typeDefs', typeDefs)
+            .prop('serviceName', serviceName),
         ),
       ),
   },
   body: S.object()
     .additionalProperties(false)
     .required(['graphName', 'services'])
-    .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
+    .prop('graphName', graphName)
     .prop(
       'services',
       S.array()
@@ -53,8 +54,8 @@ export const schema: FastifySchema = {
         .items(
           S.object()
             .required(['name', 'version'])
-            .prop('version', S.string().minLength(1).maxLength(100))
-            .prop('name', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+')),
+            .prop('version', version)
+            .prop('name', serviceName),
         ),
     ),
 }

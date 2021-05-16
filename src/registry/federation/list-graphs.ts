@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifySchema } from 'fastify'
 import S from 'fluent-json-schema'
 import { GraphDBModel } from '../../core/models/graphModel'
+import { graphName } from '../../core/shared-schemas'
 
 export const schema: FastifySchema = {
   response: {
@@ -8,7 +9,7 @@ export const schema: FastifySchema = {
       .additionalProperties(false)
       .required(['success'])
       .prop('success', S.boolean())
-      .prop('data', S.array().items(S.string().pattern('[a-zA-Z_\\-0-9]+'))),
+      .prop('data', S.array().items(graphName)),
   },
 }
 

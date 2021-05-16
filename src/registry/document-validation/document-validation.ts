@@ -13,6 +13,7 @@ import { SchemaManager } from '../../core/manager/SchemaManager'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
+import { document, graphName } from '../../core/shared-schemas'
 
 export interface RequestContext {
   Body: {
@@ -31,8 +32,8 @@ export const schema: FastifySchema = {
   body: S.object()
     .additionalProperties(false)
     .required(['document', 'graphName'])
-    .prop('graphName', S.string().minLength(1).pattern('[a-zA-Z_\\-0-9]+'))
-    .prop('document', S.string().minLength(1).maxLength(10000)),
+    .prop('graphName', graphName)
+    .prop('document', document),
 }
 
 export default function documentValidation(fastify: FastifyInstance) {
