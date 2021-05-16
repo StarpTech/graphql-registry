@@ -92,11 +92,13 @@ export default function registerSchema(fastify: FastifyInstance) {
         const serviceSchemas = schemas.map((s) => ({
           name: s.serviceName,
           typeDefs: s.typeDefs,
+          url: s.routingUrl,
         }))
         // Add the new schema to validate it against the current registry state before creating.
         serviceSchemas.push({
           name: req.body.serviceName,
           typeDefs: req.body.typeDefs,
+          url: req.body.routingUrl,
         })
 
         const { error: schemaError } = composeAndValidateSchema(serviceSchemas)

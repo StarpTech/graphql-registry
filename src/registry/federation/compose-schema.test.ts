@@ -55,14 +55,14 @@ test('Should return schema of two services', async (t) => {
   t.truthy(response.data[0].lastUpdatedAt)
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_bar`,
-    typeDefs: 'type Query{world:String}',
+    typeDefs: 'schema{query:Query}type Query{world:String}',
     version: '2',
   })
 
   t.truthy(response.data[1].lastUpdatedAt)
   t.like(response.data[1], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query{hello:String}`,
+    typeDefs: `schema{query:Query}type Query{hello:String}`,
     version: '1',
   })
 })
@@ -136,7 +136,7 @@ test('Version "current" has no precedence over the last updated', async (t) => {
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: 'type Query{world:String}',
+    typeDefs: 'schema{query:Query}type Query{world:String}',
     version: '2',
   })
 })
@@ -177,7 +177,7 @@ test('Should include "routingUrl" of the service', async (t) => {
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: 'type Query{hello:String}',
+    typeDefs: 'schema{query:Query}type Query{hello:String}',
     routingUrl: 'http://localhost:3000/api/graphql',
     version: '1',
   })

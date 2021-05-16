@@ -50,7 +50,7 @@ export async function up(knex: Knex): Promise<void> {
     .createTable(SchemaDBModel.table, (table) => {
       table.increments(SchemaDBModel.field('id')).primary()
 
-      table.string(SchemaDBModel.field('typeDefs'))
+      table.text(SchemaDBModel.field('typeDefs'))
       table.boolean(SchemaDBModel.field('isActive')).notNullable().defaultTo(true)
       table
         .timestamp(SchemaDBModel.field('createdAt'), { useTz: true })

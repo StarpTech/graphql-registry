@@ -19,7 +19,7 @@ export function composeAndValidateSchema(servicesSchemaMap: ServiceSchema[]) {
 
       return {
         name: schema.name,
-        url: '',
+        url: schema.url,
         typeDefs,
       }
     })

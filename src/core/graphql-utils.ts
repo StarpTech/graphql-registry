@@ -2,15 +2,17 @@ import {
   buildSchema,
   GraphQLSchema,
   lexicographicSortSchema,
-  printSchema,
   stripIgnoredCharacters,
 } from 'graphql'
+import { printSchemaWithDirectives } from '@graphql-tools/utils'
 
 export function normalize(typeDefs: string): string {
-  const schema = buildSchema(typeDefs)
+  const schema = buildSchema(typeDefs, { assumeValidSDL: true })
   return stripIgnoredCharacters(printSorted(schema))
 }
 
 export function printSorted(schema: GraphQLSchema): string {
-  return printSchema(lexicographicSortSchema(schema))
+  const sorted = lexicographicSortSchema(schema)
+  // without this the default implementation of "printSchema" would remove metadata like "directives"
+  return printSchemaWithDirectives(sorted)
 }

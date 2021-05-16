@@ -1,6 +1,6 @@
 # Composition stability
 
-Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema is valid. You can't fetch or push an invalid schema.
+Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema is valid. You can't fetch or produce an invalid registry state.
 
 # Terminology
 
@@ -34,6 +34,8 @@ GET - `/schema/latest?graphName=my_graph` Returns the last registered (time-base
 POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version. Optionally, you can pass `routingUrl` field. The URL that your gateway uses to communicate with the service in a [managed federation](https://www.apollographql.com/docs/federation/managed-federation/overview/) architecture.
 
 **Notice:** A schema is normalized before it's stored in the database. Whitespaces are stipped and graphql elements are sorted lexicographically.
+
+**Notice:** The schema isn't validated for breaking-changes. Use [schema diff](#produce-a-diff-from-your-schema) to understand the implications of your update.
 
 <details>
 <summary>Example Request</summary>
@@ -93,7 +95,7 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 
 ### Produce a diff from your schema
 
-POST - `/schema/diff` Returns the schema report of all services and the provided new schema.
+POST - `/schema/diff` Returns the schema report between provided and latest schemas.
 
 <details>
 <summary>Example Request</summary>
