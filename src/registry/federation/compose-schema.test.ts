@@ -18,7 +18,11 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -29,7 +33,11 @@ test('Should return schema of two services', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { world: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          world: String
+        }
+      `,
       version: '2',
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
@@ -55,14 +63,14 @@ test('Should return schema of two services', async (t) => {
   t.truthy(response.data[0].lastUpdatedAt)
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_bar`,
-    typeDefs: 'schema{query:Query}type Query{world:String}',
+    typeDefs: 'type Query{world:String}',
     version: '2',
   })
 
   t.truthy(response.data[1].lastUpdatedAt)
   t.like(response.data[1], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `schema{query:Query}type Query{hello:String}`,
+    typeDefs: `type Query{hello:String}`,
     version: '1',
   })
 })
@@ -100,7 +108,11 @@ test('Version "current" has no precedence over the last updated', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: CURRENT_VERSION,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -111,7 +123,11 @@ test('Version "current" has no precedence over the last updated', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { world: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          world: String
+        }
+      `,
       version: '2',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -136,7 +152,7 @@ test('Version "current" has no precedence over the last updated', async (t) => {
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: 'schema{query:Query}type Query{world:String}',
+    typeDefs: 'type Query{world:String}',
     version: '2',
   })
 })
@@ -151,7 +167,11 @@ test('Should include "routingUrl" of the service', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '1',
       routingUrl: 'http://localhost:3000/api/graphql',
       serviceName: `${t.context.testPrefix}_foo`,
@@ -177,7 +197,7 @@ test('Should include "routingUrl" of the service', async (t) => {
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: 'schema{query:Query}type Query{hello:String}',
+    typeDefs: 'type Query{hello:String}',
     routingUrl: 'http://localhost:3000/api/graphql',
     version: '1',
   })

@@ -17,7 +17,11 @@ test('Should validate schema as valid', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -30,7 +34,11 @@ test('Should validate schema as valid', async (t) => {
     method: 'POST',
     url: '/schema/validate',
     payload: {
-      typeDefs: `type Query { world: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          world: String
+        }
+      `,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -57,7 +65,11 @@ test('Should validate schema as invalid', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -70,7 +82,11 @@ test('Should validate schema as invalid', async (t) => {
     method: 'POST',
     url: '/schema/validate',
     payload: {
-      typeDefs: `type Query { hello: String22 }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String22
+        }
+      `,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -125,7 +141,11 @@ test('Should 400 when graph could not be found', async (t) => {
     method: 'POST',
     url: '/schema/validate',
     payload: {
-      typeDefs: `type Query { world: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          world: String
+        }
+      `,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },

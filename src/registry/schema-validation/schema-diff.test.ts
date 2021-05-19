@@ -17,7 +17,11 @@ test('Should calculate schema diff', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -30,7 +34,12 @@ test('Should calculate schema diff', async (t) => {
     method: 'POST',
     url: '/schema/diff',
     payload: {
-      typeDefs: `type Query { hello: String world: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+          world: String
+        }
+      `,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -67,7 +76,12 @@ test('Should detect a breaking change', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String world: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+          world: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -145,7 +159,11 @@ test('Should return an empty diff when no other services exists', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '3',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -158,7 +176,11 @@ test('Should return an empty diff when no other services exists', async (t) => {
     method: 'POST',
     url: '/schema/diff',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },

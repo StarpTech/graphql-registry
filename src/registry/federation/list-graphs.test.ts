@@ -17,7 +17,11 @@ test('Should return all registered graphs', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -28,7 +32,11 @@ test('Should return all registered graphs', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { world: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          world: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}_2`,

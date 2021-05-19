@@ -17,7 +17,11 @@ test('Should validate document as valid', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -30,7 +34,11 @@ test('Should validate document as valid', async (t) => {
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { bar: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          bar: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
@@ -69,7 +77,11 @@ test('Should validate document as invalid because field does not exist', async (
     method: 'POST',
     url: '/schema/push',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -124,7 +136,11 @@ test('Should return 400 error when graph does not exist', async (t) => {
     method: 'POST',
     url: '/document/validate',
     payload: {
-      document: `query { world }`,
+      document: /* GraphQL */ `
+        query {
+          world
+        }
+      `,
       graphName: `${t.context.graphName}`,
     },
   })
