@@ -59,12 +59,10 @@ npm run dev
 npm run test
 ```
 
-## Example
+## Examples
 
-[Examples](./examples)
-
-- GraphQL Federation with [Mercurius](https://github.com/mercurius-js/mercurius).
-- GraphQL Federation with [Apollo Gateway](https://github.com/apollographql/federation).
+- [GraphQL Federation with](./examples/mercurius) Mercurius.
+- [GraphQL Federation with](./examples/apollo) Apollo Gateway.
 
 ## Benchmark
 

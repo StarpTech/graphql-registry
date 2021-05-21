@@ -1,4 +1,4 @@
-# Federation with Mercurius
+# Federation with [Mercurius](https://github.com/mercurius-js/mercurius)
 
 1. Run `npm run start-registry`
 2. Run `npm run start-services`

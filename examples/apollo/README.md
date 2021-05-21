@@ -1,4 +1,4 @@
-# Federation with Apollo Gateway
+# Federation with [Apollo Gateway](https://github.com/apollographql/federation)
 
 1. Run `npm run start-registry`
 2. Run `npm run start-services`
