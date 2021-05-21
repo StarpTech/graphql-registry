@@ -32,15 +32,15 @@ State: Experimental
 
 [**Read more**](https://principledgraphql.com/integrity#3-track-the-schema-in-a-registry)
 
+## Examples
+
+- [Federation](./examples/mercurius-federation) with Mercurius.
+- [Federation](./examples/apollo-federation) with Apollo Gateway.
+- [Managed Federation](./examples/apollo-managed-federation) with Apollo Gateway.
+
 ## API
 
 Try all endpoints in [insomnia](https://insomnia.rest/run/?label=GraphQL%20Registry&uri=https%3A%2F%2Fraw.githubusercontent.com%2FStarpTech%2Fgraphql-registry%2Fmain%2Finsomnia.json) or read the api [documentation](./docs/api.md).
-
-## Big Picture
-
-<div align="center">
-  <img src="./docs/usecases-02.png" alt="graphql-registry" />
-</div>
 
 ## Development
 
@@ -58,12 +58,6 @@ npm run dev
 # Run tests
 npm run test
 ```
-
-## Examples
-
-- [Federation](./examples/mercurius-federation) with Mercurius.
-- [Federation](./examples/apollo-federation) with Apollo Gateway.
-- [Managed Federation](./examples/apollo-managed-federation) with Apollo Gateway.
 
 ## Benchmark
 
