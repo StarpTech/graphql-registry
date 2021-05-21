@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-registry": "cd .. && npm run dev",
+    "start-registry": "cd ../.. && npm run dev",
     "start-gateway": "nodemon gateway.js",
     "start-service-accounts": "nodemon accounts.js",
     "start-service-reviews": "nodemon reviews.js",
