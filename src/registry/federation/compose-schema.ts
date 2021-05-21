@@ -23,6 +23,7 @@ import {
 export interface RequestContext {
   Querystring: {
     graphName: string
+    federation: boolean
   }
 }
 

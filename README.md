@@ -59,6 +59,13 @@ npm run dev
 npm run test
 ```
 
+## Example
+
+[Examples](./examples)
+
+- GraphQL Federation with [Mercurius](https://github.com/mercurius-js/mercurius).
+- GraphQL Federation with [Apollo Gateway](https://github.com/apollographql/federation).
+
 ## Benchmark
 
 Run a benchmark with:

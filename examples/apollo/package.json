@@ -1,0 +1,26 @@
+{
+  "name": "apollo-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start-registry": "cd .. && npm run dev",
+    "start-gateway": "nodemon gateway.js",
+    "start-service-accounts": "nodemon accounts.js",
+    "start-service-reviews": "nodemon reviews.js",
+    "start-service-products": "nodemon products.js",
+    "start-service-inventory": "nodemon inventory.js",
+    "start-services": "concurrently \"npm:start-service-*\""
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "latest",
+    "concurrently": "latest"
+  },
+  "dependencies": {
+    "@apollo/federation": "^0.25.0",
+    "@apollo/gateway": "^0.28.1",
+    "apollo-server": "^2.24.1"
+  }
+}

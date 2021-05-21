@@ -94,7 +94,6 @@ test('Should register new schema with service "routingUrl"', async (t) => {
 test('Should be able to register a federated schema', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
-    logger: true,
   })
   t.teardown(() => app.close())
 
@@ -170,6 +169,69 @@ test('Should be able to register a federated schema', async (t) => {
   })
 
   t.is(res.statusCode, 200)
+})
+
+test('Should return error when federated schema has an error', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  let res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: /* GraphQL */ `
+        type Query {
+          me: User
+          user(id: ID!): User
+          users: [User]
+        }
+
+        type User {
+          id: ID!
+          name: String
+          username: String
+        }
+      `,
+      version: '1',
+      routingUrl: 'http://localhost:3000/api/graphql',
+      serviceName: `${t.context.testPrefix}_accounts`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: /* GraphQL */ `
+        extend type Query {
+          topProducts(first: Int = 5): [Product]
+        }
+
+        type Product @key(fields: "upc2") {
+          upc: String!
+          name: String
+          price: Int
+          weight: Int
+        }
+      `,
+      version: '1',
+      routingUrl: 'http://localhost:3001/api/graphql',
+      serviceName: `${t.context.testPrefix}_products`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 400)
+  t.true(
+    res
+      .json()
+      .error.includes('Product -> A @key selects upc2, but Product.upc2 could not be found'),
+  )
 })
 
 test('Should keep metdata like graphql directives', async (t) => {

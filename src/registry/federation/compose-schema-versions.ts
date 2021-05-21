@@ -30,6 +30,7 @@ export interface RequestContext {
   Body: {
     graphName: string
     services: ServiceVersionMatch[]
+    federation: boolean
   }
 }
 

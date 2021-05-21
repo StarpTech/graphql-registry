@@ -11,7 +11,7 @@ import SchemaRepository from '../../core/repositories/SchemaRepository'
 import SchemaTagRepository from '../../core/repositories/SchemaTagRepository'
 import { SchemaTagDBModel } from '../../core/models/schemaTagModel'
 import { CURRENT_VERSION } from '../../core/constants'
-import { normalize } from '../../core/graphql-utils'
+import { normalizeSchema } from '../../core/graphql-utils'
 import {
   dateTime,
   graphName,
@@ -146,7 +146,7 @@ export default function registerSchema(fastify: FastifyInstance) {
           service = updatedService!
         }
 
-        const mormalizedTypeDefs = normalize(req.body.typeDefs)
+        const mormalizedTypeDefs = normalizeSchema(req.body.typeDefs)
 
         /**
          * Create new schema

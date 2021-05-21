@@ -1,5 +1,5 @@
 import { stripIgnoredCharacters } from 'graphql'
 
-export function normalize(typeDefs: string): string {
+export function normalizeSchema(typeDefs: string): string {
   return stripIgnoredCharacters(typeDefs)
 }
