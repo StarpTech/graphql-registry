@@ -26,7 +26,7 @@ export function composeAndValidateSchema(servicesSchemaMap: ServiceSchema[]) {
 
     const { schema: validatedSchema, errors: validationErrors } = composeAndValidate(serviceList)
     schema = validatedSchema
-    if (validationErrors && validationErrors.length > 0) {
+    if (!!validationErrors) {
       error = `${validationErrors[0]}`
     }
   } catch (err) {
