@@ -12,7 +12,18 @@ Try
 ```graphql
 {
   topProducts {
-    upc
+    name
+    inStock
+    shippingEstimate
+    reviews {
+      id
+      author {
+        name
+      }
+      product {
+        name
+      }
+    }
   }
 }
 ```
