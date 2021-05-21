@@ -15,6 +15,7 @@ const typeDefs = /* GraphQL */ `
 `
 
 async function main() {
+  // Push schema to registry
   await post(`http://localhost:3000/schema/push`, {
     body: {
       typeDefs: typeDefs,

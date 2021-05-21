@@ -30,7 +30,7 @@ async function startServer() {
     // fetch for schema updates every 30s
     experimental_pollInterval: 30000,
 
-    async experimental_updateServiceDefinitions(config) {
+    async experimental_updateServiceDefinitions() {
       return {
         isNewSchema: true,
         serviceDefinitions: await fetchServices(),

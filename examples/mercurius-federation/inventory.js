@@ -4,24 +4,23 @@ const { post } = require('httpie')
 const { parse } = require('graphql')
 
 const typeDefs = /* GraphQL */ `
-  extend type Query {
-    topProducts(first: Int = 5): [Product]
-  }
-  type Product @key(fields: "upc") {
-    upc: String!
-    name: String
-    price: Int
-    weight: Int
+  extend type Product @key(fields: "upc") {
+    upc: String! @external
+    weight: Int @external
+    price: Int @external
+    inStock: Boolean
+    shippingEstimate: Int @requires(fields: "price weight")
   }
 `
 
 async function main() {
+  // Push schema to registry
   await post(`http://localhost:3000/schema/push`, {
     body: {
       typeDefs: typeDefs,
       graphName: 'my_graph',
-      serviceName: 'products',
-      routingUrl: 'http://localhost:4003/graphql',
+      serviceName: 'inventory',
+      routingUrl: 'http://localhost:4004/graphql',
     },
   })
   startServer()
@@ -31,12 +30,16 @@ function startServer() {
   const resolvers = {
     Product: {
       __resolveReference(object) {
-        return products.find((product) => product.upc === object.upc)
+        return {
+          ...object,
+          ...inventory.find((product) => product.upc === object.upc),
+        }
       },
-    },
-    Query: {
-      topProducts(_, args) {
-        return products.slice(0, args.first)
+      shippingEstimate(object) {
+        // free for expensive items
+        if (object.price > 1000) return 0
+        // estimate is based on weight
+        return object.weight * 0.5
       },
     },
   }
@@ -50,29 +53,14 @@ function startServer() {
     ]),
   })
 
-  server.listen({ port: 4003 }).then(({ url }) => {
+  server.listen({ port: 4004 }).then(({ url }) => {
     console.log(`🚀 Server ready at ${url}`)
   })
 
-  const products = [
-    {
-      upc: '1',
-      name: 'Table',
-      price: 899,
-      weight: 100,
-    },
-    {
-      upc: '2',
-      name: 'Couch',
-      price: 1299,
-      weight: 1000,
-    },
-    {
-      upc: '3',
-      name: 'Chair',
-      price: 54,
-      weight: 50,
-    },
+  const inventory = [
+    { upc: '1', inStock: true },
+    { upc: '2', inStock: false },
+    { upc: '3', inStock: true },
   ]
 }
 

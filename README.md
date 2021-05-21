@@ -61,8 +61,8 @@ npm run test
 
 ## Examples
 
-- [GraphQL Federation with](./examples/mercurius) Mercurius.
-- [GraphQL Federation with](./examples/apollo) Apollo Gateway.
+- [GraphQL Federation with](./examples/mercurius-federation) Mercurius.
+- [GraphQL Federation with](./examples/apollo-federation) Apollo Gateway.
 
 ## Benchmark
 
