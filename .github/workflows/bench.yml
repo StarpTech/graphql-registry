@@ -7,11 +7,13 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
+      - 'examples/**'
       - 'insomnia.json'
   pull_request:
     paths-ignore:
       - 'docs/**'
       - '*.md'
+      - 'examples/**'
       - 'insomnia.json'
 
 jobs:

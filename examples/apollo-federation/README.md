@@ -1,5 +1,7 @@
 # Federation with [Apollo Gateway](https://github.com/apollographql/federation)
 
+Federation allows you to split your unified schema in multiple pieces, managed by separate services. This has benefits for scaling and maintainability.
+
 1. Run `npm run start-registry`
 2. Run `npm run start-services`
 3. Run `npm run start-gateway`
