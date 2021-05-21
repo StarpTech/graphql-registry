@@ -1,6 +1,12 @@
 import anyTest, { TestInterface } from 'ava'
 import build from '../../build-server'
-import { cleanTest, createTestContext, createTestPrefix, TestContext } from '../../core/test-util'
+import {
+  cleanTest,
+  createTestContext,
+  createTestPrefix,
+  TestContext,
+  trimDoc,
+} from '../../core/test-util'
 
 const test = anyTest as TestInterface<TestContext>
 test.before(createTestContext())
@@ -94,7 +100,11 @@ test('Should detect a breaking change', async (t) => {
     method: 'POST',
     url: '/schema/diff',
     payload: {
-      typeDefs: `type Query { hello: String }`,
+      typeDefs: trimDoc/* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },

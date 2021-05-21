@@ -7,6 +7,7 @@ import {
   createTestPrefix,
   getJwtHeader,
   TestContext,
+  trimDoc,
 } from '../../core/test-util'
 
 const test = anyTest as TestInterface<TestContext>
@@ -44,7 +45,11 @@ test('Should register new schema', async (t) => {
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query{hello:String}`,
+        typeDefs: trimDoc/* GraphQL */ `
+          type Query {
+            hello: String
+          }
+        `,
         version: '1',
       },
       success: true,
@@ -81,7 +86,11 @@ test('Should register new schema with service "routingUrl"', async (t) => {
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query{hello:String}`,
+        typeDefs: trimDoc/* GraphQL */ `
+          type Query {
+            hello: String
+          }
+        `,
         routingUrl: 'http://localhost:3000/api/graphql',
         version: '1',
       },
@@ -122,6 +131,28 @@ test('Should be able to register a federated schema', async (t) => {
   })
 
   t.is(res.statusCode, 200)
+  t.like(
+    res.json(),
+    {
+      data: {
+        typeDefs: trimDoc/* GraphQL */ `
+          type Query {
+            me: User
+            user(id: ID!): User
+            users: [User]
+          }
+
+          type User {
+            id: ID!
+            name: String
+            username: String
+          }
+        `,
+      },
+      success: true,
+    },
+    'response payload match',
+  )
 
   res = await app.inject({
     method: 'POST',
@@ -147,6 +178,26 @@ test('Should be able to register a federated schema', async (t) => {
   })
 
   t.is(res.statusCode, 200)
+  t.like(
+    res.json(),
+    {
+      data: {
+        typeDefs: trimDoc/* GraphQL */ `
+          extend type Query {
+            topProducts(first: Int = 5): [Product]
+          }
+          type Product @key(fields: "upc") {
+            upc: String!
+            name: String
+            price: Int
+            weight: Int
+          }
+        `,
+      },
+      success: true,
+    },
+    'response payload match',
+  )
 
   res = await app.inject({
     method: 'POST',
@@ -169,6 +220,24 @@ test('Should be able to register a federated schema', async (t) => {
   })
 
   t.is(res.statusCode, 200)
+  t.like(
+    res.json(),
+    {
+      data: {
+        typeDefs: trimDoc/* GraphQL */ `
+          extend type Product @key(fields: "upc") {
+            upc: String! @external
+            weight: Int @external
+            price: Int @external
+            inStock: Boolean
+            shippingEstimate: Int @requires(fields: "price weight")
+          }
+        `,
+      },
+      success: true,
+    },
+    'response payload match',
+  )
 })
 
 test('Should return error when federated schema has an error', async (t) => {
@@ -271,8 +340,18 @@ test('Should keep metdata like graphql directives', async (t) => {
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs:
-          'schema{query:Query}type Query{me:User}type User@key(fields:"id"){id:ID!username:String@deprecated(reason:"Use `newField`.")}',
+        typeDefs: trimDoc/* GraphQL */ `
+          schema {
+            query: Query
+          }
+          type Query {
+            me: User
+          }
+          type User @key(fields: "id") {
+            id: ID!
+            username: String @deprecated(reason: "Use \`newField\`.")
+          }
+        `,
         version: '1',
       },
       success: true,
@@ -382,7 +461,11 @@ test('Should use version "current" when no version was specified', async (t) => 
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query{hello:String}`,
+        typeDefs: trimDoc/* GraphQL */ `
+          type Query {
+            hello: String
+          }
+        `,
         version: CURRENT_VERSION,
       },
       success: true,
@@ -448,7 +531,11 @@ test('Should not create multiple schemas when client and typeDefs does not chang
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query{hello:String}`,
+    typeDefs: trimDoc/* GraphQL */ `
+      type Query {
+        hello: String
+      }
+    `,
     version: '2',
   })
 })
@@ -509,13 +596,21 @@ test('Should be able to register schemas from multiple clients', async (t) => {
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_bar`,
-    typeDefs: `type Query{world:String}`,
+    typeDefs: trimDoc/* GraphQL */ `
+      type Query {
+        world: String
+      }
+    `,
     version: '2',
   })
 
   t.like(response.data[1], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query{hello:String}`,
+    typeDefs: trimDoc/* GraphQL */ `
+      type Query {
+        hello: String
+      }
+    `,
     version: '1',
   })
 })
@@ -597,7 +692,11 @@ test('Should be able to store multiple versions of the same schema with the same
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query{world:String}`,
+    typeDefs: trimDoc/* GraphQL */ `
+      type Query {
+        world: String
+      }
+    `,
     version: '2',
   })
 })
@@ -743,7 +842,11 @@ test('Should return correct latest service schema with multiple graphs', async (
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query{hello:String}`,
+    typeDefs: trimDoc/* GraphQL */ `
+      type Query {
+        hello: String
+      }
+    `,
     version: '1',
   })
 
@@ -764,7 +867,11 @@ test('Should return correct latest service schema with multiple graphs', async (
 
   t.like(response.data[0], {
     serviceName: `${t.context.testPrefix}_foo`,
-    typeDefs: `type Query{hello:String}`,
+    typeDefs: trimDoc/* GraphQL */ `
+      type Query {
+        hello: String
+      }
+    `,
     version: '2',
   })
 })
@@ -861,7 +968,11 @@ test('Should be able to register a schema with a valid JWT', async (t) => {
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query{hello:String}`,
+        typeDefs: trimDoc/* GraphQL */ `
+          type Query {
+            hello: String
+          }
+        `,
         version: '1',
       },
       success: true,
@@ -904,7 +1015,11 @@ test('Should be able to register a schema in name of another service', async (t)
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: `type Query{hello:String}`,
+        typeDefs: trimDoc/* GraphQL */ `
+          type Query {
+            hello: String
+          }
+        `,
         version: '1',
       },
       success: true,

@@ -3,6 +3,7 @@ import execa from 'execa'
 import { join } from 'path'
 import { uid } from 'uid'
 import jwt from 'jsonwebtoken'
+import { stripIgnoredCharacters } from 'graphql/utilities'
 import { JwtPayload } from './jwt-auth'
 
 export interface TestContext {
@@ -11,6 +12,10 @@ export interface TestContext {
   graphName: string
   bootstrapped: boolean
   connectionUrl: string
+}
+
+export function trimDoc(strings: ReadonlyArray<string>, ...values: ReadonlyArray<string>): string {
+  return stripIgnoredCharacters(strings.join(''))
 }
 
 export function getJwtHeader(payload: JwtPayload) {
