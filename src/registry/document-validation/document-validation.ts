@@ -17,7 +17,7 @@ import { document, graphName } from '../../core/shared-schemas'
 
 export interface RequestContext {
   Body: {
-    document: string
+    documents: string[]
     graphName: string
   }
 }
@@ -31,9 +31,9 @@ export const schema: FastifySchema = {
   },
   body: S.object()
     .additionalProperties(false)
-    .required(['document', 'graphName'])
+    .required(['documents', 'graphName'])
     .prop('graphName', graphName)
-    .prop('document', document),
+    .prop('documents', S.array().items(document).minItems(1).maxItems(100)),
 }
 
 export default function documentValidation(fastify: FastifyInstance) {
@@ -87,14 +87,14 @@ export default function documentValidation(fastify: FastifyInstance) {
       throw SchemaCompositionError(updated.error)
     }
 
-    let doc = null
+    let sources: Source[] = []
     try {
-      doc = parse(req.body.document)
+      sources = req.body.documents.map((document) => new Source(document))
     } catch {
       throw InvalidDocumentError()
     }
 
-    const invalidDocuments = validateDocument(updated.schema, [new Source(print(doc))], {
+    const invalidDocuments = validateDocument(updated.schema, sources, {
       apollo: true,
       strictDeprecated: true,
       maxDepth: 10,

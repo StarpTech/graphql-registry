@@ -51,7 +51,13 @@ test('Should validate document as valid', async (t) => {
     method: 'POST',
     url: '/document/validate',
     payload: {
-      document: `query { hello }`,
+      documents: [
+        /* GraphQL */ `
+          query {
+            hello
+          }
+        `,
+      ],
       graphName: `${t.context.graphName}`,
     },
   })
@@ -94,7 +100,13 @@ test('Should validate document as invalid because field does not exist', async (
     method: 'POST',
     url: '/document/validate',
     payload: {
-      document: `query { world }`,
+      documents: [
+        /* GraphQL */ `
+          query {
+            world
+          }
+        `,
+      ],
       graphName: `${t.context.graphName}`,
     },
   })
@@ -108,14 +120,14 @@ test('Should validate document as invalid because field does not exist', async (
       error: [
         {
           source: {
-            body: '{\n  world\n}\n',
+            body: '\n          query {\n            world\n          }\n        ',
             name: 'GraphQL request',
             locationOffset: { line: 1, column: 1 },
           },
           errors: [
             {
               message: 'Cannot query field "world" on type "Query".',
-              locations: [{ line: 2, column: 3 }],
+              locations: [{ line: 3, column: 13 }],
             },
           ],
           deprecated: [],
@@ -136,11 +148,13 @@ test('Should return 400 error when graph does not exist', async (t) => {
     method: 'POST',
     url: '/document/validate',
     payload: {
-      document: /* GraphQL */ `
-        query {
-          world
-        }
-      `,
+      documents: [
+        /* GraphQL */ `
+          query {
+            world
+          }
+        `,
+      ],
       graphName: `${t.context.graphName}`,
     },
   })

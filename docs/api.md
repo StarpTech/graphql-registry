@@ -146,7 +146,7 @@ POST - `/document/validate` Confirm that all client operations are supported by 
 ```json
 {
   "graphName": "my_graph",
-  "document": "query { hello }"
+  "documents": ["query { hello }"]
 }
 ```
 
