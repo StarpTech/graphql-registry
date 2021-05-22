@@ -76,6 +76,9 @@ Our benchmark suite is running in the CI.
 GraphQL-Registry uses by default postgres as database.
 
 ```sh
+# Bootstrap database
+npm install && npm run migrate:up
+# Run service
 docker run -e DATABASE_URL="" starptech/graphql-registry:latest -p 3000:3000
 ```
 
