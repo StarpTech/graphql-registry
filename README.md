@@ -96,3 +96,8 @@ I will happily accept your pull request if it:
 - has tests
 - looks reasonable
 - follows the [code of conduct](./CODE_OF_CONDUCT.md)
+
+### License
+
+GraphQL Registry is open-source under the GNU Affero General Public License Version 3 (AGPLv3) or any later version. You can [find it here](LICENSE).
+Why AGPLv3 and not MIT? Check out the blog post from [plausible](https://plausible.io/blog/open-source-licenses#risks-associated-with-permissive-open-source-licenses).

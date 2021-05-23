@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "main": "build/index.js",
   "description": "GraphQL registry",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "node -r dotenv/config build/index.js",
     "build": "tsc",
