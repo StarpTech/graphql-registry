@@ -20,7 +20,7 @@ export function setup() {
   let data = {
     typeDefs: 'type Query { hello: String }',
     version: '1',
-    routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
+    routingUrl: `http://foo:3000/api/graphql`,
     graphName: 'my_graph',
     serviceName: 'foo',
   }
@@ -37,7 +37,7 @@ export function setup() {
   data = {
     typeDefs: 'type Query { world: String }',
     version: '1',
-    routingUrl: 'http://localhost:3001/api/graphql',
+    routingUrl: 'http://bar:3001/api/graphql',
     graphName: 'my_graph',
     serviceName: 'bar',
   }
