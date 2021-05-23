@@ -1,6 +1,6 @@
 # Composition stability
 
-Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema is valid. You can't fetch or produce an invalid registry state.
+Whenever a schema is pushed or fetched, Graph-Registry ensures that the schema is valid. You can't fetch or produce an invalid registry state. This doesn't imply that you can't break your schema from consumer perspective. Always use a [change report](#creates-a-change-report) to understand your schema update.
 
 # Terminology
 
