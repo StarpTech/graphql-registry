@@ -19,7 +19,6 @@
     "concurrently": "latest"
   },
   "dependencies": {
-    "@apollo/federation": "^0.25.0",
     "@apollo/gateway": "^0.28.1",
     "apollo-server": "^2.24.1"
   }

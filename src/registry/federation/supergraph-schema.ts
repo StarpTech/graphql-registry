@@ -6,22 +6,16 @@ import {
   InvalidGraphNameError,
   SchemaCompositionError,
   SchemaVersionLookupError,
+  SupergraphCompositionError,
 } from '../../core/errors'
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
-import {
-  dateTime,
-  graphName,
-  routingUrl,
-  schemaId,
-  serviceName,
-  typeDefs,
-  version,
-} from '../../core/shared-schemas'
+import { graphName } from '../../core/shared-schemas'
+import { hash } from '../../core/util'
 
 export interface RequestContext {
-  Querystring: {
+  Body: {
     graphName: string
     federation: boolean
   }
@@ -35,46 +29,41 @@ export const schema: FastifySchema = {
       .prop('success', S.boolean())
       .prop(
         'data',
-        S.array().items(
-          S.object()
-            .required(['version', 'typeDefs', 'serviceName', 'schemaId', 'routingUrl'])
-            .prop('schemaId', schemaId)
-            .prop('version', version)
-            .prop('typeDefs', typeDefs)
-            .prop('serviceName', serviceName)
-            .prop('routingUrl', routingUrl)
-            .prop('lastUpdatedAt', dateTime),
-        ),
+        S.object()
+          .required(['supergraphSdl', 'compositionId'])
+          .prop('supergraphSdl', S.string())
+          .prop('compositionId', S.string()),
       ),
   },
-  querystring: S.object()
-    .required(['graphName'])
-    .additionalProperties(false)
-    .prop('graphName', graphName),
+  body: S.object().additionalProperties(false).required(['graphName']).prop('graphName', graphName),
 }
 
-export default function composeSchema(fastify: FastifyInstance) {
-  fastify.get<RequestContext>('/schema/latest', { schema }, async (req, res) => {
+export default function supergraphSchema(fastify: FastifyInstance) {
+  fastify.post<RequestContext>('/schema/supergraph', { schema }, async (req, res) => {
     const graphRepository = new GraphRepository(fastify.knex)
 
     const graphExists = await graphRepository.exists({
-      name: req.query.graphName,
+      name: req.body.graphName,
     })
     if (!graphExists) {
-      throw InvalidGraphNameError(req.query.graphName)
+      throw InvalidGraphNameError(req.body.graphName)
     }
 
     const serviceRepository = new ServiceRepository(fastify.knex)
     const schemaRepository = new SchemaRepository(fastify.knex)
 
     const serviceModels = await serviceRepository.findMany({
-      graphName: req.query.graphName,
+      graphName: req.body.graphName,
     })
     if (serviceModels.length === 0) {
-      return res.send({
-        success: true,
-        data: [],
-      })
+      throw SupergraphCompositionError(`Can't compose supergraph. No service is registered.`)
+    }
+
+    const servicesWithoutRoutingUrl = serviceModels.filter((service) => !service.routingUrl)
+    if (servicesWithoutRoutingUrl.length > 0) {
+      throw SupergraphCompositionError(
+        `Can't compose supergraph. Service '${servicesWithoutRoutingUrl[0].name}' has no routingUrl.`,
+      )
     }
 
     const allLatestServices = serviceModels.map((s) => ({
@@ -84,7 +73,7 @@ export default function composeSchema(fastify: FastifyInstance) {
     const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
 
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
-      req.query.graphName,
+      req.body.graphName,
       allLatestServices,
     )
 
@@ -105,15 +94,22 @@ export default function composeSchema(fastify: FastifyInstance) {
       typeDefs: s.typeDefs,
     }))
 
-    const { error: schemaError } = composeAndValidateSchema(serviceSchemas)
+    const { error: schemaError, supergraphSdl } = composeAndValidateSchema(serviceSchemas)
 
     if (schemaError) {
       throw SchemaCompositionError(schemaError)
     }
 
+    if (!supergraphSdl) {
+      throw SupergraphCompositionError(schemaError)
+    }
+
     return {
       success: true,
-      data: schemas,
+      data: {
+        supergraphSdl,
+        compositionId: hash(supergraphSdl),
+      },
     }
   })
 }

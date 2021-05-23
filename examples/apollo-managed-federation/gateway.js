@@ -1,20 +1,18 @@
 const { ApolloServer } = require('apollo-server')
 const { ApolloGateway } = require('@apollo/gateway')
-const { get } = require('httpie')
-const { parse } = require('graphql')
-const { composeAndValidate } = require('@apollo/federation')
+const { post } = require('httpie')
 
-// TODO: registry should return supgergraph sdl
-async function fetchServices() {
-  const res = await get(`http://localhost:3000/schema/latest?graphName=my_graph`)
-
-  return res.data.data.map((svc) => {
-    return {
-      name: svc.serviceName,
-      url: svc.routingUrl,
-      typeDefs: parse(svc.typeDefs),
-    }
+async function getSupergraph() {
+  const res = await post(`http://localhost:3000/schema/supergraph`, {
+    body: {
+      graphName: 'my_graph',
+    },
   })
+
+  return {
+    supergraphSdl: res.data.data.supergraphSdl,
+    id: res.data.data.compositionId,
+  }
 }
 
 async function startServer() {
@@ -23,13 +21,7 @@ async function startServer() {
     experimental_pollInterval: 30000,
 
     async experimental_updateSupergraphSdl() {
-      const services = await fetchServices()
-      const { supergraphSdl } = composeAndValidate(services)
-      return {
-        // TODO: registry should return compositionId
-        id: services.map((s) => s.version).join('-'), // supergraph only updates when id changes
-        supergraphSdl,
-      }
+      return getSupergraph()
     },
 
     // Experimental: Enabling this enables the query plan view in Playground.

@@ -20,6 +20,7 @@ test('Should keep the most recent 10 schemas of every service in the graph', asy
       payload: {
         typeDefs: `type Query { hello${i}: String }`,
         version: '1',
+        routingUrl: `http://${t.context.testPrefix}_bar:3000/api/graphql`,
         serviceName: `${t.context.testPrefix}_foo`,
         graphName: `${t.context.graphName}`,
       },
@@ -32,6 +33,7 @@ test('Should keep the most recent 10 schemas of every service in the graph', asy
       payload: {
         typeDefs: `type Query { world${i}: String }`,
         version: '1',
+        routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
         serviceName: `${t.context.testPrefix}_bar`,
         graphName: `${t.context.graphName}`,
       },

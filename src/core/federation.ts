@@ -1,4 +1,4 @@
-import { parse } from 'graphql'
+import { GraphQLSchema, parse } from 'graphql'
 import { composeAndValidate } from '@apollo/federation'
 
 export interface ServiceSchema {
@@ -7,9 +7,18 @@ export interface ServiceSchema {
   url?: string
 }
 
-export function composeAndValidateSchema(servicesSchemaMap: ServiceSchema[]) {
-  let schema
-  let error = null
+export interface CompositionResult {
+  error: string | null
+  schema: GraphQLSchema | null
+  supergraphSdl: string | undefined
+}
+
+export function composeAndValidateSchema(servicesSchemaMap: ServiceSchema[]): CompositionResult {
+  let result: CompositionResult = {
+    error: null,
+    schema: null,
+    supergraphSdl: '',
+  }
 
   try {
     const serviceList = servicesSchemaMap.map((schema) => {
@@ -24,14 +33,20 @@ export function composeAndValidateSchema(servicesSchemaMap: ServiceSchema[]) {
       }
     })
 
-    const { schema: validatedSchema, errors: validationErrors } = composeAndValidate(serviceList)
-    schema = validatedSchema
+    const {
+      schema: validatedSchema,
+      errors: validationErrors,
+      supergraphSdl,
+    } = composeAndValidate(serviceList)
     if (!!validationErrors) {
-      error = `${validationErrors[0]}`
+      result.error = `${validationErrors[0]}`
+      return result
     }
+    result.schema = validatedSchema
+    result.supergraphSdl = supergraphSdl
   } catch (err) {
-    error = `${err.message}`
+    result.error = `${err.message}`
   }
 
-  return { schema, error }
+  return result
 }

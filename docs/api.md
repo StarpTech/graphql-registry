@@ -51,7 +51,7 @@ POST - `/schema/push` Creates a new graph and schema for a service. If you omit 
   "graphName": "my_graph",
   "serviceName": "foo",
   "version": "1", // optional, uses "current" by default
-  "routingUrl": "http://products-graphql.svc.cluster.local:4001/graphql" // optional, for federation
+  "routingUrl": "http://products-graphql.svc.cluster.local:4001/graphql"
 }
 ```
 
@@ -70,6 +70,23 @@ POST - `/schema/compose` Returns the last registered schema definition of all se
 {
   "graphName": "my_graph",
   "services": [{ "name": "foo", "version": "1" }]
+}
+```
+
+</p>
+</details>
+
+### Get supergraph schema
+
+POST - `/schema/supergraph` Returns the supergraph schema definition of all registered services.
+
+<details>
+<summary>Example Request</summary>
+<p>
+
+```jsonc
+{
+  "graphName": "my_graph"
 }
 ```
 

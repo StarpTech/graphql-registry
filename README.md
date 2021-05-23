@@ -25,6 +25,7 @@ State: Experimental
 - Create multiple graphs (for example, staging and production, or different development branches)
 - Stores versioned schemas for all GraphQL-federated services
 - Serves schema for GraphQL gateway based on provided services & their versions
+- Serves a supergraph schema for the GraphQL gateway
 - Validates new schema to be compatible with other running services
 - Validates that all client operations are supported by your schema
 - Produce a diff between your proposed schema and the current registry state to detect breaking changes and more

@@ -30,6 +30,7 @@ test('Should return schema of two services', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -46,6 +47,7 @@ test('Should return schema of two services', async (t) => {
         }
       `,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -62,6 +64,7 @@ test('Should return schema of two services', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_bar:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },
@@ -78,6 +81,7 @@ test('Should return schema of two services', async (t) => {
         }
       `,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_bar:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },
@@ -205,6 +209,7 @@ test('Should return 404 when schema in version could not be found', async (t) =>
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -253,6 +258,7 @@ test('Should return 400 when schema in specified version was deactivated', async
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -313,6 +319,7 @@ test('Version "current" should always return the latest (not versioned) register
           hello: String
         }
       `,
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -330,6 +337,7 @@ test('Version "current" should always return the latest (not versioned) register
           world: String
         }
       `,
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -349,6 +357,7 @@ test('Version "current" should always return the latest (not versioned) register
       `,
       serviceName: `${t.context.testPrefix}_foo`,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       graphName: `${t.context.graphName}`,
     },
   })
@@ -403,7 +412,7 @@ test('Should include "routingUrl" of the service', async (t) => {
       `,
       version: '1',
       serviceName: `${t.context.testPrefix}_foo`,
-      routingUrl: 'http://localhost:3000/api/graphql',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       graphName: `${t.context.graphName}`,
     },
   })
@@ -437,7 +446,7 @@ test('Should include "routingUrl" of the service', async (t) => {
         hello: String
       }
     `,
-    routingUrl: 'http://localhost:3000/api/graphql',
+    routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
     version: '1',
   })
 })

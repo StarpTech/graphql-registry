@@ -20,6 +20,7 @@ test('Should return 200 because credentials are valid', async (t) => {
     payload: {
       typeDefs: `type Query { world: String }`,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },
@@ -44,6 +45,7 @@ test('Should support multiple secrets comma separated', async (t) => {
     payload: {
       typeDefs: `type Query { world: String }`,
       version: '3',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },

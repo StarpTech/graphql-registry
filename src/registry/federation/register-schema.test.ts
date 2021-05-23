@@ -31,6 +31,7 @@ test('Should register new schema', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -45,53 +46,12 @@ test('Should register new schema', async (t) => {
     {
       data: {
         serviceName: `${t.context.testPrefix}_foo`,
+        routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
         typeDefs: trimDoc/* GraphQL */ `
           type Query {
             hello: String
           }
         `,
-        version: '1',
-      },
-      success: true,
-    },
-    'response payload match',
-  )
-})
-
-test('Should register new schema with service "routingUrl"', async (t) => {
-  const app = build({
-    databaseConnectionUrl: t.context.connectionUrl,
-  })
-  t.teardown(() => app.close())
-
-  const res = await app.inject({
-    method: 'POST',
-    url: '/schema/push',
-    payload: {
-      typeDefs: /* GraphQL */ `
-        type Query {
-          hello: String
-        }
-      `,
-      version: '1',
-      routingUrl: 'http://localhost:3000/api/graphql',
-      serviceName: `${t.context.testPrefix}_foo`,
-      graphName: `${t.context.graphName}`,
-    },
-  })
-
-  t.is(res.statusCode, 200)
-  t.like(
-    res.json(),
-    {
-      data: {
-        serviceName: `${t.context.testPrefix}_foo`,
-        typeDefs: trimDoc/* GraphQL */ `
-          type Query {
-            hello: String
-          }
-        `,
-        routingUrl: 'http://localhost:3000/api/graphql',
         version: '1',
       },
       success: true,
@@ -124,7 +84,7 @@ test('Should be able to register a federated schema', async (t) => {
         }
       `,
       version: '1',
-      routingUrl: 'http://localhost:3000/api/graphql',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_accounts`,
       graphName: `${t.context.graphName}`,
     },
@@ -264,7 +224,7 @@ test('Should return error when federated schema has an error', async (t) => {
         }
       `,
       version: '1',
-      routingUrl: 'http://localhost:3000/api/graphql',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_accounts`,
       graphName: `${t.context.graphName}`,
     },
@@ -326,6 +286,7 @@ test('Should keep metdata like graphql directives', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -393,6 +354,57 @@ test('Should return 400 when routingUrl is not valid URI', async (t) => {
   )
 })
 
+test('Should not be possible to register two schemas with the same routingUrl', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  let res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
+      version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: /* GraphQL */ `
+        type Query {
+          world: String
+        }
+      `,
+      version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
+      serviceName: `${t.context.testPrefix}_bar`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 400)
+  t.like(
+    res.json(),
+    {
+      error: `Service "${t.context.testPrefix}_foo" already use the routingUrl "http://${t.context.testPrefix}_foo:3000/api/graphql"`,
+      success: false,
+    },
+    'response payload match',
+  )
+})
+
 test('Should normalize a schema: Remove whitespaces', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
@@ -409,6 +421,7 @@ test('Should normalize a schema: Remove whitespaces', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -426,6 +439,7 @@ test('Should normalize a schema: Remove whitespaces', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -450,6 +464,7 @@ test('Should use version "current" when no version was specified', async (t) => 
           hello: String
         }
       `,
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -490,6 +505,7 @@ test('Should not create multiple schemas when client and typeDefs does not chang
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -507,6 +523,7 @@ test('Should not create multiple schemas when client and typeDefs does not chang
         }
       `,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -556,6 +573,7 @@ test('Should be able to register schemas from multiple clients', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -573,6 +591,7 @@ test('Should be able to register schemas from multiple clients', async (t) => {
         }
       `,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_bar:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },
@@ -627,6 +646,7 @@ test('Should not be able to push invalid schema', async (t) => {
     payload: {
       typeDefs: `foo`, // invalid GraphQL SDL
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: t.context.graphName,
     },
@@ -651,6 +671,7 @@ test('Should be able to store multiple versions of the same schema with the same
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: t.context.graphName,
     },
@@ -668,6 +689,7 @@ test('Should be able to store multiple versions of the same schema with the same
         }
       `,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: t.context.graphName,
     },
@@ -717,6 +739,7 @@ test('Should reject schema because it is not compatible with registry state', as
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: t.context.graphName,
     },
@@ -734,6 +757,7 @@ test('Should reject schema because it is not compatible with registry state', as
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: t.context.graphName,
     },
@@ -760,6 +784,7 @@ test('Should not reject schema because breaking changes can be applied', async (
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: t.context.graphName,
     },
@@ -777,6 +802,7 @@ test('Should not reject schema because breaking changes can be applied', async (
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: t.context.graphName,
     },
@@ -801,6 +827,7 @@ test('Should return correct latest service schema with multiple graphs', async (
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -818,6 +845,7 @@ test('Should return correct latest service schema with multiple graphs', async (
         }
       `,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}_2`,
     },
@@ -892,6 +920,7 @@ test('Should return 400 because an service has no active schema registered', asy
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: t.context.graphName,
     },
@@ -922,6 +951,7 @@ test('Should return 400 because an service has no active schema registered', asy
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: t.context.graphName,
     },
@@ -957,6 +987,7 @@ test('Should be able to register a schema with a valid JWT', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -1004,6 +1035,7 @@ test('Should be able to register a schema in name of another service', async (t)
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -1051,6 +1083,7 @@ test('Should not be able to register a schema with a jwt token because client is
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -1090,6 +1123,7 @@ test('Should not be able to register a schema with a jwt token with empty servic
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },

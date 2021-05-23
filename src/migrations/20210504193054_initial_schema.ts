@@ -25,9 +25,9 @@ export async function up(knex: Knex): Promise<void> {
     .createTable(ServiceDBModel.table, (table) => {
       table.increments(ServiceDBModel.field('id')).primary()
 
-      table.string(ServiceDBModel.field('name'))
+      table.string(ServiceDBModel.field('name')).notNullable()
       table.boolean(ServiceDBModel.field('isActive')).notNullable().defaultTo(true)
-      table.string(ServiceDBModel.field('routingUrl')).nullable()
+      table.string(ServiceDBModel.field('routingUrl')).notNullable()
       table
         .timestamp(ServiceDBModel.field('createdAt'), { useTz: true })
         .notNullable()
@@ -46,6 +46,8 @@ export async function up(knex: Knex): Promise<void> {
         .index()
 
       table.index([ServiceDBModel.field('isActive'), ServiceDBModel.field('name')])
+      table.unique([ServiceDBModel.field('graphId'), ServiceDBModel.field('name')])
+      table.unique([ServiceDBModel.field('graphId'), ServiceDBModel.field('routingUrl')])
     })
     .createTable(SchemaDBModel.table, (table) => {
       table.increments(SchemaDBModel.field('id')).primary()

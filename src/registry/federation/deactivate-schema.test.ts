@@ -23,6 +23,7 @@ test('Should deactivate schema', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },

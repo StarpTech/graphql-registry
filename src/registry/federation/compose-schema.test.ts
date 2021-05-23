@@ -30,6 +30,7 @@ test('Should return schema of two services', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -45,6 +46,7 @@ test('Should return schema of two services', async (t) => {
         }
       `,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_bar:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },
@@ -128,6 +130,7 @@ test('Version "current" has no precedence over the last updated', async (t) => {
         }
       `,
       version: CURRENT_VERSION,
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -143,6 +146,7 @@ test('Version "current" has no precedence over the last updated', async (t) => {
         }
       `,
       version: '2',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -191,7 +195,7 @@ test('Should include "routingUrl" of the service', async (t) => {
         }
       `,
       version: '1',
-      routingUrl: 'http://localhost:3000/api/graphql',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -220,7 +224,7 @@ test('Should include "routingUrl" of the service', async (t) => {
         hello: String
       }
     `,
-    routingUrl: 'http://localhost:3000/api/graphql',
+    routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
     version: '1',
   })
 })

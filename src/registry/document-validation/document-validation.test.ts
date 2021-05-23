@@ -23,6 +23,7 @@ test('Should validate document as valid', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },
@@ -40,6 +41,7 @@ test('Should validate document as valid', async (t) => {
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_bar:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_bar`,
       graphName: `${t.context.graphName}`,
     },
@@ -89,6 +91,7 @@ test('Should validate document as invalid because field does not exist', async (
         }
       `,
       version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
     },

@@ -26,6 +26,25 @@ export default class ServiceRepository {
       .select(`${table}.*`)
       .first<ServiceDBModel>()
   }
+  findByRoutingUrl({ graphName, routingUrl }: { graphName: string; routingUrl: string }) {
+    const knex = this.knex
+    const table = ServiceDBModel.table
+    return knex
+      .from(table)
+      .join(
+        GraphDBModel.table,
+        ServiceDBModel.fullName('graphId'),
+        '=',
+        GraphDBModel.fullName('id'),
+      )
+      .where({
+        [GraphDBModel.fullName('isActive')]: true,
+        [GraphDBModel.fullName('name')]: graphName,
+        [ServiceDBModel.fullName('routingUrl')]: routingUrl,
+      })
+      .select(`${table}.*`)
+      .first<ServiceDBModel>()
+  }
   findByNames(
     { graphName }: { graphName: string },
     serviceNames: string[],
@@ -72,7 +91,10 @@ export default class ServiceRepository {
       .whereNot(ServiceDBModel.fullName('name'), exceptService)
       .orderBy(ServiceDBModel.fullName('updatedAt'), 'desc')
   }
-  findMany({ graphName }: { graphName: string }): Promise<ServiceDBModel[]> {
+  findMany(
+    { graphName }: { graphName: string },
+    where: Partial<ServiceDBModel> = {},
+  ): Promise<ServiceDBModel[]> {
     const knex = this.knex
     const table = ServiceDBModel.table
     return knex
@@ -84,6 +106,7 @@ export default class ServiceRepository {
         '=',
         GraphDBModel.fullName('id'),
       )
+      .where(where)
       .where({
         [GraphDBModel.fullName('isActive')]: true,
         [GraphDBModel.fullName('name')]: graphName,

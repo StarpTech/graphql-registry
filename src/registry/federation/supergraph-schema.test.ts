@@ -7,7 +7,7 @@ test.before(createTestContext())
 test.beforeEach(createTestPrefix())
 test.after.always('cleanup', cleanTest())
 
-test('Should return all registered graphs', async (t) => {
+test('Should return supergraph of two services', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
@@ -23,8 +23,8 @@ test('Should return all registered graphs', async (t) => {
         }
       `,
       version: '1',
-      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
-      serviceName: `${t.context.testPrefix}_foo`,
+      routingUrl: `http://supergraph_svc_foo:3000/api/graphql`,
+      serviceName: `supergraph_svc_foo`,
       graphName: `${t.context.graphName}`,
     },
   })
@@ -38,27 +38,27 @@ test('Should return all registered graphs', async (t) => {
           world: String
         }
       `,
-      version: '1',
-      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
-      serviceName: `${t.context.testPrefix}_bar`,
-      graphName: `${t.context.graphName}_2`,
+      version: '2',
+      routingUrl: 'http://supergraph_svc_bar:3001/api/graphql',
+      serviceName: `supergraph_svc_bar`,
+      graphName: `${t.context.graphName}`,
     },
   })
   t.is(res.statusCode, 200)
 
   res = await app.inject({
-    method: 'GET',
-    url: '/graphs',
+    method: 'POST',
+    url: '/schema/supergraph',
+    payload: {
+      graphName: `${t.context.graphName}`,
+    },
   })
 
   t.is(res.statusCode, 200)
 
-  t.deepEqual(
-    res.json(),
-    {
-      success: true,
-      data: [`${t.context.graphName}`, `${t.context.graphName}_2`],
-    },
-    'response payload match',
-  )
+  const response = res.json()
+
+  t.true(response.success)
+
+  t.snapshot(response.data, 'supergraph composition')
 })

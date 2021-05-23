@@ -10,6 +10,7 @@ import registerSchema from './federation/register-schema'
 import deactivateSchema from './federation/deactivate-schema'
 import jwtAuth from '../core/jwt-auth'
 import documentValidation from './document-validation/document-validation'
+import supergraphSchema from './federation/supergraph-schema'
 export interface registryOptions {
   basicAuth?: string
   jwtSecret?: string
@@ -37,6 +38,7 @@ export default async function Registry(fastify: FastifyInstance, opts: registryO
   listGraphs(fastify)
   registerSchema(fastify)
   garbageCollect(fastify)
+  supergraphSchema(fastify)
   composeSchema(fastify)
   composeSchemaVersions(fastify)
   deactivateSchema(fastify)

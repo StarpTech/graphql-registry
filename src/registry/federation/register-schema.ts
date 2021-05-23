@@ -3,7 +3,11 @@ import { SchemaManager } from '../../core/manager/SchemaManager'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaResponseModel, SuccessResponse } from '../../core/types'
 import { FastifyInstance, FastifySchema } from 'fastify'
-import { SchemaCompositionError, SchemaVersionLookupError } from '../../core/errors'
+import {
+  DuplicateServiceUrlError,
+  SchemaCompositionError,
+  SchemaVersionLookupError,
+} from '../../core/errors'
 import { checkUserServiceScope } from '../../core/hook-handler/user-scope.prevalidation'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
@@ -52,7 +56,7 @@ export const schema: FastifySchema = {
   },
   body: S.object()
     .additionalProperties(false)
-    .required(['version', 'typeDefs', 'serviceName', 'graphName'])
+    .required(['version', 'typeDefs', 'serviceName', 'graphName', 'routingUrl'])
     .prop('graphName', graphName)
     .prop('version', version.default(CURRENT_VERSION))
     .prop('typeDefs', typeDefs)
@@ -118,7 +122,6 @@ export default function registerSchema(fastify: FastifyInstance) {
         if (!graph) {
           graph = await graphRepository.create({ name: req.body.graphName })
         }
-
         /**
          * Create new service
          */
@@ -129,21 +132,18 @@ export default function registerSchema(fastify: FastifyInstance) {
         })
 
         if (!service) {
+          const serviceByRoutingUrl = await serviceRepository.findByRoutingUrl({
+            graphName: req.body.graphName,
+            routingUrl: req.body.routingUrl,
+          })
+          if (serviceByRoutingUrl) {
+            throw DuplicateServiceUrlError(serviceByRoutingUrl.name, serviceByRoutingUrl.routingUrl)
+          }
           service = await serviceRepository.create({
             name: req.body.serviceName,
             graphId: graph.id,
             routingUrl: req.body.routingUrl,
           })
-        } else if (req.body.routingUrl && req.body.routingUrl !== service.routingUrl) {
-          const updatedService = await serviceRepository.updateOne(
-            {
-              routingUrl: req.body.routingUrl,
-            },
-            {
-              id: service.id,
-            },
-          )
-          service = updatedService!
         }
 
         const mormalizedTypeDefs = normalizeSchema(req.body.typeDefs)
