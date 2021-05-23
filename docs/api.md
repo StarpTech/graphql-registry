@@ -39,7 +39,7 @@ POST - `/schema/push` Creates a new graph and schema for a service. If you omit 
 
 **Notice:** A schema is normalized before it's stored in the database. Whitespaces are stipped.
 
-**Notice:** The schema isn't validated for breaking-changes. Use [schema diff](#produce-a-diff-from-your-schema) to understand the implications of your update.
+**Notice:** The schema isn't validated for breaking-changes. Use a [change report](#creates-a-change-report) to understand the implications of your update.
 
 <details>
 <summary>Example Request</summary>
@@ -114,9 +114,9 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 
 ## Validation
 
-### Produce a diff from your schema
+### Creates a change report
 
-POST - `/schema/diff` Returns the schema report between provided and latest schemas.
+POST - `/schema/check` Returns the schema report between provided and latest schemas. It can detect breaking, dangerous and safe changes. This should be executed before a new schema is pushed.
 
 <details>
 <summary>Example Request</summary>
@@ -135,7 +135,7 @@ POST - `/schema/diff` Returns the schema report between provided and latest sche
 
 ### Validate your schema
 
-POST - `/schema/validate` Validate schema between provided and latest schemas.
+POST - `/schema/validate` Validate schema between provided and latest schemas. It only verify if the schema can be composed.
 
 <details>
 <summary>Example Request</summary>

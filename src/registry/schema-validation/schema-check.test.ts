@@ -13,7 +13,7 @@ test.before(createTestContext())
 test.beforeEach(createTestPrefix())
 test.after.always('cleanup', cleanTest())
 
-test('Should calculate schema diff', async (t) => {
+test('Should check the schema for changes with the latest registry state', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
   })
@@ -39,7 +39,7 @@ test('Should calculate schema diff', async (t) => {
 
   res = await app.inject({
     method: 'POST',
-    url: '/schema/diff',
+    url: '/schema/check',
     payload: {
       typeDefs: /* GraphQL */ `
         type Query {
@@ -58,16 +58,17 @@ test('Should calculate schema diff', async (t) => {
     res.json(),
     {
       success: true,
-      data: [
-        {
-          criticality: {
+      data: {
+        isBreaking: false,
+        report: [
+          {
             level: 'NON_BREAKING',
+            type: 'FIELD_ADDED',
+            message: "Field 'world' was added to object type 'Query'",
+            path: 'Query.world',
           },
-          type: 'FIELD_ADDED',
-          message: "Field 'world' was added to object type 'Query'",
-          path: 'Query.world',
-        },
-      ],
+        ],
+      },
     },
     'response payload match',
   )
@@ -100,7 +101,7 @@ test('Should detect a breaking change', async (t) => {
 
   res = await app.inject({
     method: 'POST',
-    url: '/schema/diff',
+    url: '/schema/check',
     payload: {
       typeDefs: trimDoc/* GraphQL */ `
         type Query {
@@ -118,18 +119,19 @@ test('Should detect a breaking change', async (t) => {
     res.json(),
     {
       success: true,
-      data: [
-        {
-          criticality: {
-            level: 'BREAKING',
+      data: {
+        isBreaking: true,
+        report: [
+          {
             reason:
               'Removing a field is a breaking change. It is preferable to deprecate the field before removing it.',
+            level: 'BREAKING',
+            type: 'FIELD_REMOVED',
+            message: "Field 'world' was removed from object type 'Query'",
+            path: 'Query.world',
           },
-          type: 'FIELD_REMOVED',
-          message: "Field 'world' was removed from object type 'Query'",
-          path: 'Query.world',
-        },
-      ],
+        ],
+      },
     },
     'response payload match',
   )
@@ -143,7 +145,7 @@ test('Should return 400 because type_def is missing', async (t) => {
 
   let res = await app.inject({
     method: 'POST',
-    url: '/schema/diff',
+    url: '/schema/check',
     payload: {
       serviceName: `${t.context.testPrefix}_foo`,
       graphName: `${t.context.graphName}`,
@@ -187,7 +189,7 @@ test('Should return an empty diff when no other services exists', async (t) => {
 
   res = await app.inject({
     method: 'POST',
-    url: '/schema/diff',
+    url: '/schema/check',
     payload: {
       typeDefs: /* GraphQL */ `
         type Query {
@@ -204,7 +206,10 @@ test('Should return an empty diff when no other services exists', async (t) => {
     res.json(),
     {
       success: true,
-      data: [],
+      data: {
+        isBreaking: false,
+        report: [],
+      },
     },
     'message',
   )

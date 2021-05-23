@@ -3,7 +3,7 @@ import basicAuth from '../core/basic-auth'
 import garbageCollect from './maintanance/garbage-collect'
 import composeSchema from './federation/compose-schema'
 import composeSchemaVersions from './federation/compose-schema-versions'
-import schemaDiff from './schema-validation/schema-diff'
+import schemaCheck from './schema-validation/schema-check'
 import schemaValidation from './schema-validation/schema-validation'
 import listGraphs from './federation/list-graphs'
 import registerSchema from './federation/register-schema'
@@ -42,6 +42,6 @@ export default async function Registry(fastify: FastifyInstance, opts: registryO
   composeSchema(fastify)
   composeSchemaVersions(fastify)
   deactivateSchema(fastify)
-  schemaDiff(fastify)
+  schemaCheck(fastify)
   schemaValidation(fastify)
 }

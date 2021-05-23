@@ -1,6 +1,6 @@
 import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
-import { diff } from '@graphql-inspector/core'
+import { CriticalityLevel, diff } from '@graphql-inspector/core'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaManager } from '../../core/manager/SchemaManager'
 import {
@@ -29,14 +29,20 @@ export const schema: FastifySchema = {
       .prop('success', S.boolean())
       .prop(
         'data',
-        S.array().items(
-          S.object()
-            .required(['criticality', 'type', 'message', 'path'])
-            .prop('criticality', S.object().prop('level', S.string()).prop('reason', S.string()))
-            .prop('type', S.string())
-            .prop('message', S.string())
-            .prop('path', S.string()),
-        ),
+        S.object()
+          .prop('isBreaking', S.boolean())
+          .prop(
+            'report',
+            S.array().items(
+              S.object()
+                .required(['type', 'message', 'level', 'path'])
+                .prop('type', S.string())
+                .prop('message', S.string())
+                .prop('level', S.string())
+                .prop('path', S.string())
+                .prop('reason', S.string()),
+            ),
+          ),
       ),
   },
   body: S.object()
@@ -48,7 +54,7 @@ export const schema: FastifySchema = {
 }
 
 export default function schemaDiff(fastify: FastifyInstance) {
-  fastify.post<RequestContext>('/schema/diff', { schema }, async (req, res) => {
+  fastify.post<RequestContext>('/schema/check', { schema }, async (req, res) => {
     const graphRepository = new GraphRepository(fastify.knex)
 
     const graphExists = await graphRepository.exists({
@@ -111,11 +117,30 @@ export default function schemaDiff(fastify: FastifyInstance) {
       throw SchemaCompositionError(updated.error)
     }
 
-    const result = diff(original.schema, updated.schema)
+    const changes = diff(original.schema, updated.schema)
+
+    const changesReport = []
+    let isBreaking = false
+
+    for (const change of changes) {
+      if (change.criticality.level === CriticalityLevel.Breaking) {
+        isBreaking = true
+      }
+      changesReport.push({
+        type: change.type,
+        message: change.message,
+        level: change.criticality.level,
+        path: change.path,
+        reason: change.criticality.reason,
+      })
+    }
 
     return {
       success: true,
-      data: result,
+      data: {
+        isBreaking,
+        report: changesReport,
+      },
     }
   })
 }

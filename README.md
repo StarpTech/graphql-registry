@@ -26,7 +26,7 @@
 - Serves a supergraph schema for the GraphQL gateway
 - Validates new schema to be compatible with other running services
 - Validates that all client operations are supported by your schema
-- Produce a diff between your proposed schema and the current registry state to detect breaking changes and more
+- Detect breaking, dangerous and safe changes of schema updates
 - Lightweight authorization concept based on JWT.
 
 [**Read more**](https://principledgraphql.com/integrity#3-track-the-schema-in-a-registry)
