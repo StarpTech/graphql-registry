@@ -35,7 +35,7 @@ GET - `/schema/latest?graphName=my_graph` Returns the last registered (time-base
 
 ### Register a schema
 
-POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version. Optionally, you can pass `routingUrl` field. The URL that your gateway uses to communicate with the service in a federation architecture.
+POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` always represent the last registered schema that was pushed without a version. The `routingUrl` is the URL that your gateway uses to communicate with the service in a federation architecture.
 
 **Notice:** A schema is normalized before it's stored in the database. Whitespaces are stipped.
 
