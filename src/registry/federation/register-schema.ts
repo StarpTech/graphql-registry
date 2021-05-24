@@ -131,11 +131,12 @@ export default function registerSchema(fastify: FastifyInstance) {
           name: req.body.serviceName,
         })
 
+        const serviceByRoutingUrl = await serviceRepository.findByRoutingUrl({
+          graphName: req.body.graphName,
+          routingUrl: req.body.routingUrl,
+        })
+
         if (!service) {
-          const serviceByRoutingUrl = await serviceRepository.findByRoutingUrl({
-            graphName: req.body.graphName,
-            routingUrl: req.body.routingUrl,
-          })
           if (serviceByRoutingUrl) {
             throw DuplicateServiceUrlError(serviceByRoutingUrl.name, serviceByRoutingUrl.routingUrl)
           }
@@ -144,6 +145,19 @@ export default function registerSchema(fastify: FastifyInstance) {
             graphId: graph.id,
             routingUrl: req.body.routingUrl,
           })
+        } else if (req.body.routingUrl !== service.routingUrl) {
+          if (serviceByRoutingUrl) {
+            throw DuplicateServiceUrlError(serviceByRoutingUrl.name, serviceByRoutingUrl.routingUrl)
+          }
+          const updatedService = await serviceRepository.updateOne(
+            {
+              routingUrl: req.body.routingUrl,
+            },
+            {
+              id: service.id,
+            },
+          )
+          service = updatedService!
         }
 
         const mormalizedTypeDefs = normalizeSchema(req.body.typeDefs)

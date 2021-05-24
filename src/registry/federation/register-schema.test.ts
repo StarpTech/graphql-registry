@@ -354,6 +354,67 @@ test('Should return 400 when routingUrl is not valid URI', async (t) => {
   )
 })
 
+test('Should be able to update the routingUrl', async (t) => {
+  const app = build({
+    databaseConnectionUrl: t.context.connectionUrl,
+  })
+  t.teardown(() => app.close())
+
+  let res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
+      version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3000/api/graphql`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+
+  res = await app.inject({
+    method: 'POST',
+    url: '/schema/push',
+    payload: {
+      typeDefs: /* GraphQL */ `
+        type Query {
+          hello: String
+        }
+      `,
+      version: '1',
+      routingUrl: `http://${t.context.testPrefix}_foo:3003/api/graphql`,
+      serviceName: `${t.context.testPrefix}_foo`,
+      graphName: `${t.context.graphName}`,
+    },
+  })
+
+  t.is(res.statusCode, 200)
+  t.is(res.statusCode, 200)
+  t.like(
+    res.json(),
+    {
+      data: {
+        serviceName: `${t.context.testPrefix}_foo`,
+        routingUrl: `http://${t.context.testPrefix}_foo:3003/api/graphql`,
+        typeDefs: trimDoc/* GraphQL */ `
+          type Query {
+            hello: String
+          }
+        `,
+        version: '1',
+      },
+      success: true,
+    },
+    'response payload match',
+  )
+})
+
 test('Should not be possible to register two schemas with the same routingUrl', async (t) => {
   const app = build({
     databaseConnectionUrl: t.context.connectionUrl,
