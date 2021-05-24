@@ -35,7 +35,7 @@ GET - `/schema/latest?graphName=my_graph` Returns the last registered (time-base
 
 ### Register a schema
 
-POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` is a mutable version that can be overwritten. The `routingUrl` is the URL that your gateway uses to communicate with the service in a federation architecture.
+POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` is a mutable version that always points to the registered schema. The `routingUrl` is the URL that your gateway uses to communicate with the service in a federation architecture.
 
 **Notice:** A schema is normalized before it's stored in the database. Whitespaces are stipped.
 
@@ -60,7 +60,7 @@ POST - `/schema/push` Creates a new graph and schema for a service. If you omit 
 
 ### Get latest schemas by versions
 
-POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions. If versions can't be found it fails. You can use the version `current` to fetch the latest schema that was pushed without a version. This is useful for rapid development when you don't want to deal with versioning. For production use immutable versions.
+POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions. If versions can't be found it fails. You can use the version `current` to fetch the latest schema that was pushed with the version `current`. This is useful for rapid development when you don't want to deal with versioning. For production use immutable versions.
 
 **Notice:** The version `current` doesn't represent the latest schema. It's handled as a mutable version.
 
