@@ -16,7 +16,8 @@
   "license": "ISC",
   "devDependencies": {
     "nodemon": "latest",
-    "concurrently": "latest"
+    "concurrently": "latest",
+    "httpie": "latest"
   },
   "dependencies": {
     "@apollo/federation": "^0.25.0",

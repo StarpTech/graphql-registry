@@ -33,16 +33,12 @@ export function composeAndValidateSchema(servicesSchemaMap: ServiceSchema[]): Co
       }
     })
 
-    const {
-      schema: validatedSchema,
-      errors: validationErrors,
-      supergraphSdl,
-    } = composeAndValidate(serviceList)
-    if (!!validationErrors) {
-      result.error = `${validationErrors[0]}`
+    const { schema, errors, supergraphSdl } = composeAndValidate(serviceList)
+    if (!!errors) {
+      result.error = `${errors[0]}`
       return result
     }
-    result.schema = validatedSchema
+    result.schema = schema
     result.supergraphSdl = supergraphSdl
   } catch (err) {
     result.error = `${err.message}`

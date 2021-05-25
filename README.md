@@ -26,7 +26,8 @@
 - Serves a supergraph schema for the GraphQL gateway
 - Validates new schema to be compatible with other running services
 - Validates that all client operations are supported by your schema
-- Detect breaking, dangerous and safe changes of schema updates
+- Calculates a schema coverage report from GraphQL operations
+- Validates if a schema update produce a breaking, dangerous or safe change
 - Lightweight authorization concept based on JWT.
 
 [**Read more**](https://principledgraphql.com/integrity#3-track-the-schema-in-a-registry)

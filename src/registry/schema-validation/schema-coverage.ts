@@ -1,6 +1,5 @@
 import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
-import { CriticalityLevel, diff } from '@graphql-inspector/core'
 import { composeAndValidateSchema } from '../../core/federation'
 import { SchemaManager } from '../../core/manager/SchemaManager'
 import {
@@ -11,14 +10,17 @@ import {
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
-import { graphName, serviceName, typeDefs } from '../../core/shared-schemas'
-import { getChangeSet } from '../../core/graphql-utils'
+import { graphName } from '../../core/shared-schemas'
+import { getSchemaCoverage } from '../../core/graphql-utils'
+import { Source } from 'graphql'
 
 export interface RequestContext {
   Body: {
-    serviceName: string
-    typeDefs: string
     graphName: string
+    documents: {
+      name: string
+      source: string
+    }[]
   }
 }
 
@@ -31,32 +33,24 @@ export const schema: FastifySchema = {
       .prop(
         'data',
         S.object()
-          .prop('breakingChangeAdded', S.boolean())
-          .prop('deprecationAdded', S.boolean())
-          .prop(
-            'report',
-            S.array().items(
-              S.object()
-                .required(['type', 'message', 'level', 'path'])
-                .prop('type', S.string())
-                .prop('message', S.string())
-                .prop('level', S.string())
-                .prop('path', S.string())
-                .prop('reason', S.string()),
-            ),
-          ),
+          .prop('sources', S.array().items(S.object().additionalProperties(true)))
+          .prop('types', S.object().additionalProperties(true)),
       ),
   },
   body: S.object()
     .additionalProperties(false)
-    .required(['typeDefs', 'serviceName', 'graphName'])
+    .required(['documents', 'graphName'])
     .prop('graphName', graphName)
-    .prop('typeDefs', typeDefs)
-    .prop('serviceName', serviceName),
+    .prop(
+      'documents',
+      S.array().items(
+        S.object().required(['name', 'source']).prop('name', S.string()).prop('source', S.string()),
+      ),
+    ),
 }
 
-export default function schemaCheck(fastify: FastifyInstance) {
-  fastify.post<RequestContext>('/schema/check', { schema }, async (req, res) => {
+export default function schemaCoverage(fastify: FastifyInstance) {
+  fastify.post<RequestContext>('/schema/coverage', { schema }, async (req, res) => {
     const graphRepository = new GraphRepository(fastify.knex)
 
     const graphExists = await graphRepository.exists({
@@ -97,39 +91,20 @@ export default function schemaCheck(fastify: FastifyInstance) {
       typeDefs: s.typeDefs,
     }))
 
-    let original = composeAndValidateSchema(serviceSchemas)
-    if (!original.schema) {
-      throw SchemaCompositionError(original.error)
+    let compositionResult = composeAndValidateSchema(serviceSchemas)
+    if (compositionResult.error) {
+      throw SchemaCompositionError(compositionResult.error)
     }
-    if (original.error) {
-      throw SchemaCompositionError(original.error)
-    }
-
-    serviceSchemas = serviceSchemas
-      .filter((schema) => schema.name !== req.body.serviceName)
-      .concat({
-        name: req.body.serviceName,
-        url: '',
-        typeDefs: req.body.typeDefs,
-      })
-
-    const updated = composeAndValidateSchema(serviceSchemas)
-    if (updated.error) {
-      throw SchemaCompositionError(updated.error)
-    }
-    if (!updated.schema) {
-      throw SchemaCompositionError(updated.error)
+    if (!compositionResult.schema) {
+      throw SchemaCompositionError(compositionResult.error)
     }
 
-    const changesReport = getChangeSet(original.schema, updated.schema)
+    const sources = req.body.documents.map((document) => new Source(document.source, document.name))
+    const changesReport = getSchemaCoverage(compositionResult.schema, sources)
 
     return {
       success: true,
-      data: {
-        breakingChangeAdded: changesReport.breakingChangeAdded,
-        deprecationAdded: changesReport.deprecationAdded,
-        report: changesReport.changes,
-      },
+      data: changesReport,
     }
   })
 }

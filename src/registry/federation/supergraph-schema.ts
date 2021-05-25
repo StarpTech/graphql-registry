@@ -84,7 +84,7 @@ export default function supergraphSchema(fastify: FastifyInstance) {
     if (!schemas.length) {
       return res.send({
         success: true,
-        data: [],
+        data: {},
       })
     }
 

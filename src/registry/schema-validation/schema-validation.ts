@@ -56,7 +56,6 @@ export default function schemaValidation(fastify: FastifyInstance) {
     if (serviceModels.length === 0) {
       return res.send({
         success: true,
-        data: [],
       })
     }
 

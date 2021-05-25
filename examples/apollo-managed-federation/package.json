@@ -16,7 +16,8 @@
   "license": "ISC",
   "devDependencies": {
     "nodemon": "latest",
-    "concurrently": "latest"
+    "concurrently": "latest",
+    "httpie": "latest"
   },
   "dependencies": {
     "@apollo/gateway": "^0.28.1",

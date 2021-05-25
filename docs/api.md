@@ -118,7 +118,7 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 
 ### Creates a change report
 
-POST - `/schema/check` Returns the schema report between provided and latest schemas. It can detect breaking, dangerous and safe changes. This should be executed before a new schema is pushed.
+POST - `/schema/check` Returns the schema report between provided and latest schema. It can detect breaking, dangerous and safe changes. This should be executed before a new schema is pushed.
 
 <details>
 <summary>Example Request</summary>
@@ -135,9 +135,27 @@ POST - `/schema/check` Returns the schema report between provided and latest sch
 </p>
 </details>
 
+### Creates a schema coverage report
+
+POST - `/schema/coverage` Returns the schema coverage between provided documents and latest schema. It returns a detailed reports about type and field hits.
+
+<details>
+<summary>Example Request</summary>
+<p>
+
+```json
+{
+  "graphName": "my_graph",
+  "documents": [{ "name": "foo.graphql", "source": "query { hello }" }]
+}
+```
+
+</p>
+</details>
+
 ### Validate your schema
 
-POST - `/schema/validate` Validate schema between provided and latest schemas. It only verify if the schema can be composed.
+POST - `/schema/validate` Validate schema between provided and latest schema. It only verify if the schema can be composed.
 
 <details>
 <summary>Example Request</summary>

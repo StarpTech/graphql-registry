@@ -59,7 +59,8 @@ test('Should check the schema for changes with the latest registry state', async
     {
       success: true,
       data: {
-        isBreaking: false,
+        breakingChangeAdded: false,
+        deprecationAdded: false,
         report: [
           {
             level: 'NON_BREAKING',
@@ -120,7 +121,8 @@ test('Should detect a breaking change', async (t) => {
     {
       success: true,
       data: {
-        isBreaking: true,
+        breakingChangeAdded: true,
+        deprecationAdded: false,
         report: [
           {
             reason:
@@ -207,7 +209,8 @@ test('Should return an empty diff when no other services exists', async (t) => {
     {
       success: true,
       data: {
-        isBreaking: false,
+        breakingChangeAdded: false,
+        deprecationAdded: false,
         report: [],
       },
     },
