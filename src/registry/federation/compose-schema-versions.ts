@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifySchema } from 'fastify'
 import S from 'fluent-json-schema'
 import { composeAndValidateSchema } from '../../core/federation'
-import { SchemaResponseModel, SuccessResponse } from '../../core/types'
+import { SchemaResponseModel, ServiceVersionMatch, SuccessResponse } from '../../core/types'
 import { SchemaManager } from '../../core/manager/SchemaManager'
 import {
   InvalidGraphNameError,
@@ -20,11 +20,6 @@ import {
   typeDefs,
   version,
 } from '../../core/shared-schemas'
-
-interface ServiceVersionMatch {
-  name: string
-  version: string
-}
 
 export interface RequestContext {
   Body: {

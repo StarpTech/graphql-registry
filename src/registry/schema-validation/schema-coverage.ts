@@ -1,7 +1,7 @@
 import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { composeAndValidateSchema } from '../../core/federation'
-import { SchemaManager } from '../../core/manager/SchemaManager'
+import { SchemaManager, ServiceSchemaVersionMatch } from '../../core/manager/SchemaManager'
 import {
   InvalidGraphNameError,
   SchemaCompositionError,
@@ -10,13 +10,15 @@ import {
 import SchemaRepository from '../../core/repositories/SchemaRepository'
 import ServiceRepository from '../../core/repositories/ServiceRepository'
 import GraphRepository from '../../core/repositories/GraphRepository'
-import { graphName } from '../../core/shared-schemas'
+import { graphName, serviceName, version } from '../../core/shared-schemas'
 import { getSchemaCoverage } from '../../core/graphql-utils'
 import { Source } from 'graphql'
+import { ServiceVersionMatch } from '../../core/types'
 
 export interface RequestContext {
   Body: {
     graphName: string
+    services?: ServiceVersionMatch[]
     documents: {
       name: string
       source: string
@@ -46,6 +48,17 @@ export const schema: FastifySchema = {
       S.array().items(
         S.object().required(['name', 'source']).prop('name', S.string()).prop('source', S.string()),
       ),
+    )
+    .prop(
+      'services',
+      S.array()
+        .minItems(1)
+        .items(
+          S.object()
+            .required(['name', 'version'])
+            .prop('version', version)
+            .prop('name', serviceName),
+        ),
     ),
 }
 
@@ -74,11 +87,21 @@ export default function schemaCoverage(fastify: FastifyInstance) {
       })
     }
 
-    const allLatestServices = serviceModels.map((s) => ({ name: s.name }))
+    let serviceVersionMatches: ServiceSchemaVersionMatch[] = []
+
+    if (req.body.services && req.body.services?.length > 0) {
+      serviceVersionMatches = req.body.services.map((s) => ({
+        name: s.name,
+        version: s.version,
+      }))
+    } else {
+      serviceVersionMatches = serviceModels.map((s) => ({ name: s.name }))
+    }
+
     const schmemaService = new SchemaManager(serviceRepository, schemaRepository)
     const { schemas, error: findError } = await schmemaService.findByServiceVersions(
       req.body.graphName,
-      allLatestServices,
+      serviceVersionMatches,
     )
 
     if (findError) {

@@ -1,5 +1,5 @@
 import S from 'fluent-json-schema'
-import { Source, print, parse } from 'graphql'
+import { Source } from 'graphql'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { validate as validateDocument } from '@graphql-inspector/core'
 import {

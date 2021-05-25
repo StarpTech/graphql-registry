@@ -137,7 +137,7 @@ POST - `/schema/check` Returns the schema report between provided and latest sch
 
 ### Creates a schema coverage report
 
-POST - `/schema/coverage` Returns the schema coverage between provided documents and latest schema. It returns a detailed reports about type and field hits.
+POST - `/schema/coverage` Returns the schema coverage between provided documents and latest schema or service versions. It returns a detailed reports about type and field hits.
 
 <details>
 <summary>Example Request</summary>
@@ -146,7 +146,8 @@ POST - `/schema/coverage` Returns the schema coverage between provided documents
 ```json
 {
   "graphName": "my_graph",
-  "documents": [{ "name": "foo.graphql", "source": "query { hello }" }]
+  "documents": [{ "name": "foo.graphql", "source": "query { hello }" }],
+  "services": [{ "name": "foo", "version": "1" }] // optional
 }
 ```
 

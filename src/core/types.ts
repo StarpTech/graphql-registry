@@ -23,5 +23,10 @@ export type ErrorResponse = {
   error?: string
 }
 
+export interface ServiceVersionMatch {
+  name: string
+  version: string
+}
+
 export type LastUpdatedSchema = Pick<SchemaTagDBModel, 'version'> &
   Pick<SchemaDBModel, 'id' | 'typeDefs' | 'updatedAt'>
