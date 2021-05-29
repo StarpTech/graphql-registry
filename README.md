@@ -86,7 +86,7 @@ docker run -e DATABASE_URL="" starptech/graphql-registry:latest -p 3000:3000
 
 ## Alpha version
 
-GraphQL Registry is currently highly under development. It means that we are still working on essential features like production-ready schema management, graph metrics and development tooling. GraphQl Registry can be evaluated anytime. Every feature is covered by integration tests. We rely on your feedback and sponsorship. Feel free to open an issue or feature request!
+GraphQL Registry is currently highly under development. It means that we are still working on essential features like production-ready schema management, graph metrics and development tooling. GraphQL Registry can be evaluated anytime. Every feature is covered by integration tests. We rely on your feedback and sponsorship. Feel free to open an issue or feature request!
 
 ## Contributing
 
