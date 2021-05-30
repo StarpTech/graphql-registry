@@ -64,6 +64,8 @@ POST - `/schema/push` Creates a new graph and schema for a service. If you omit 
 
 POST - `/schema/compose` Returns the last registered schema definition of all services based on passed services & their versions. If versions can't be found it fails. You can use the version `current` to fetch the latest schema that was pushed with the version `current`. This is useful for rapid development when you don't want to deal with versioning. For production use immutable versions.
 
+**Idempotent:** yes
+
 **Notice:** The version `current` doesn't represent the latest schema. It's handled as a mutable version.
 
 <details>
@@ -84,6 +86,8 @@ POST - `/schema/compose` Returns the last registered schema definition of all se
 
 POST - `/schema/supergraph` Returns the supergraph schema definition of all registered services. The supergraph is composed of the latest schema version of a service.
 
+**Idempotent:** yes
+
 <details>
 <summary>Example Request</summary>
 <p>
@@ -100,6 +104,8 @@ POST - `/schema/supergraph` Returns the supergraph schema definition of all regi
 ### Deactivate a schema
 
 PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer be part of any result. You can re-activate it by registering.
+
+**Idempotent:** yes
 
 <details>
 <summary>Example Request</summary>
@@ -209,7 +215,7 @@ POST - `/document/validate` Confirm that all client operations are supported by 
 
 POST - `/schema/garbage_collect` Removes all schemas except the most recent N of every service. Returns the count removed schemas and versions. This could be called by a cron.
 
-**Idempotent:** yes
+**Idempotent:** no
 
 <details>
 <summary>Example Request</summary>
