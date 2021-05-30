@@ -37,6 +37,8 @@ GET - `/schema/latest?graphName=my_graph` Returns the last registered (time-base
 
 POST - `/schema/push` Creates a new graph and schema for a service. If you omit the `version` field the schema is registered as `current` version. `current` is a mutable version that always points to the registered schema. The `routingUrl` is the URL that your gateway uses to communicate with the service in a federation architecture.
 
+**Idempotent:** yes
+
 **Notice:** A schema is normalized before it's stored in the database. Whitespaces are stipped.
 
 **Notice:** The schema isn't validated for breaking-changes. Use a [change report](#creates-a-change-report) to understand the implications of your update.
@@ -120,6 +122,8 @@ PUT - `/schema/deactivate` Deactivates a schema by id. The schema will no longer
 
 POST - `/schema/check` Returns the schema report between provided and latest schema. It can detect breaking, dangerous and safe changes. This should be executed before a new schema is pushed.
 
+**Idempotent:** yes
+
 <details>
 <summary>Example Request</summary>
 <p>
@@ -138,6 +142,8 @@ POST - `/schema/check` Returns the schema report between provided and latest sch
 ### Creates a schema coverage report
 
 POST - `/schema/coverage` Returns the schema coverage between provided documents and latest schema or service versions. It returns a detailed reports about type and field hits.
+
+**Idempotent:** yes
 
 <details>
 <summary>Example Request</summary>
@@ -158,6 +164,8 @@ POST - `/schema/coverage` Returns the schema coverage between provided documents
 
 POST - `/schema/validate` Validate schema between provided and latest schema. It only verify if the schema can be composed.
 
+**Idempotent:** yes
+
 <details>
 <summary>Example Request</summary>
 <p>
@@ -176,6 +184,8 @@ POST - `/schema/validate` Validate schema between provided and latest schema. It
 ### Validating client operations
 
 POST - `/document/validate` Confirm that all client operations are supported by the latest schema.
+
+**Idempotent:** yes
 
 <details>
 <summary>Example Request</summary>
@@ -198,6 +208,8 @@ POST - `/document/validate` Confirm that all client operations are supported by 
 ### Remove all schemas except the most (N) recent
 
 POST - `/schema/garbage_collect` Removes all schemas except the most recent N of every service. Returns the count removed schemas and versions. This could be called by a cron.
+
+**Idempotent:** yes
 
 <details>
 <summary>Example Request</summary>
