@@ -1,6 +1,7 @@
 import S from 'fluent-json-schema'
 import { FastifyInstance, FastifySchema } from 'fastify'
 import { SchemaDBModel } from '../../core/models/schemaModel'
+import { SchemaTagDBModel } from '../../core/models/schemaTagModel'
 
 export interface RequestContext {
   Body: {
@@ -33,21 +34,21 @@ export default function garbageCollect(fastify: FastifyInstance) {
     return fastify.knex.transaction(async function (trx) {
       const schemasToKeep = await trx
         .from(`${SchemaDBModel.table}`)
-        .orderBy('updatedAt', 'desc')
+        .orderBy(SchemaDBModel.field('updatedAt'), 'desc')
         .limit(req.body.numSchemasKeep)
 
       const deletedSchemaTags = await trx
-        .from('schema_tag')
+        .from(`${SchemaTagDBModel.table}`)
         .whereNotIn(
-          `schema_tag.schemaId`,
+          `${SchemaTagDBModel.field('schemaId')}`,
           schemasToKeep.map((s) => s.id),
         )
         .delete()
 
       const deletedSchemas = await trx
-        .from('schema')
+        .from(`${SchemaDBModel.table}`)
         .whereNotIn(
-          `schema.id`,
+          `${SchemaDBModel.field('id')}`,
           schemasToKeep.map((s) => s.id),
         )
         .delete()
