@@ -1,6 +1,7 @@
 export class SchemaDBModel {
   id!: number
   typeDefs!: string
+  hash!: string
   isActive?: boolean
   createdAt!: Date
   updatedAt?: Date

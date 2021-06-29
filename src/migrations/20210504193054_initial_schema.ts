@@ -53,6 +53,7 @@ export async function up(knex: Knex): Promise<void> {
       table.increments(SchemaDBModel.field('id')).primary()
 
       table.text(SchemaDBModel.field('typeDefs'))
+      table.string(SchemaDBModel.field('hash')).notNullable()
       table.boolean(SchemaDBModel.field('isActive')).notNullable().defaultTo(true)
       table
         .timestamp(SchemaDBModel.field('createdAt'), { useTz: true })
@@ -77,7 +78,7 @@ export async function up(knex: Knex): Promise<void> {
         .index()
 
       table.index([SchemaDBModel.field('isActive')])
-      table.index([SchemaDBModel.field('typeDefs')])
+      table.index([SchemaDBModel.field('hash')])
     })
     .createTable(SchemaTagDBModel.table, (table) => {
       table.increments(SchemaTagDBModel.field('id')).primary()

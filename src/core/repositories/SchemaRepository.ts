@@ -23,11 +23,11 @@ export default class SchemaRepository {
   }
   findFirst({
     graphName,
-    typeDefs,
+    typeDefsHash,
     serviceName,
   }: {
     graphName: string
-    typeDefs: string
+    typeDefsHash: string
     serviceName: string
   }) {
     const knex = this.knex
@@ -46,7 +46,8 @@ export default class SchemaRepository {
         [GraphDBModel.fullName('name')]: graphName,
         [ServiceDBModel.fullName('isActive')]: true,
         [ServiceDBModel.fullName('name')]: serviceName,
-        [SchemaDBModel.fullName('typeDefs')]: typeDefs,
+        [SchemaDBModel.fullName('hash')]: typeDefsHash,
+
       })
       .select(`${table}.*`)
       .first<SchemaDBModel | undefined>()

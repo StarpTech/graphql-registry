@@ -25,6 +25,7 @@ import {
   typeDefs,
   version,
 } from '../../core/shared-schemas'
+import { hash } from '../../core/util'
 
 export interface RequestContext {
   Body: {
@@ -159,8 +160,9 @@ export default function registerSchema(fastify: FastifyInstance) {
           )
           service = updatedService!
         }
-
-        const mormalizedTypeDefs = normalizeSchema(req.body.typeDefs)
+        
+        const normalizedTypeDefs = normalizeSchema(req.body.typeDefs)
+        const typeDefsHash = hash(normalizedTypeDefs);
 
         /**
          * Create new schema
@@ -169,14 +171,15 @@ export default function registerSchema(fastify: FastifyInstance) {
         let schema = await schemaRepository.findFirst({
           graphName: req.body.graphName,
           serviceName: req.body.serviceName,
-          typeDefs: mormalizedTypeDefs,
+          typeDefsHash,
         })
 
         if (!schema) {
           schema = await schemaRepository.create({
             graphId: graph.id,
             serviceId: service.id,
-            typeDefs: mormalizedTypeDefs,
+            typeDefs: normalizedTypeDefs,
+            hash: typeDefsHash
           })
         } else {
           const updatedSchema = await schemaRepository.updateById(schema.id, {
