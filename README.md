@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./docs/logo-usecases.png" alt="graphql-registry" width="700" />
+  <img src="./docs/logo-standalone.png" alt="graphql-registry" width="350" />
 </div>
 
 <br>
