@@ -32,23 +32,20 @@ export const schema: FastifySchema = {
 export default function garbageCollect(fastify: FastifyInstance) {
   fastify.post<RequestContext>('/schema/garbage_collect', { schema }, async (req, res) => {
     return fastify.knex.transaction(async function (trx) {
-      const schemasToKeep = await trx
-        .from(`${SchemaDBModel.table}`)
+      const schemasToKeep = await trx<SchemaDBModel>(SchemaDBModel.table)
         .orderBy(SchemaDBModel.field('updatedAt'), 'desc')
         .limit(req.body.numSchemasKeep)
 
-      const deletedSchemaTags = await trx
-        .from(`${SchemaTagDBModel.table}`)
+      const deletedSchemaTags = await trx(SchemaTagDBModel.table)
         .whereNotIn(
           `${SchemaTagDBModel.field('schemaId')}`,
           schemasToKeep.map((s) => s.id),
         )
         .delete()
 
-      const deletedSchemas = await trx
-        .from(`${SchemaDBModel.table}`)
+      const deletedSchemas = await trx(SchemaDBModel.table)
         .whereNotIn(
-          `${SchemaDBModel.field('id')}`,
+          SchemaDBModel.field('id'),
           schemasToKeep.map((s) => s.id),
         )
         .delete()
