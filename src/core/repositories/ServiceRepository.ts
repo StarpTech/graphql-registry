@@ -1,4 +1,4 @@
-import { Knex } from 'knex'
+import Knex from 'knex'
 import { GraphDBModel } from '../models/graphModel'
 import { ServiceDBModel } from '../models/serviceModel'
 

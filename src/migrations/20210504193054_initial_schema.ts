@@ -1,4 +1,4 @@
-import { Knex } from 'knex'
+import Knex from 'knex'
 import { GraphDBModel } from '../core/models/graphModel'
 import { SchemaDBModel } from '../core/models/schemaModel'
 import { SchemaTagDBModel } from '../core/models/schemaTagModel'

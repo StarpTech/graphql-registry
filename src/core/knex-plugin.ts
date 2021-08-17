@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin'
-import knex, { Knex } from 'knex'
+import Knex from 'knex'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -13,7 +13,7 @@ export interface KnexPluginOptions {
 }
 
 export default fp<KnexPluginOptions>(async function (fastify, opts) {
-  const connection = knex({
+  const connection = Knex({
     client: 'pg',
     log: {
       warn: fastify.log.warn,
