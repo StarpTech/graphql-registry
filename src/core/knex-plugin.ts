@@ -10,6 +10,7 @@ declare module 'fastify' {
 
 export interface KnexPluginOptions {
   databaseConnectionUrl: string
+  databaseSchema?: string
 }
 
 export default fp<KnexPluginOptions>(async function (fastify, opts) {
@@ -22,6 +23,7 @@ export default fp<KnexPluginOptions>(async function (fastify, opts) {
       debug: fastify.log.debug,
     },
     connection: opts.databaseConnectionUrl,
+    searchPath: opts.databaseSchema,
   })
 
   fastify.decorate('knexHealthcheck', async () => {

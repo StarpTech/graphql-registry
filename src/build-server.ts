@@ -8,6 +8,7 @@ import { ErrorResponse } from './core/types'
 export interface buildOptions {
   logger?: boolean
   databaseConnectionUrl: string
+  databaseSchema?: string
   basicAuth?: string
   prettyPrint?: boolean
   jwtSecret?: string
@@ -28,6 +29,7 @@ export default function build(opts: buildOptions) {
   // Database client
   fastify.register(knexPlugin, {
     databaseConnectionUrl: opts.databaseConnectionUrl,
+    databaseSchema: opts.databaseSchema,
   })
 
   // Registry
