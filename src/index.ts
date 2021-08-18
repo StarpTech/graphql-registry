@@ -8,6 +8,7 @@ const config = envSchema({
 
 const app = build({
   databaseConnectionUrl: config.DATABASE_URL,
+  databaseSchema: config.DATABASE_SCHEMA,
   basicAuth: config.BASIC_AUTH,
   jwtSecret: config.JWT_SECRET,
   logger: config.LOGGER,
