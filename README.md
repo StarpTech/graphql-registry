@@ -18,8 +18,8 @@
 
 ---
 
-> **Note**: Are you looking for the next generation API Developer Platform? 🔎 Have a look at: [WunderGraph](https://github.com/wundergraph/wundergraph)
-Turn your services, databases and 3rd party APIs into a secure unified API in just a few minutes. 🪄
+> **Note**: Are you looking for a Complete API Management for GraphQL Federation? 🔎 Have a look at: [WunderGraph Cosmo](https://github.com/wundergraph/cosmo)
+Includes Schema Registry, analytics, metrics, tracing, and routing. Available for 100% on-prem deployment or as a [Managed Service](https://cosmo.wundergraph.com/login). Apache 2.0 licensed, ensuring no vendor lock-in 🪄
 
 ---
 
